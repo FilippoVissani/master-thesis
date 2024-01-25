@@ -7,7 +7,7 @@
 \usepackage{acronym}
 
 \school{\unibo}
-\programme{Corso di Laurea Magistrale in Ingegneria e Scienze Informatiche}
+\programme{MSc in Engineering and Computer Science}
 \title{Feasibility of Reactive Aggregate Programming via Kotlin Flows}
 \author{Filippo Vissani}
 \date{\today}
@@ -17,19 +17,16 @@
 \session{IV}
 \academicyear{2022-2023}
 
-% Definition of acronyms
-\acrodef{IoT}{Internet of Thing}
-\acrodef{vm}[VM]{Virtual Machine}
-
-
-\mainlinespacing{1.241} % line spacing in mainmatter, comment to default (1)
+\mainlinespacing{1.241}
 
 \begin{document}
 
 \frontmatter\frontispiece
 
 \begin{abstract}	
-Max 2000 characters, strict.
+% Max 2000 characters, strict.
+% Very brief (e.g. 250-300 words)
+% Abstract should briefly point out: Context, Problem/Objectives, Methods/Contribution, Results, Conclusions
 \end{abstract}
 
 \begin{dedication} % this is optional
@@ -41,7 +38,7 @@ Optional. Max 1 page.
 \end{acknowledgements}
 
 %----------------------------------------------------------------------------------------
-\tableofcontents   
+\tableofcontents
 \listoffigures     % (optional) comment if empty
 \lstlistoflistings % (optional) comment if empty
 %----------------------------------------------------------------------------------------
@@ -53,46 +50,84 @@ Optional. Max 1 page.
 \label{chap:introduction}
 %----------------------------------------------------------------------------------------
 
-Write your intro here.
-\sidenote{Add sidenotes in this way. They are named after the author of the thesis}
+% Introduction should set: Context, Scope, Significance (Motivation), Goals/High-level Questions, Methodology (briefly), Organization of the paper (chapters and what they include)
 
-You can use acronyms that your defined previously,
-such as \ac{IoT}.
-%
-If you use acronyms twice,
-they will be written in full only once
-(indeed, you can mention the \ac{IoT} now without it being fully explained).
-%
-In some cases, you may need a plural form of the acronym.
-%
-For instance,
-that you are discussing \acp{vm},
-you may need both \ac{vm} and \acp{vm}.
+%----------------------------------------------------------------------------------------
+\chapter{Background}
+\label{chap:background}
+%----------------------------------------------------------------------------------------
 
-\paragraph{Structure of the Thesis}
+\section{Functional Programming}
 
-\note{At the end, describe the structure of the paper}
+\section{Functional Reactive Programming}
 
-\chapter{State of the art}
+\subsection{Kotlin Flow}
 
-I suggest referencing stuff as follows: \cref{fig:random-image} or \Cref{fig:random-image}
+\section{Aggregate Programming}
 
-\begin{figure}
-    \centering
-    \includegraphics[width=.8\linewidth]{figures/random-image.pdf}
-    \caption{Some random image}
-    \label{fig:random-image}
-\end{figure}
+\subsection{Field Calculus}
 
-\section{Some cool topic}
+\subsection{Proactive Model}
 
-\chapter{Contribution}
+% talk about semantics
 
-You may also put some code snippet (which is NOT float by default), eg: \cref{lst:random-code}.
+\subsection{Reactive Model}
 
-\lstinputlisting[float,language=Java,label={lst:random-code}]{listings/HelloWorld.java}
+% talk about semantics
 
-\section{Fancy formulas here}
+%----------------------------------------------------------------------------------------
+\chapter{Analysis}
+\label{chap:analysis}
+%----------------------------------------------------------------------------------------
+\section{State of the Art}
+
+\subsection{Protelis}
+
+\subsection{ScaFi}
+
+\subsection{Collektive}
+
+\subsection{FCPP}
+
+\subsection{DFRP}
+
+\section{Design of DFRP}
+
+% talk about constructs and semantics
+
+\section{Design of Collektive}
+
+% talk about constructs and semantics
+
+\section{Kotlin Implementation of DFRP}
+
+\section{Integration of DFRP in Collektive}
+
+%----------------------------------------------------------------------------------------
+\chapter{Design}
+\label{chap:design}
+%----------------------------------------------------------------------------------------
+
+\section{Architecture}
+
+\section{Detailed Design}
+
+%----------------------------------------------------------------------------------------
+\chapter{Implementation}
+\label{chap:implementation}
+%----------------------------------------------------------------------------------------
+\chapter{Evaluation}
+\label{chap:evaluation}
+%----------------------------------------------------------------------------------------
+
+\section{Testing}
+
+%----------------------------------------------------------------------------------------
+\chapter{Conclusion}
+\label{chap:conclusion}
+%----------------------------------------------------------------------------------------
+
+% Conclusion chapter should point out: (1) Briefly recall problem, starting point and methods adopted, (2) Briefly report Findings, (3) Briefly discuss benefits/limitations, (4) Discuss Future Work
 
 %----------------------------------------------------------------------------------------
 % BIBLIOGRAPHY
