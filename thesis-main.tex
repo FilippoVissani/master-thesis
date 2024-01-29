@@ -17,6 +17,11 @@
 \session{IV}
 \academicyear{2022-2023}
 
+% Definition of acronyms
+\acrodef{IoT}{Internet of Thing}
+\acrodef{vm}[VM]{Virtual Machine}
+\acrodef{jvm}[JVM]{Java Virtual Machine}
+
 \mainlinespacing{1.241}
 
 \begin{document}
@@ -57,11 +62,81 @@ Optional. Max 1 page.
 \label{chap:background}
 %----------------------------------------------------------------------------------------
 
+This chapter provides a broad overview of the concepts, paradigms, and frameworks that served as points of reference during the entire development of this thesis.
+
 \section{Functional Programming}
+
+The functional paradigm, in the context of computer science, involves building programs through the application and composition of functions. It adopts a declarative approach, where function definitions are represented as trees of expressions mapping values to other values, rather than relying on a sequence of imperative statements to update the program's running state.
+
+\subsection{Concepts}
+
+This section elucidates fundamental concepts that form the basis of functional programming.
+
+\paragraph{Higher-order functions}
+
+Higher-order functions possess the ability to either receive functions as arguments or produce them as results. The nuanced difference lies in the mathematical concept denoted by "higher-order", which involves functions operating on other functions.
+
+These functions facilitate partial application or currying, enabling a technique where a function is applied to its arguments one at a time. With each application, a new function is created to handle the next argument. This approach allows programmers to express ideas succinctly, such as representing the successor function by partially applying the addition operator to the natural number one.
+
+\paragraph{Purity}
+Pure functions, or expressions, lack side effects. This absence of side effects endows pure functions with various advantageous properties, many of which can be leveraged for code optimization. A pure function, to be defined as such, must meet the following properties:
+
+\begin{itemize}
+    \item If the result of a pure expression is not used, it can be removed without influencing other expressions.
+    \item If a pure function is invoked with arguments that do not introduce side effects, the result remains constant concerning that set of arguments. Repeatedly calling the pure function with the same arguments yields identical results.
+\end{itemize}
+
+\paragraph{Recursion}
+
+Functional languages typically employ recursion for iteration. Recursive functions call themselves, allowing an operation to iterate until it meets the base case. Generally, recursion involves managing a stack, consuming space proportional to the recursion depth. This characteristic might render recursion less favorable compared to imperative loops due to potential space inefficiency. Nonetheless, a specific type of recursion called tail recursion can be identified and optimized by a compiler, producing code similar to that used for iteration in imperative languages. Implementing tail recursion optimization involves transforming the program using a continuous passing style during compilation.
+
+\paragraph{Evaluation strategies}
+
+In functional languages, various methods are commonly provided for evaluating arguments during their passage to functions. Three primary approaches include:
+
+\begin{itemize}
+    \item \textit{Call-by-value}: This involves evaluating arguments before the function application.
+    \item \textit{Call-by-name}: Here, arguments are assessed each time their value is needed within the function body.
+    \item \textit{Call-by-need}: Also known as lazy evaluation, this approach involves evaluating arguments only when their value is first required within the function body.
+\end{itemize}
+
+\paragraph{Type systems}
+
+Functional programming languages have leaned towards employing typed lambda calculus. This approach involves rejecting all invalid programs at compilation time, even at the risk of encountering false positive errors. In contrast, untyped lambda calculus, accepts all valid programs at compilation time, running the risk of false negative errors, as it rejects invalid programs only at runtime when there is sufficient information to distinguish valid from invalid programs. The incorporation of algebraic data types enhances the ease of manipulating complex data structures. Additionally, the robust compile-time type checking contributes to program reliability, offering a level of assurance even in the absence of other reliability techniques. Furthermore, type inference alleviates the need for manual declaration of types by the programmer in most cases.
+
+\paragraph{Referential transparency}
+
+In functional programming, there are no assignment statements; once a variable is defined, its value remains constant throughout the program's execution. This characteristic eliminates the possibility of side effects since any variable can be substituted with its actual value at any given point in the program. Consequently, functional programs are characterized by referential transparency.
+
+\paragraph{Data structures}
+
+Purely functional data structures are often represented differently from their imperative counterparts. While arrays, providing constant access and update times, are fundamental in most imperative languages, purely functional alternatives might employ maps or random access lists. Although these alternatives allow for a purely functional implementation, they come with logarithmic access and update times. One distinguishing feature of purely functional data structures is persistence, which involves maintaining unmodified previous versions of the data structure.
 
 \subsection{Functional Programming in Kotlin}
 
+Kotlin, an open-source programming language characterized by static typing, accommodates both object-oriented and functional programming paradigms. Rather than striving for uniqueness, Kotlin derives inspiration from decades of language development. Variants of Kotlin are designed to target different platforms, including the \ac{jvm}, JavaScript, and native code.
+
+In Kotlin, functions are treated as first-class entities, implying their ability to be stored in variables and data structures. Additionally, they can be passed as arguments to and returned from other higher-order functions. The operations that can be performed on functions are equivalent to those applicable to other non-function values.
+
+To support these functionalities, Kotlin, being a statically typed programming language, employs a family of function types to represent functions. Moreover, it incorporates specialized language constructs, such as lambda expressions.
+
+An illustrative instance of a higher-order function in Kotlin is the functional programming idiom \texttt{fold}
+\cref{lst:fold-function} \sidenote{Is there something wrong with listings reference? Why the reference is to the current section?}
+employed for collections. This function receives an initial accumulator value and a combining function. Subsequently, it constructs its return value by iteratively combining the current accumulator value with each element in the collection. Importantly, the accumulator value is replaced with each iteration.
+
+\lstinputlisting[language=Kotlin,label={lst:fold-function}]{listings/fold.kt}
+
+the \texttt{combine} parameter has the function type \((R, T) \rightarrow R\), so it accepts a function that takes two arguments of types \textit{R} and \textit{T} and returns a value of type \textit{R}. It is invoked inside the \texttt{for} loop, and the return value is then assigned to \texttt{accumulator}.
+
+Kotlin uses function types, such as \((Int) \rightarrow String\), for declarations that deal with functions. Each function type in Kotlin is characterized by a parenthesized list specifying the parameter types and a return type. For example, \((A, B) \rightarrow C\) represents a type indicative of functions that accept two arguments of types \textit{A} and \textit{B}, yielding a result of type \textit{C}. The parameter list may be empty, denoted by \(() \rightarrow A\). It is essential to note that the return type cannot exclude the declaration of \texttt{Unit}. Function types have the option to include an additional receiver type, indicated before the dot in the notation. For instance, the type \(A.(B) \rightarrow C\) signifies functions that can be invoked on a receiver object \textit{A}, accepting a parameter \textit{B}, and producing a result of type \textit{C}.
+
 \section{Reactive Programming}
+
+Reactive programming is a declarative programming paradigm centered around data streams and the propagation of changes. Within this framework, expressing both static and dynamic data streams becomes straightforward. Additionally, the paradigm allows for the indication of inferred dependencies in the associated execution model, enabling the automatic propagation of alterations in the data flow.
+
+Reactive programming is grounded in the principle of asynchronous event processing, wherein events are handled without impeding the processing of concurrent events. Unlike synchronous procedure calls, where the program flow halts until the procedure returns the result, asynchronous communication involves the caller registering a \textit{callback procedure} procedure to be invoked upon result availability. The caller, unburdened by waiting for the result, can proceed with other tasks. In essence, the asynchronous procedure receives not only the necessary parameters but also instructions regarding the subsequent actions upon result availability, thus incorporating a forward-looking aspect into the invocation. Additionally, the caller has the flexibility to register multiple callback procedures, a valuable feature for scenarios necessitating notifications for both success and failure outcomes. The widely adopted implementation of the \textit{callback pattern} in object-oriented programming involves the Observer pattern. Here, the return value of the asynchronous procedure call is defined \textit{observable}, while the \textit{callback procedure} assumes the role of the \textit{observer}.
+
+\sidenote{This section must be completed}
 
 \subsection{Reactive Programming in Kotlin}
 
