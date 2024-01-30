@@ -1,0 +1,22 @@
+@startuml
+
+interface Observable {
+    subscribe(Observer): Subscription
+}
+
+interface Observer {
+    subscription: Subscription
+    onNext(item)
+    onError(error)
+    onCompleted()
+}
+
+interface Subscription {
+    unsubscribe()
+}
+
+Observable --> Observer
+Observer --> Subscription
+Subscription --> Observable
+
+@enduml

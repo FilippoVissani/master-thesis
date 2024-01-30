@@ -5,6 +5,7 @@
 \usepackage{notes}
 \usepackage{shortcuts}
 \usepackage{acronym}
+\usepackage{svg}
 
 \school{\unibo}
 \programme{MSc in Engineering and Computer Science}
@@ -136,7 +137,12 @@ Reactive programming is a declarative programming paradigm centered around data 
 
 Reactive programming is grounded in the principle of asynchronous event processing, wherein events are handled without impeding the processing of concurrent events. Unlike synchronous procedure calls, where the program flow halts until the procedure returns the result, asynchronous communication involves the caller registering a \textit{callback procedure} procedure to be invoked upon result availability. The caller, unburdened by waiting for the result, can proceed with other tasks. In essence, the asynchronous procedure receives not only the necessary parameters but also instructions regarding the subsequent actions upon result availability, thus incorporating a forward-looking aspect into the invocation. Additionally, the caller has the flexibility to register multiple callback procedures, a valuable feature for scenarios necessitating notifications for both success and failure outcomes. The widely adopted implementation of the \textit{callback pattern} in object-oriented programming involves the Observer pattern. Here, the return value of the asynchronous procedure call is defined \textit{observable}, while the \textit{callback procedure} assumes the role of the \textit{observer}.
 
-\sidenote{This section must be completed}
+\begin{figure}
+    \centering
+    \includesvg{figures/callback-pattern.svg}
+    \caption{Callback pattern}
+    \label{fig:callback-pattern}
+\end{figure}
 
 \subsection{Reactive Programming in Kotlin}
 
