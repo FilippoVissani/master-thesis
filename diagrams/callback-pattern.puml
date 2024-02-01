@@ -1,18 +1,18 @@
 @startuml
 
-interface Observable {
-    subscribe(Observer): Subscription
+class Observable {
+    +subscribe(Observer): Subscription
 }
 
-interface Observer {
-    subscription: Subscription
-    onNext(item)
-    onError(error)
-    onCompleted()
+class Observer {
+    +subscription: Subscription
+    +onNext(item)
+    +onError(error)
+    +onCompleted()
 }
 
-interface Subscription {
-    unsubscribe()
+class Subscription {
+    +unsubscribe()
 }
 
 Observable --> Observer
