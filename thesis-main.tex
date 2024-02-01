@@ -147,9 +147,9 @@ Reactive programming is grounded in the principle of asynchronous event processi
 
 In the context of reactive applications, the mere handling of a singular event is insufficient. Rather, the application is required to manage a continuous stream of events. In the realm of reactive streams, the \texttt{Observable} represents not merely an isolated event but an ongoing sequence of events. Subsequently, the \texttt{Observer} is tasked with furnishing callbacks for both successful and unsuccessful outcomes, as well as for the termination of the event stream.
 
-\subsection{Backpressure}
+\subsection{Back pressure}
 
-Divergence exists among reactive streams concerning how the flow of the stream is regulated. Two distinct approaches, namely push and pull, are identified. In the push paradigm, the consumer lacks precise knowledge of when a new event will be emitted. Consequently, the consumer is susceptible to being inundated by the unceasing stream of events. To mitigate this, the consumer must possess the capability to exert control over the stream's flow, a concept referred to as back pressure. Conversely, in the pull paradigm, the consumer explicitly determines when to retrieve the subsequent event from the stream.
+Divergence exists among reactive streams concerning how the flow of the stream is regulated. Two distinct approaches, namely push and pull, are identified. In the push paradigm, the consumer lacks precise knowledge of when a new event will be emitted. Consequently, the consumer is susceptible to being inundated by the unceasing stream of events. To mitigate this, the consumer must possess the capability to exert control over the stream's flow, a concept referred to as \textit{back pressure}. Conversely, in the pull paradigm, the consumer explicitly determines when to retrieve the subsequent event from the stream.
 
 \subsection{Reactive Operators}
 
