@@ -124,7 +124,7 @@ An illustrative instance of a higher-order function in Kotlin is the functional 
 \cref{lst:fold-function} \sidenote{Is there something wrong with listings reference? Why the reference is to the current section?}
 employed for collections. This function receives an initial accumulator value and a combining function. Subsequently, it constructs its return value by iteratively combining the current accumulator value with each element in the collection. Importantly, the accumulator value is replaced with each iteration.
 
-\lstinputlisting[language=Kotlin,label={lst:fold-function}]{listings/fold.kt}
+\lstinputlisting[float,language=Kotlin,label={lst:fold-function}]{listings/fold.kt}
 
 the \texttt{combine} parameter has the function type \((R, T) \rightarrow R\), so it accepts a function that takes two arguments of types \textit{R} and \textit{T} and returns a value of type \textit{R}. It is invoked inside the \texttt{for} loop, and the return value is then assigned to \texttt{accumulator}.
 
@@ -134,16 +134,51 @@ Kotlin uses function types, such as \((Int) \rightarrow String\), for declaratio
 
 Reactive programming is a declarative programming paradigm centered around data streams and the propagation of changes. Within this framework, expressing both static and dynamic data streams becomes straightforward. Additionally, the paradigm allows for the indication of inferred dependencies in the associated execution model, enabling the automatic propagation of alterations in the data flow.
 
-Reactive programming is grounded in the principle of asynchronous event processing, wherein events are handled without impeding the processing of concurrent events. Unlike synchronous procedure calls, where the program flow halts until the procedure returns the result, asynchronous communication involves the caller registering a \textit{callback procedure} procedure to be invoked upon result availability. The caller, unburdened by waiting for the result, can proceed with other tasks. In essence, the asynchronous procedure receives not only the necessary parameters but also instructions regarding the subsequent actions upon result availability, thus incorporating a forward-looking aspect into the invocation. Additionally, the caller has the flexibility to register multiple callback procedures, a valuable feature for scenarios necessitating notifications for both success and failure outcomes. The widely adopted implementation of the \textit{callback pattern} in object-oriented programming involves the Observer pattern. Here, the return value of the asynchronous procedure call is defined \textit{observable}, while the \textit{callback procedure} assumes the role of the \textit{observer}.
+\subsection{Callback Pattern}
+
+Reactive programming is grounded in the principle of asynchronous event processing, wherein events are handled without impeding the processing of concurrent events. Unlike synchronous procedure calls, where the program flow halts until the procedure returns the result, asynchronous communication involves the caller registering a \textit{callback procedure} procedure to be invoked upon result availability. The caller, unburdened by waiting for the result, can proceed with other tasks. In essence, the asynchronous procedure receives not only the necessary parameters but also instructions regarding the subsequent actions upon result availability, thus incorporating a forward-looking aspect into the invocation. Additionally, the caller has the flexibility to register multiple callback procedures, a valuable feature for scenarios necessitating notifications for both success and failure outcomes. The widely adopted implementation of the \textit{callback pattern} (\cref{fig:callback-pattern}) in object-oriented programming involves the Observer pattern. Here, the return value of the asynchronous procedure call is defined \textit{observable}, while the \textit{callback procedure} assumes the role of the \textit{observer}.
 
 \begin{figure}
     \centering
-    \includegraphics[width=.8\linewidth]{figures/callback-pattern.pdf}
-    \caption{Callback pattern}
+    \includegraphics[width=.5\linewidth]{figures/callback-pattern.pdf}
+    \caption{Callback pattern: class diagram}
     \label{fig:callback-pattern}
 \end{figure}
 
+In the context of reactive applications, the mere handling of a singular event is insufficient. Rather, the application is required to manage a continuous stream of events. In the realm of reactive streams, the \texttt{Observable} represents not merely an isolated event but an ongoing sequence of events. Subsequently, the \texttt{Observer} is tasked with furnishing callbacks for both successful and unsuccessful outcomes, as well as for the termination of the event stream.
+
+\subsection{Backpressure}
+
+Divergence exists among reactive streams concerning how the flow of the stream is regulated. Two distinct approaches, namely push and pull, are identified. In the push paradigm, the consumer lacks precise knowledge of when a new event will be emitted. Consequently, the consumer is susceptible to being inundated by the unceasing stream of events. To mitigate this, the consumer must possess the capability to exert control over the stream's flow, a concept referred to as back pressure. Conversely, in the pull paradigm, the consumer explicitly determines when to retrieve the subsequent event from the stream.
+
+\subsection{Reactive Operators}
+
+The primary advantage offered by libraries furnishing the reactive streams APIs lies in the provision of operators. These operators are essentially functions applicable to a data stream, adept at solving problems related to the processing of reactive streams, encompassing tasks such as filtering, mapping (\cref{fig:reactive-map}), and aggregating.
+
+Furthermore, these operator functions are intentionally designed to be composable, signifying their capability to be consecutively linked to construct processing pipelines. Each operator function receives an observable as input and yields another observable as output. Consequently, the outcome of one operator function can seamlessly serve as the input for another operator function, a concept termed operator chaining.
+
+\subsection{Hot and Cold Observables}
+
+The start of emission of data for an observable depends on its nature. In the case of a \textit{hot observable}, the emission of items may start immediately upon its creation. Consequently, any subsequent observer subscribing to this observable may commence observation at any point within the sequence, potentially in the middle. Conversely, a \textit{cold observable} adopts a different approach by deferring emission until an observer subscribes to it. In this scenario, the observer is assured of obtaining the entire sequence from its inception once the subscription is initiated.
+
+This dichotomy between hot and cold observables reflects a fundamental distinction in their behavior, influencing the temporal aspect of data emission and subsequent observation by observers. The inherent characteristics of each type contribute to varying scenarios and considerations when designing and utilizing observables in reactive programming contexts.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\linewidth]{figures/map-marble.png}
+    \caption{Map operator in reactive applications}
+    \label{fig:reactive-map}
+\end{figure}
+
 \subsection{Reactive Programming in Kotlin}
+
+Kotlin Flow\footnote{\url{https://kotlinlang.org/docs/flow.html}} is a powerful mechanism for handling asynchronous data streams, providing a sequential emission of values that can be completed normally or with an exception. The key distinction lies in its cold flow property, where intermediate operators like \texttt{map}, \texttt{filter}, \texttt{take}, and \texttt{zip} set up a chain of operations for future execution without executing any code immediately, showcasing the asynchronous nature of flows. Terminal operators, such as \texttt{collect}, \texttt{single}, \texttt{reduce}, and \texttt{toList}, trigger the execution of all operations in a suspending manner, completing either normally or exceptionally based on the success or failure of upstream flow operations. By default, flows are sequential, with exceptions for specific operations like \texttt{buffer} and \texttt{flatMapMerge} that introduce concurrency. The \texttt{Flow} interface doesn't inherently differentiate between cold and hot streams, but a \texttt{SharedFlow} subtype and operators like \texttt{stateIn}, \texttt{shareIn}, and \texttt{produceIn} enable the transformation of any flow into a hot stream, allowing for repeated collections or emitting different values from the same running source on each collection.
+
+\sidenote{Talk about the code snippet}
+
+\lstinputlisting[float,language=Kotlin,label={lst:flow-example}]{listings/flow-example.kt}
+
+\lstinputlisting[float,label={lst:flow-example-result}]{listings/flow-example-result.txt}
 
 \section{Aggregate Programming}
 
