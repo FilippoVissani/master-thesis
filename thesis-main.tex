@@ -171,7 +171,7 @@ This dichotomy between hot and cold observables reflects a fundamental distincti
 
 \subsection{Reactive Programming in Kotlin}
 
-Kotlin Flow\footnote{\url{https://kotlinlang.org/docs/flow.html}} is a library for handling asynchronous data streams, providing a sequential emission of values that can be completed normally or with an exception. The key distinction lies in its cold flow property, where intermediate operators like \texttt{map}, \texttt{filter}, \texttt{take}, and \texttt{zip} set up a chain of operations for future execution without executing any code immediately, showcasing the asynchronous nature of flows. Terminal operators, such as \texttt{collect}, \texttt{single}, \texttt{reduce}, and \texttt{toList}, trigger the execution of all operations in a suspending manner, completing either normally or exceptionally based on the success or failure of upstream flow operations. By default, flows are sequential, with exceptions for specific operations like \texttt{buffer} and \texttt{flatMapMerge} that introduce concurrency. The \texttt{Flow} interface doesn't inherently differentiate between cold and hot streams, but a \texttt{SharedFlow} subtype and operators like \texttt{stateIn}, \texttt{shareIn}, and \texttt{produceIn} enable the transformation of any flow into a hot stream, allowing for repeated collections or emitting different values from the same running source on each collection.
+Kotlin\footnote{\url{https://kotlinlang.org/}} Flow\footnote{\url{https://kotlinlang.org/docs/flow.html}} is a library for handling asynchronous data streams, providing a sequential emission of values that can be completed normally or with an exception. The key distinction lies in its cold flow property, where intermediate operators like \texttt{map}, \texttt{filter}, \texttt{take}, and \texttt{zip} set up a chain of operations for future execution without executing any code immediately, showcasing the asynchronous nature of flows. Terminal operators, such as \texttt{collect}, \texttt{single}, \texttt{reduce}, and \texttt{toList}, trigger the execution of all operations in a suspending manner, completing either normally or exceptionally based on the success or failure of upstream flow operations. By default, flows are sequential, with exceptions for specific operations like \texttt{buffer} and \texttt{flatMapMerge} that introduce concurrency. The \texttt{Flow} interface doesn't inherently differentiate between cold and hot streams, but a \texttt{SharedFlow} subtype and operators like \texttt{stateIn}, \texttt{shareIn}, and \texttt{produceIn} enable the transformation of any flow into a hot stream, allowing for repeated collections or emitting different values from the same running source on each collection.
 
 The example \cref{lst:flow-example} demonstrates the asynchronous nature of Kotlin Flow and how it allows concurrent execution without blocking the main thread. The \texttt{simple} function creates a flow using the \texttt{flow} builder. Inside the flow, it emits values from one to three with a delay of one hundred milliseconds between each emission. The delay simulates an operation that takes time, such as network calls or disk I/O. In the \texttt{main} function, a coroutine is launched using \texttt{launch} to run concurrently with the main thread. This coroutine prints messages indicating that it's not blocked and introduces delays between each message. As the flow is collected in the main coroutine, the emitted values are printed and interleaved with the messages from the concurrent coroutine (\cref{lst:flow-example-result}). This demonstrates that the main thread is not blocked during the execution of the flow, thanks to the asynchronous nature of flows.
 
@@ -181,6 +181,8 @@ The example \cref{lst:flow-example} demonstrates the asynchronous nature of Kotl
 
 \section{Aggregate Programming}
 
+\subsection{Field Calculus}
+
 \subsection{Abstractions}
 
 % Context
@@ -189,8 +191,6 @@ The example \cref{lst:flow-example} demonstrates the asynchronous nature of Kotl
 % Path
 % Slot
 % Export
-
-\subsection{Field Calculus}
 
 \subsection{Proactive Model}
 
