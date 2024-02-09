@@ -10,15 +10,74 @@
 
 \subsection{Protelis}
 
-\subsection{ScaFi}
+Protelis~\cite{Pianini2015} is based on field calculus and is closely related to Proto~\cite{Beal2006}. It inherits spatial computing features from the field calculus, which provides universality, consistency, and self-stabilization properties. However, Protelis improves over Proto by offering a richer API through Java integration, support for code mobility through first-order functions, and a syntax inspired by C-family languages.
 
-\subsection{Collektive}
+The syntax of Protelis (\Cref{fig:protelis-syntax}) is presented in abstract form. It uses meta-variables to represent names of user-defined functions (\texttt{f}), variables and function arguments (\texttt{x}), literal values (l), built-in functions and operators (b), Java method names (\texttt{m}), and aliases of static Java methods (\texttt{\#a}). The syntax employs conventions like comma-separated lists and semi-colon separators for sequences of elements.
+
+Protelis adopts a familiar C- or Java-like syntax, making it more accessible and reducing barriers to adoption. Despite its syntactic similarity to imperative languages, Protelis is purely functional. Programs consist of a sequence of function definitions, followed by a main block of statements. Functions are defined with curly brackets and can contain sequences of statements or expressions. Each statement is an expression to be evaluated (\texttt{e}), possibly in the context of the creation of a new variable (\texttt{let x = e}) or a re-assignment (\texttt{x = e}).
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\linewidth]{figures/protelis-syntax.png}
+    \caption{Protelis abstract syntax}
+    \label{fig:protelis-syntax}
+\end{figure}
+
+\subsubsection{Example: Rendezvous at a Mass Event}
+
+In large public events, it can be challenging to meet with companions due to crowded areas, inaccessible rendezvous points, or difficulty in accessing cloud-based services.
+
+Utilizing peer-to-peer geometric calculations across a network of devices to compute a \textit{rendezvous}\footnote{A meeting at an agreed time and place.} route is the proposed solution to the problem. The solution is demonstrated in a simulated city center environment (\Cref{fig:protelis-example-map}), using London as an example, with devices distributed randomly across the city streets. Each device has a communication range, and the goal is for two individuals (represented by their devices) to meet at a specific location.
+
+The implementation (\Cref{lst:protelis-example}) involves injecting the environment of the devices with properties representing their owners (e.g., "Alice" and "Bob"). The algorithm measures the distance to one of the participants, creates a potential field, and builds an optimal path from the other participant, descending the distance potential field to reach the first participant at zero distance. The algorithm utilizes two main functions: \texttt{distanceTo} and \texttt{descend}. \texttt{distanceTo} measures the distance to one of the participants. Given a device and a potential field, \texttt{descend} builds a path of devices connecting the device with the source of the potential field. The algorithm elegantly compresses the entire process into a few lines of code, utilizing the \texttt{nbr} operator to exchange required information without explicitly declaring any communication protocol.
+
+As \Cref{fig:protelis-example-map} shows, the simulation rapidly identifies a chain of devices (represented by red dots) that marks a sequence of waypoints for both device owners to walk and meet in the middle. The algorithm dynamically adjusts the path if one of the device owners moves in a different direction, ensuring it continues to recommend the best path for rendezvous.
+
+\lstinputlisting[float,label={lst:protelis-example},caption=Rendezvous implementation in Protelis]{listings/protelis-example.txt}
+
+\begin{figure}
+    \centering
+    \begin{subfigure}[b]{.49\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figures/protelis-example-a.png}
+        \caption{Initial configuration.}
+        \label{fig:protelis-example-a}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{.49\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figures/protelis-example-b.png}
+        \caption{Path begins to form.}
+        \label{fig:protelis-example-b}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{.49\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figures/protelis-example-c.png}
+        \caption{Path continues to extend.}
+        \label{fig:protelis-example-c}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{.49\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figures/protelis-example-d.png}
+        \caption{Path computation complete.}
+        \label{fig:protelis-example-d}
+    \end{subfigure}
+    \caption{Example of computing a rendezvous route for two people in a crowded urban environment.}
+    \label{fig:protelis-example-map}
+\end{figure}
+
+
+\subsection{ScaFi}
 
 \subsection{FCPP}
 
+\subsection{Collektive}
+
 \subsection{FRASP}
 
-As said in \cref{subsection:reactive-and-proactive-models}, aggregate computing makes use of a round-based execution model, that can be defined as \textit{proactive}. This approach is simple to reason about but limited in terms of flexibility in scheduling and management of sub-activities (and response to contextual changes). In~\cite{Casadei2023} is proposed a reactive self-organization programming approach, called FRASP, that enables the decoupling of the program logic from the scheduling of its sub-activities. This model maintains the same expressiveness and benefits of aggregate programming while enabling significant improvements in terms of scheduling controllability, flexibility in the sensing/actuation model, and execution efficiency.
+As said in \Cref{subsection:reactive-and-proactive-models}, aggregate computing makes use of a round-based execution model, that can be defined as \textit{proactive}. This approach is simple to reason about but limited in terms of flexibility in scheduling and management of sub-activities (and response to contextual changes). In~\cite{Casadei2023} is proposed a reactive self-organization programming approach, called FRASP, that enables the decoupling of the program logic from the scheduling of its sub-activities. This model maintains the same expressiveness and benefits of aggregate programming while enabling significant improvements in terms of scheduling controllability, flexibility in the sensing/actuation model, and execution efficiency.
 
 \subsubsection{Reactive Model}
 FRASP is based on the reactive functional programming (FRP) paradigm and considers \textit{continuous time}, $Time$ = $\{ t \in \mathbb{R} \, | \, t \geq 0 \}$. Time-varying values are called \textit{cells} and may be conceptually modeled by generic functions of type $Cell$ $a$: $Time \rightarrow a$. Then, \textit{streams} are discrete-time values and may be modeled by generic functions of type $Stream$ $a$: $[Time] \rightarrow [a]$, namely, mapping a sequence of (increasing) sample times to a sequence of corresponding values. While cells model state, streams model state changes.
@@ -45,7 +104,7 @@ A \textit{(self-healing) gradient} is a distributed behavior that self-stabilize
 
 \lstinputlisting[label={lst:gradient.scala},language=scala,caption=Gradient implementation in FRASP]{listings/gradient.scala}
 
-The reactive dataflow graph in \cref{fig:gradient-dependencies} corresponds to \cref{lst:gradient.scala}. \Cref{fig:gradient-dependencies} provides the local view of the computation for a single node (where the layers denote different semantic kinds of dependencies), whereas \cref{fig:gradient-dependencies-distributed} shows the distributed dependency graph. The arrows denote dependencies. The dashed arrows denote dependencies based on platform-level scheduling and node interaction; for instance, a red block depends on changes corresponding to neighbors' red blocks and is communicated via message passing.
+The reactive dataflow graph in \Cref{fig:gradient-dependencies} corresponds to \Cref{lst:gradient.scala}. \Cref{fig:gradient-dependencies} provides the local view of the computation for a single node (where the layers denote different semantic kinds of dependencies), whereas \Cref{fig:gradient-dependencies-distributed} shows the distributed dependency graph. The arrows denote dependencies. The dashed arrows denote dependencies based on platform-level scheduling and node interaction; for instance, a red block depends on changes corresponding to neighbors' red blocks and is communicated via message passing.
 
 \begin{figure}
     \centering
@@ -62,7 +121,7 @@ The reactive dataflow graph in \cref{fig:gradient-dependencies} corresponds to \
         \caption{Distributed view (with neighbor dependencies).}
         \label{fig:gradient-dependencies-distributed}
     \end{subfigure}
-    \caption{Dependencies between sub-computations in gradient program (\cref{lst:gradient.scala})}
+    \caption{Dependencies between sub-computations in gradient program (\Cref{lst:gradient.scala})}
 \end{figure}
 
 \section{Design of FRASP}
