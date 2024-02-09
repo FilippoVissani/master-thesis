@@ -1,0 +1,19 @@
+// Follow the gradient of a potential field down from a source
+def descend(source,potential) {
+    rep(path <- source) {
+        let nextStep = minHood(nbr([potential, self.getId()]));
+        if (nextStep.size() > 1) {
+            let candidates = nbr([nextStep.get(1), path]);
+            source || anyHood([self.getId(), true] == candidates)
+        } else {
+            source
+        }
+    }
+}
+
+def rendezvous(person1, person2) {
+    descend (person1 == owner, distanceTo(person2 == owner))
+}
+
+// Example of using rendezvous
+rendezvous("Alice", "Bob");
