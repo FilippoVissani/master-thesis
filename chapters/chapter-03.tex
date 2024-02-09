@@ -111,8 +111,8 @@ If a node is not a source, then will take as its gradient value the output of th
 
 \begin{figure}
     \centering
-    \includegraphics[width=.8\linewidth]{figures/scafi-gradient.png}
-    \caption{A graphical representation of the gradient implementation in ScaFi after stabilization.}
+    \includegraphics[width=\linewidth]{figures/scafi-gradient.png}
+    \caption{A graphical representation of the gradient implementation in ScaFi after stabilization. Each device of the network is labeled with its distance from the source (in parenthesis) and its ID. The source device is the one with ID 1. Note that devices that are not connected to the source are considered to be at an infinite distance from it.}
     \label{fig:scafi-gradient}
 \end{figure}
 
