@@ -18,7 +18,7 @@ Protelis adopts a familiar C- or Java-like syntax, making it more accessible and
 
 \begin{figure}
     \centering
-    \includegraphics[width=\linewidth]{figures/protelis-syntax.png}
+    \includegraphics[width=.8\linewidth]{figures/protelis-syntax.png}
     \caption{Protelis abstract syntax}
     \label{fig:protelis-syntax}
 \end{figure}
@@ -71,6 +71,51 @@ As \Cref{fig:protelis-example-map} shows, the simulation rapidly identifies a ch
 
 \subsection{ScaFi}
 
+ScaFi~\cite{Casadei2022} is a Scala-based library and framework designed for aggregate programming. It facilitates the development of distributed algorithms where computations are performed by individual devices in a network, and the results are aggregated across the network. The core concepts and constructs of ScaFi's API are outlined as follows:
+
+\paragraph{Expression Evaluation}
+An expression written using the ScaFi API is evaluated by each device once per computation round.
+
+\paragraph{Fields}
+Fields are represented as atomic values without any particular wrapper. They indicate the value of the field at the device performing the computation.
+
+\paragraph{Neighboring Field}
+The concept of ``neighboring field" from field calculus is not explicitly represented (not reified). Spatial computation (\texttt{nbr} and \texttt{nbrvar} constructs) is only available inside a special scope provided by the \texttt{foldhood} construct.
+
+\paragraph{Export}
+The export for each iteration is constructed by the ScaFi engine. It applies side effects to an internal data structure as the constructs are invoked, thereby constructing the evaluation tree.
+
+\paragraph{Constructs}
+The semantics of the constructs defined in ScaFi are described below:
+\begin{itemize}
+    \item \texttt{rep(init)(f)}: captures state evolution, starting from an \texttt{init} value that is updated each round through \texttt{f};
+    \item \texttt{nbr(e)} captures communication, of the value computed from its \texttt{e} expression, with neighbors; it is used only inside the argument \texttt{expr} of \texttt{foldhood(init)(acc)(expr)}, which supports neighborhood data aggregation, through a standard “fold” of functional programming with initial value \texttt{init}, accumulator function \texttt{acc}, and the set of values to fold over obtained by evaluating expr against all neighbors;
+    \item \texttt{branch(cond)(th)(el)} captures domain partitioning (space-time branching): essentially, the devices for which \texttt{cond} evaluates to \texttt{true} will run sub-computation \texttt{th}, while the others will run \texttt{el};
+    \item \texttt{mid} is a built-in sensor providing the identifier of devices;
+    \item \texttt{sense(sensorName)} abstracts access to local sensors;
+    \item \texttt{nbrvar(sensorName)} abstracts access to “neighboring sensors” that behave similarly to \texttt{nbr} but are provided by the platform: i.e., such sensors provide a value for each neighbor.
+\end{itemize}
+\sidenote{What about aggregate, align and share?}
+
+\subsubsection{Gradient Implementation in ScaFi}
+
+A \textit{(self-healing) gradient} is a distributed behavior that self-stabilizes, in each device of the distributed system, to a value denoting its minimum distance from the closest source node (for instance, computed by summing the neighbor-to-neighbor distances along the shortest path to the source), adapting to changes in the source set and distances. By following the neighbors of maximum decrease (resp. increase) of the gradient value, i.e., by descending (resp. ascending) the gradient, it is possible to implement efficient hop-by-hop information flows, that can be useful for data propagation and collection.
+
+The implementation of a gradient using ScaFi is presented in \Cref{lst:scafi-gradient}. The following is a brief description of the program:
+The gradient value at each node is dynamically evolved using \texttt{rep}. This is necessary to allow a node to share its previous gradient value with neighbors. The default value is \texttt{Double.PositiveInfinity} since by default a node is at an infinite distance from a source (since it may not be reachable in general). The \texttt{mux(c)(th)(el)} evaluates its expression \texttt{th} and \texttt{el} and then uses the Boolean condition \texttt{c} to select either the former (when \texttt{c} is true) or the latter (when \texttt{c} is false).
+If a node is a source (i.e., if sensing the Boolean sensor \texttt{source} returns \texttt{true}), then its gradient value is \texttt{0} (by definition).
+If a node is not a source, then will take as its gradient value the output of the expression \texttt{minHoodPlus(nbr\{distance\} + nbrRange)}.
+\texttt{minHoodPlus(e)} is a variant of \texttt{foldhood} which does not consider the device itself when folding over the neighborhood. Namely, it selects the minimum value among those obtained by evaluating \texttt{e} against the neighbors (excluding the device itself). The argument of \texttt{minHoodPlus} is \texttt{nbr\{distance\} + nbrRange()}, which amounts to calculating, for each neighbor, the sum of the neighbor's most recent gradient value and the corresponding distance to that neighbor (obtained by neighboring sensor \texttt{nbrRange}, which is \texttt{nbrvar[Double]("nbrRange")}).
+
+\lstinputlisting[float,label={lst:scafi-gradient},language=scala,caption=Implementation of gradient in ScaFi]{listings/scafi-gradient.scala}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=.8\linewidth]{figures/scafi-gradient.png}
+    \caption{A graphical representation of the gradient implementation in ScaFi after stabilization.}
+    \label{fig:scafi-gradient}
+\end{figure}
+
 \subsection{FCPP}
 
 \subsection{Collektive}
@@ -100,11 +145,11 @@ The details of the syntax and semantics of FRASP are discussed in detail in Sect
 
 \subsubsection{A Paradigmatic Example}
 
-A \textit{(self-healing) gradient} is a distributed behavior that self-stabilizes, in each device of the distributed system, to a value denoting its minimum distance from the closest source node (for instance, computed by summing the neighbor-to-neighbor distances along the shortest path to the source), adapting to changes in the source set and distances. By following the neighbors of maximum decrease (resp. increase) of the gradient value, i.e., by descending (resp. ascending) the gradient, it is possible to implement efficient hop-by-hop information flows, that can be useful for data propagation and collection. \Cref{lst:gradient.scala} provides a representation of a gradient. The function takes the Boolean \texttt{src} flow as input, denoting whether the executing node is the source of the gradient or not. The external \texttt{loop} is used to progressively evolve the current gradient value \texttt{distance} starting from an infinite value (as, initially, devices do not know whether a source is reachable). Internally to the loop, \texttt{mux} is used to select one of two values: if the node is a source, then its gradient value is \texttt{0} (base case); otherwise, the gradient should be the minimum value among the neighbors' gradient values augmented by the distance (\texttt{nbrRange}) from that very neighbor. Construct \texttt{liftTwice} is used to combine (using the sum: \_+\_) the two flows \texttt{nbrRange} (distances to neighbors) and \texttt{nbr(distance)} (neighbors' gradient values).
+\Cref{lst:frasp-gradient.scala} provides a representation of a gradient in FRASP. The function takes the Boolean \texttt{src} flow as input, denoting whether the executing node is the source of the gradient or not. The external \texttt{loop} is used to progressively evolve the current gradient value \texttt{distance} starting from an infinite value (as, initially, devices do not know whether a source is reachable). Internally to the loop, \texttt{mux} is used to select one of two values: if the node is a source, then its gradient value is \texttt{0} (base case); otherwise, the gradient should be the minimum value among the neighbors' gradient values augmented by the distance (\texttt{nbrRange}) from that very neighbor. Construct \texttt{liftTwice} is used to combine (using the sum: \_+\_) the two flows \texttt{nbrRange} (distances to neighbors) and \texttt{nbr(distance)} (neighbors' gradient values).
 
-\lstinputlisting[label={lst:gradient.scala},language=scala,caption=Gradient implementation in FRASP]{listings/gradient.scala}
+\lstinputlisting[label={lst:frasp-gradient.scala},language=scala,caption=Gradient implementation in FRASP]{listings/frasp-gradient.scala}
 
-The reactive dataflow graph in \Cref{fig:gradient-dependencies} corresponds to \Cref{lst:gradient.scala}. \Cref{fig:gradient-dependencies} provides the local view of the computation for a single node (where the layers denote different semantic kinds of dependencies), whereas \Cref{fig:gradient-dependencies-distributed} shows the distributed dependency graph. The arrows denote dependencies. The dashed arrows denote dependencies based on platform-level scheduling and node interaction; for instance, a red block depends on changes corresponding to neighbors' red blocks and is communicated via message passing.
+The reactive dataflow graph in \Cref{fig:gradient-dependencies} corresponds to \Cref{lst:frasp-gradient.scala}. \Cref{fig:gradient-dependencies} provides the local view of the computation for a single node (where the layers denote different semantic kinds of dependencies), whereas \Cref{fig:gradient-dependencies-distributed} shows the distributed dependency graph. The arrows denote dependencies. The dashed arrows denote dependencies based on platform-level scheduling and node interaction; for instance, a red block depends on changes corresponding to neighbors' red blocks and is communicated via message passing.
 
 \begin{figure}
     \centering
@@ -121,7 +166,7 @@ The reactive dataflow graph in \Cref{fig:gradient-dependencies} corresponds to \
         \caption{Distributed view (with neighbor dependencies).}
         \label{fig:gradient-dependencies-distributed}
     \end{subfigure}
-    \caption{Dependencies between sub-computations in gradient program (\Cref{lst:gradient.scala})}
+    \caption{Dependencies between sub-computations in gradient program (\Cref{lst:frasp-gradient.scala})}
 \end{figure}
 
 \section{Design of FRASP}
