@@ -118,6 +118,27 @@ If a node is not a source, then will take as its gradient value the output of th
 
 \subsection{FCPP}
 
+FCPP~\cite{Audrito2020} is a C++14 library implementing Field Calculus and providing tools for distributed system simulation.
+
+Its extensible component-based architecture allows customization for diverse application scenarios, such as Internet-of-Things (IoT) deployments, simulations, and self-organizing cloud applications. Users can add components tailored to specific functionalities, enhancing flexibility and applicability. The library incorporates compile-time optimizations and supports parallel execution, enabling efficient simulation of both systems and self-organizing cloud applications. Currently, FCPP focuses on distributed system simulations but already significantly reduces simulation costs, accelerating the development of new distributed algorithms. These features offer a path for a convenient extension to address previously ineffective scenarios:
+
+Existing implementations often have high-performance requirements, unsuitable for resource-constrained microcontrollers. FCPP's lightweight nature makes it well-suited for these systems.
+
+Self-organizing cloud applications necessitate fine-grained parallelism for scalability, and performance improvements directly translate to cost reduction. FCPP's support for parallelism caters to this need.
+
+\subsubsection{Aggregate program example with FCPP}
+
+The example function provided in \Cref{lst:fcpp-example} utilizes the Adaptive Bellman-Ford algorithm to estimate distances from devices where the \texttt{source} parameter is \texttt{true}. This function explicitly takes a \texttt{node} object as input, enabling access to its functionalities, including the \texttt{nbr\_dist()} method. This method returns a \texttt{field<double>} representing the estimated distances to neighboring nodes.
+
+The \texttt{call\_point} parameter serves two purposes:
+
+\begin{itemize}
+    \item Updating the \texttt{node.stack\_trace} (shared functionality across all aggregate functions, as noted in the first line).
+    \item Facilitating the aggregation of function calls (e.g., \texttt{nbr} and \texttt{min\_hood}) by providing an incrementing index.
+\end{itemize}
+
+\lstinputlisting[float,label={lst:fcpp-example},language=C++,caption=Implementation Adaptive Bellman Ford algorithm in FCPP]{listings/fcpp-example.cpp}
+
 \subsection{Collektive}
 
 \subsection{FRASP}
