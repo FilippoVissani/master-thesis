@@ -126,7 +126,7 @@ Existing implementations often have high-performance requirements, unsuitable fo
 
 Self-organizing cloud applications necessitate fine-grained parallelism for scalability, and performance improvements directly translate to cost reduction. FCPP's support for parallelism caters to this need.
 
-\subsubsection{Aggregate program example with FCPP}
+\subsubsection{Aggregate Program Example with FCPP}
 
 The example function provided in \Cref{lst:fcpp-example} utilizes the Adaptive Bellman-Ford algorithm to estimate distances from devices where the \texttt{source} parameter is \texttt{true}. This function explicitly takes a \texttt{node} object as input, enabling access to its functionalities, including the \texttt{nbr\_dist()} method. This method returns a \texttt{field<double>} representing the estimated distances to neighboring nodes.
 
@@ -140,6 +140,31 @@ The \texttt{call\_point} parameter serves two purposes:
 \lstinputlisting[float,label={lst:fcpp-example},language=C++,caption=Implementation Adaptive Bellman Ford algorithm in FCPP]{listings/fcpp-example.cpp}
 
 \subsection{Collektive}
+
+Collektive\footnote{\url{https://github.com/Collektive/collektive}} provides the user with a DSL, implemented in Kotlin, that allows the user to create aggregate programs transparently. It was designed with the following principles in mind: transparency, minimality and portability.
+
+Transparency refers to the clear and concise information it provides about how the underlying system behaves, such as data processing, storage, and communication between nodes. Transparency helps to reduce complexity, making it easier to understand and maintain large and complex systems.
+
+Collektive is designed with the fewest possible constructs and abstractions while still offering the required functionalities. This reduces the complexity of the system, making it easier to maintain and debug, and lowers the overhead associated with using the DSL, which is particularly important for systems that require high performance and scalability.
+
+Portability refers to its ability to run on various platforms and environments, including different operating systems, cloud platforms, and hardware architectures. This enables systems built with the DSL to be easily deployed and run in different environments, which is crucial for systems requiring deployment in multiple locations or scalability to meet changing demands.
+
+Constructs implemented in Collektive are defined in \Cref{lst:collektive-constructs}, while the semantics are described below:
+
+\begin{itemize}
+    \item \texttt{exchange}~\cite{https://doi.org/10.4230/lipics.ecoop.2022.20}: manages the computation of values between neighbors in a specific context. It computes a \texttt{body} function starting from the \texttt{initial} value and the messages received from other neighbors, then sends the results from the evaluation to specific neighbors or everyone, it is contingent upon the origin of the calculated value, whether it was received from a neighbor or if it constituted the initial value. The result of this function is a field with as messages a map with as key the ID of the devices across the network and the result of the computation passed as relative local values.
+    \item \texttt{exchanging}: Same behavior of \texttt{exchange} but this function can yield a \texttt{Field} of \texttt{Return} value.
+    \item \texttt{repeat}: Iteratively updates the value computing the \texttt{transform} expression at each device using the last computed value or the \texttt{initial}.
+    \item \texttt{repeating}: Iteratively updates the value computing the \texttt{transform} expression from a \texttt{YieldingContext} at each device using the last computed value or the \texttt{initial}.
+\end{itemize}
+
+\lstinputlisting[float,label={lst:collektive-constructs},language=kotlin,caption=Constructs implemented in Collektive]{listings/collektive-constructs.kt}
+
+\subsubsection{Example of Gradient in Collektive}
+
+In the \Cref{lst:collektive-gradient}, the implementation of the gradient in Collektive is presented. In this case, a construct is used that is not strictly part of the field calculus but extends it; it is the \texttt{share} construct~\cite{https://doi.org/10.48550/arxiv.1910.02874}. \texttt{share} captures the space-time nature of field computation through observation of neighbors' values, starting from an \texttt{initial} value, it reduces to a single local value given a \texttt{transform} function and updating and sharing to neighbors of a local variable.
+
+\lstinputlisting[float,label={lst:collektive-gradient},language=kotlin,caption=Gradient implementation in Collektive]{listings/collektive-gradient.kt}
 
 \subsection{FRASP}
 
@@ -164,13 +189,13 @@ The details of the syntax and semantics of FRASP are discussed in detail in Sect
     \item \texttt{loop(init,ft)} evolves a piece of state (initially, \texttt{init}) by applying function \texttt{ft} mapping the previous state's flow to the next state's flow.
 \end{itemize}
 
-\subsubsection{A Paradigmatic Example}
+\subsubsection{Gradient Implementation in FRASP}
 
-\Cref{lst:frasp-gradient.scala} provides a representation of a gradient in FRASP. The function takes the Boolean \texttt{src} flow as input, denoting whether the executing node is the source of the gradient or not. The external \texttt{loop} is used to progressively evolve the current gradient value \texttt{distance} starting from an infinite value (as, initially, devices do not know whether a source is reachable). Internally to the loop, \texttt{mux} is used to select one of two values: if the node is a source, then its gradient value is \texttt{0} (base case); otherwise, the gradient should be the minimum value among the neighbors' gradient values augmented by the distance (\texttt{nbrRange}) from that very neighbor. Construct \texttt{liftTwice} is used to combine (using the sum: \_+\_) the two flows \texttt{nbrRange} (distances to neighbors) and \texttt{nbr(distance)} (neighbors' gradient values).
+\Cref{lst:frasp-gradient} provides a representation of a gradient in FRASP. The function takes the Boolean \texttt{src} flow as input, denoting whether the executing node is the source of the gradient or not. The external \texttt{loop} is used to progressively evolve the current gradient value \texttt{distance} starting from an infinite value (as, initially, devices do not know whether a source is reachable). Internally to the loop, \texttt{mux} is used to select one of two values: if the node is a source, then its gradient value is \texttt{0} (base case); otherwise, the gradient should be the minimum value among the neighbors' gradient values augmented by the distance (\texttt{nbrRange}) from that very neighbor. Construct \texttt{liftTwice} is used to combine (using the sum: \_+\_) the two flows \texttt{nbrRange} (distances to neighbors) and \texttt{nbr(distance)} (neighbors' gradient values).
 
-\lstinputlisting[label={lst:frasp-gradient.scala},language=scala,caption=Gradient implementation in FRASP]{listings/frasp-gradient.scala}
+\lstinputlisting[label={lst:frasp-gradient},language=scala,caption=Gradient implementation in FRASP]{listings/frasp-gradient.scala}
 
-The reactive dataflow graph in \Cref{fig:gradient-dependencies} corresponds to \Cref{lst:frasp-gradient.scala}. \Cref{fig:gradient-dependencies} provides the local view of the computation for a single node (where the layers denote different semantic kinds of dependencies), whereas \Cref{fig:gradient-dependencies-distributed} shows the distributed dependency graph. The arrows denote dependencies. The dashed arrows denote dependencies based on platform-level scheduling and node interaction; for instance, a red block depends on changes corresponding to neighbors' red blocks and is communicated via message passing.
+The reactive dataflow graph in \Cref{fig:gradient-dependencies} corresponds to \Cref{lst:frasp-gradient}. \Cref{fig:gradient-dependencies} provides the local view of the computation for a single node (where the layers denote different semantic kinds of dependencies), whereas \Cref{fig:gradient-dependencies-distributed} shows the distributed dependency graph. The arrows denote dependencies. The dashed arrows denote dependencies based on platform-level scheduling and node interaction; for instance, a red block depends on changes corresponding to neighbors' red blocks and is communicated via message passing.
 
 \begin{figure}
     \centering
@@ -187,7 +212,7 @@ The reactive dataflow graph in \Cref{fig:gradient-dependencies} corresponds to \
         \caption{Distributed view (with neighbor dependencies).}
         \label{fig:gradient-dependencies-distributed}
     \end{subfigure}
-    \caption{Dependencies between sub-computations in gradient program (\Cref{lst:frasp-gradient.scala})}
+    \caption{Dependencies between sub-computations in gradient program (\Cref{lst:frasp-gradient})}
 \end{figure}
 
 \section{Design of FRASP}
