@@ -140,13 +140,13 @@ The \texttt{call\_point} parameter serves two purposes:
 
 \subsection{Collektive}
 
-Collektive\footnote{\url{https://github.com/Collektive/collektive}} provides the user with a DSL, implemented in Kotlin, that allows to create aggregate programs transparently. It was designed with the following principles in mind: transparency, minimality and portability.
+Collektive\footnote{\url{https://github.com/Collektive/collektive}} provides the user with a \ac{dsl}, implemented in Kotlin, that allows to create aggregate programs transparently. It was designed with the following principles in mind: transparency, minimality and portability.
 
 Transparency refers to the clear and concise information it provides about how the underlying system behaves, such as data processing, storage, and communication between nodes. Transparency helps to reduce complexity, making it easier to understand and maintain large and complex systems.
 
-Collektive is designed with the fewest possible constructs and abstractions while still offering the required functionalities. This reduces the complexity of the system, making it easier to maintain and debug, and lowers the overhead associated with using the DSL, which is particularly important for systems that require high performance and scalability.
+Collektive is designed with the fewest possible constructs and abstractions while still offering the required functionalities. This reduces the complexity of the system, making it easier to maintain and debug, and lowers the overhead associated with using the \ac{dsl}, which is particularly important for systems that require high performance and scalability.
 
-Portability refers to its ability to run on various platforms and environments, including different operating systems, cloud platforms, and hardware architectures. This enables systems built with the DSL to be easily deployed and run in different environments, which is crucial for systems requiring deployment in multiple locations or scalability to meet changing demands.
+Portability refers to its ability to run on various platforms and environments, including different operating systems, cloud platforms, and hardware architectures. This enables systems built with the \ac{dsl} to be easily deployed and run in different environments, which is crucial for systems requiring deployment in multiple locations or scalability to meet changing demands.
 
 Constructs implemented in Collektive are defined in \Cref{lst:collektive-constructs}, while the semantics are described below:
 
@@ -219,7 +219,7 @@ The reactive dataflow graph in \Cref{fig:gradient-dependencies} corresponds to \
 
 \subsection{Architecture}
 
-The architecture of FRASP is shown in \Cref{fig:frasp-architecture}. The design is organized into three packages: \texttt{core}, which includes basic type definitions (\texttt{Core}) as well as the components for the DSL (\texttt{Language} for primitives and \texttt{RichLanguage} for other built-ins) and its ``virtual machine" (\texttt{Semantics}), overall captured by an \texttt{Incarnation}; \texttt{frp}, which provides an interface to the FRP engine (\texttt{FrpEngine}), possibly also decoupling from the specific FRP library adopted, as well as extensions (\texttt{FrpExtensions}) useful for the definition of FRASP constructs; and simulation, which provides basic simulation support.
+The architecture of FRASP is shown in \Cref{fig:frasp-architecture}. The design is organized into three packages: \texttt{core}, which includes basic type definitions (\texttt{Core}) as well as the components for the \ac{dsl} (\texttt{Language} for primitives and \texttt{RichLanguage} for other built-ins) and its ``virtual machine" (\texttt{Semantics}), overall captured by an \texttt{Incarnation}; \texttt{frp}, which provides an interface to the FRP engine (\texttt{FrpEngine}), possibly also decoupling from the specific FRP library adopted, as well as extensions (\texttt{FrpExtensions}) useful for the definition of FRASP constructs; and simulation, which provides basic simulation support.
 
 \begin{figure}
     \centering
@@ -230,7 +230,7 @@ The architecture of FRASP is shown in \Cref{fig:frasp-architecture}. The design 
 
 \subsection{Implementation Details}
 
-FRASP has been implemented in Scala, using Sodium as FRP library. Scala is well known for its suitability as a host for embedded DSLs, and for aggregate computing embeddings as well. The design of the FRASP DSL is
+FRASP has been implemented in Scala, using Sodium as FRP library. Scala is well known for its suitability as a host for embedded \ac{dsl}s, and for aggregate computing embeddings as well. The design of the FRASP \ac{dsl} is
 detailed in \Cref{fig:frasp-design}. Following the system/execution model described in \Cref{section:frasp}, the input and output of a (sub-)program are modeled through an interface \texttt{Context}, providing access to local sensor data and neighbor data; and an interface \texttt{Export}, capturing outputs and data that must be shared with neighbors. In particular, an \texttt{Export} is modeled as a tree where each node is a \texttt{Slot} (corresponding to a particular language construct) with an associated value, and can be located through a path of slots—e.g., \texttt{S1/S2/S3} identifies a node in the export tree, where \texttt{S1} depends on \texttt{S2} which depends in turn on \texttt{S3} (so, a change in the output \texttt{S3} will cause the expression corresponding to \texttt{S2} to re-evaluate, and possibly \texttt{S1} in turn). \texttt{Flow} is the type of a reactive (sub-)computation, which takes a \texttt{Context} (providing its inputs), a \texttt{Seq[Slot]} as path (indicating its position in the export tree), and returns \texttt{Cell} (i.e. a time-varying value) of \texttt{Export}. Each \texttt{Language} construct returns a \texttt{Flow}: therefore, the constructs do not immediately run upon evaluation, but rather an executable, reactive object denoting a computation graph whose nodes will execute as a response to change (\Cref{fig:gradient-dependencies}). Access to neighbor-related data is mediated by a \texttt{NeighborField} abstraction, which is the same provided by constructs supporting interaction with neighbors, i.e., \texttt{nbr} and \texttt{nbrSensor} 
 
 \begin{figure}
