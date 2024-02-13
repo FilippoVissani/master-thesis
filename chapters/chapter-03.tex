@@ -244,6 +244,31 @@ detailed in \Cref{fig:frasp-design}. Following the system/execution model descri
 
 \subsection{Architecture}
 
+Collektive has been developed as a Gradle project composed of three different submodules, as shown in Figure 4.5. The cited submodules are:
+
+\begin{itemize}
+    \item \texttt{plugin}, that is divided into two submodules:
+    \begin{itemize}
+        \item \texttt{gradle-plugin}: the necessary plugin used by a gradle project to include the compiler plugin.
+        \item \texttt{compiler-plugin}: the compiler plugin is used to modify the data structure which is responsible for keeping track of the stack at runtime. For each aggregate function and branch construct, the stack data structure is updated to allow alignment whenever necessary.
+    \end{itemize}
+    \item \texttt{dsl}: the actual DSL implementation in Kotlin Multiplatform, where the logic is implemented and that exposes the operators of the aggregate computing.
+\end{itemize}
+
 \subsection{Implementation Details}
+
+\subsubsection{Alignment Processing Strategy}
+
+The alignment processing pursues the following strategy: in the first instance all the function definitions are visited and the ones involving aggregate computation will be subject to alignment processing. Then, for each candidate function, the plugin visits all the call sites in the body of the function and checks if the call has an aggregate reference or if it is involved in an aggregate computation. If so, the plugin will align the expression call. During the visiting of the function definition, branch conditions are also visited aligning only the branches that involve aggregate computation. If a branch body does not involve aggregate computation, the plugin will not align it. Aligning the branches in this way, by default all the branches follow the branch semantics of aggregate computing.
+
+\begin{enumerate}
+    \item Each function definition exhibiting the following characteristics is the target of the alignment processing:
+    \begin{itemize}
+        \item The function has an \texttt{extensionReceiver} of type \texttt{Aggregate} or a subtype of it.
+        \item The function has a \texttt{dispatchReceiver} of type \texttt{Aggregate} or a subtype of it.
+        \item One or more of the function's parameters are of type \texttt{Aggregate} or a subtype of it.
+    \end{itemize}
+    \item For each candidate function, it aligns the call expressions having an aggregate reference or in-depth they involve an aggregate computation.
+\end{enumerate}
 
 \section{Integration of FRASP in Collektive}
