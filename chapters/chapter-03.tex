@@ -161,7 +161,7 @@ Constructs implemented in Collektive are defined in \Cref{lst:collektive-constru
 
 \subsubsection{Example of Gradient in Collektive}
 
-In the \Cref{lst:collektive-gradient}, the implementation of the gradient in Collektive is presented. In this case, a construct is used that is not strictly part of the field calculus but extends it; it is the \texttt{share} construct~\cite{https://doi.org/10.48550/arxiv.1910.02874}. \texttt{share} captures the space-time nature of field computation through observation of neighbors' values, starting from an \texttt{initial} value, it reduces to a single local value given a \texttt{transform} function and updating and sharing to neighbors of a local variable.
+In the \Cref{lst:collektive-gradient}, the implementation of the gradient in Collektive is presented. In this case, it is used a construct that is not strictly part of the field calculus but extends it; it is the \texttt{share} construct~\cite{https://doi.org/10.48550/arxiv.1910.02874}. \texttt{share} captures the space-time nature of field computation through observation of neighbors' values, starting from an \texttt{initial} value, it reduces to a single local value given a \texttt{transform} function and updating and sharing to neighbors of a local variable.
 
 \lstinputlisting[float,label={lst:collektive-gradient},language=kotlin,caption=Gradient implementation in Collektive]{listings/collektive-gradient.kt}
 
