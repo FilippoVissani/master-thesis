@@ -193,7 +193,7 @@ The details of the syntax and semantics of FRASP are discussed in detail in Sect
 
 \Cref{lst:frasp-gradient} provides a representation of a gradient in FRASP. The function takes the Boolean \texttt{src} flow as input, denoting whether the executing node is the source of the gradient or not. The external \texttt{loop} is used to progressively evolve the current gradient value \texttt{distance} starting from an infinite value (as, initially, devices do not know whether a source is reachable). Internally to the loop, \texttt{mux} is used to select one of two values: if the node is a source, then its gradient value is \texttt{0} (base case); otherwise, the gradient should be the minimum value among the neighbors' gradient values augmented by the distance (\texttt{nbrRange}) from that very neighbor. Construct \texttt{liftTwice} is used to combine (using the sum: \_+\_) the two flows \texttt{nbrRange} (distances to neighbors) and \texttt{nbr(distance)} (neighbors' gradient values).
 
-\lstinputlisting[label={lst:frasp-gradient},language=scala,caption=Gradient implementation in FRASP]{listings/frasp-gradient.scala}
+\lstinputlisting[float,label={lst:frasp-gradient},language=scala,caption=Gradient implementation in FRASP]{listings/frasp-gradient.scala}
 
 The reactive dataflow graph in \Cref{fig:gradient-dependencies} corresponds to \Cref{lst:frasp-gradient}. \Cref{fig:gradient-dependencies} provides the local view of the computation for a single node (where the layers denote different semantic kinds of dependencies), whereas \Cref{fig:gradient-dependencies-distributed} shows the distributed dependency graph. The arrows denote dependencies. The dashed arrows denote dependencies based on platform-level scheduling and node interaction; for instance, a red block depends on changes corresponding to neighbors' red blocks and is communicated via message passing.
 
@@ -326,3 +326,20 @@ FRASP implements a reactive version of the constructs defined by the field calcu
 \subsubsection{Divergences between Reactive and Proactive Models}
 
 In the proactive model, at each round, the aggregate expression is reevaluated entirely, taking into account the following parameters passed in as input: previous state, neighbor messages, and sensors states. This behavior differs completely from the reactive model, where it is necessary to think in terms of dependencies between information flows instead of computational rounds. In other words, it is necessary to revisit the design of Collektive by modifying some aspects of it. The state, sensors, and messages of neighbors must be modeled as reactive entities, of which the values change over time; furthermore, in addition to modeling the aggregate constructs so that they are reactive, it is necessary to adequately define the dependencies between them and the context (state, sensors and neighbors messages) in which they are executed.
+
+\subsection{Feasibility of Reactive Aggregate Programming in Kotlin}
+
+Even before addressing the problems presented in the Section, it is necessary to understand whether it is possible to create a Kotlin version of FRASP and, if so, analyze the similarities and differences with the model implemented in Scala, considering, in particular, the ergonomics of the \ac{dsl}.
+
+\footnote{\url{https://github.com/FilippoVissani/kotlin-distributed-frp}}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\linewidth]{figures/kotlin-distributed-frp-design.pdf}
+    \caption{Detailed design of Kotlin Distributed FRP.}
+    \label{fig:kotlin-distributed-frp-design}
+\end{figure}
+
+\lstinputlisting[float,label={lst:kotlin-distributed-frp},language=kotlin,caption=Gradient implementation in Kotlin Distributed FRP]{listings/kotlin-distributed-frp.kt}
+
+\subsection{Integration Solutions Proposed}
