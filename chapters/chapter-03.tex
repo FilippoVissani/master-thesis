@@ -300,9 +300,12 @@ The alignment processing pursues the following strategy: in the first instance a
 \section{Integration of FRASP in Collektive}
 
 Given the considerations regarding the proactive computational model made in \Cref{subsection:reactive-and-proactive-models} and the solution proposed in~\cite{Casadei2023} with the related results of the evaluations performed, it is decided to introduce the FRASP model in Collektive.
-Analysis of the architectures of FRASP and Collektive, defined in \Cref{section:design-of-frasp} and \Cref{section:design-of-collektive}, respectively, reveals substantial differences in technology and design choices. This considerably complicates the process of integrating the reactive model into Collektive. The possible issues identified during the analysis are described in the following subsections.
+Analysis of the architectures of FRASP and Collektive, defined in \Cref{section:design-of-frasp} and \Cref{section:design-of-collektive}, respectively, reveals substantial differences in technology and design choices. This considerably complicates the process of integrating the reactive model into Collektive. The possible issues identified during the analysis are described in \Cref{subsection:integration-problems}.
 
-\subsection{Differences between Scala and Kotlin}
+\subsection{Integration Problems}
+\label{subsection:integration-problems}
+
+\subsubsection{Differences between Scala and Kotlin}
 The Scala implementation of FRASP is extremely concise, even though it models several aspects of aggregate programming. In addition, the \ac{dsl} provided is particularly ergonomic, so the user can create aggregate programs easily and effectively. These characteristics of FRASP are due in part to the flexibility of Scala, which is given by the constructs that the language implements. The following are some Scala features that are used in FRASP but are not available by Kotlin:
 
 \begin{itemize}
@@ -311,15 +314,15 @@ The Scala implementation of FRASP is extremely concise, even though it models se
     \item \textbf{Currying}: Currying is the process of converting a function with multiple arguments into a sequence of functions that take one argument. Each function returns another function that consumes the following argument.
 \end{itemize}
 
-\subsection{Differences in Paths and Exports Management}
+\subsubsection{Differences in Paths and Exports Management}
 
 Typically, in aggregate computing implementations that respect the proactive model, paths are modeled as lists of tokens, while exports are represented by making use of maps that have the path as the key and the result of evaluating the sub-expression related to the path as the value.
 In FRASP, these entities are represented in a completely different way; this is due to the need to properly model the dependencies of reactive sub-expressions. In particular, an export is modeled as a tree (using a specially defined data structure) where each node is a token with an associated value and can be located through a path of tokens.
 
-\subsection{Diversity of Implemented Constructs}
+\subsubsection{Diversity of Implemented Constructs}
 
 FRASP implements a reactive version of the constructs defined by the field calculus, this allows a sub-expression to be automatically re-evaluated as one of the sub-expressions on which it depends changes. On the other hand, in addition to the field calculus constructs, Collektive implements a proactive version of \texttt{exchange} and \texttt{share}, so a reactive version of these two constructs must be provided.
 
-\subsection{Divergences between Reactive and Proactive Models}
+\subsubsection{Divergences between Reactive and Proactive Models}
 
 In the proactive model, at each round, the aggregate expression is reevaluated entirely, taking into account the following parameters passed in as input: previous state, neighbor messages, and sensors states. This behavior differs completely from the reactive model, where it is necessary to think in terms of dependencies between information flows instead of computational rounds. In other words, it is necessary to revisit the design of Collektive by modifying some aspects of it. The state, sensors, and messages of neighbors must be modeled as reactive entities, of which the values change over time; furthermore, in addition to modeling the aggregate constructs so that they are reactive, it is necessary to adequately define the dependencies between them and the context (state, sensors and neighbors messages) in which they are executed.
