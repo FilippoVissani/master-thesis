@@ -4,5 +4,6 @@
         "DFRP",
         "FRASP",
         "Protelis"
-    ]
+    ],
+    "latex-workshop.latex.autoBuild.run": "never"
 }
