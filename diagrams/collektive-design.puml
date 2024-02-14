@@ -1,0 +1,68 @@
+@startuml
+interface Aggregate<ID : Any> {
+    +{abstract} localId: Any
+    +{abstract} alignedOn(pivot: Any, body: Function0): Any
+    +{abstract} exchange(initial: Any, body: Function1): Field<ID, Initial>
+    +{abstract} exchanging(initial: Any, body: Function2): Field<ID, Return>
+    +{abstract} repeat(initial: Any, transform: Function1): Any
+    +{abstract} repeating(initial: Any, transform: Function2): Any
+}
+
+class AggregateContext<ID : Any> {
+    +messagesToSend(): OutboundMessage<ID>
+    +newState(): Map<Path, Any?>
+}
+
+class AggregateResult<ID : Any,\nR> {
+    +localId: Any
+    +newState: Map<Path, Any?>
+    +result: Any
+    +toSend: OutboundMessage<ID>
+}
+
+class Collektive<ID : Any,\nR> {
+    +localId: Any
+    +state: Map<Path, Any?>
+    +cycle(): Any
+    +cycleWhile(condition: Function1): Any
+    +aggregate(localId: Any, network: Network, previousState: Map, compute: Function1): AggregateResult<ID, R>
+    +aggregate(localId: Any, inbound: Iterable, previousState: Map, compute: Function1): AggregateResult<ID, R>
+}
+
+interface Stack {
+    +{abstract} alignRaw(token: Any): Unit
+    +{abstract} currentPath(): Path
+    +{abstract} dealign(): Unit
+}
+
+interface Field<ID : Any,\nT> {
+    +{abstract} localId: Any
+    +{abstract} localValue: Any
+    +neighborsCount: Int
+    +alignedMap(other: Field, transform: Function2): Field<ID, R>
+    +{abstract} asSequence(): Sequence<Pair<ID, T>>
+    +{abstract} excludeSelf(): Map<ID, T>
+    +{abstract} get(id: Any): Any
+    +map(transform: Function1): Field<ID, B>
+    +mapToConstantField(singleton: Any): Field<ID, B>
+    +{abstract} mapWithId(transform: Function2): Field<ID, B>
+    +{abstract} toMap(): Map<ID, T>
+}
+
+interface Network<ID : Any> {
+    +{abstract} read(): Collection<InboundMessage<ID>>
+    +{abstract} write(message: OutboundMessage): Unit
+}
+
+interface Path {
+    +{abstract} tokens(): List<Any?>
+}
+
+Aggregate <|.. AggregateContext
+AggregateResult <.. Collektive
+Field <.. Aggregate
+Aggregate <.. Collektive
+Network <.. Collektive
+Path <.. Stack
+Stack <.. AggregateContext
+@enduml
