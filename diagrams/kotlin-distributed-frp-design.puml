@@ -1,0 +1,44 @@
+@startuml
+interface AggregateExpression<T> {
+    +{abstract} compute(path: List, context: Context): StateFlow<ExportTree<T>>
+}
+
+interface Context {
+    +{abstract} neighborsStates: StateFlow<ExportTree<Any>>>
+    +{abstract} selfID: Int
+    +{abstract} sensorsStates: StateFlow<String, Any>>
+    +{abstract} receiveExport(neighborID: Int, exported: ExportTree): Unit
+    +{abstract} updateLocalSensor(sensorID: String, newValue: Any): Unit
+}
+
+interface ExportTree<T> {
+    +{abstract} children: Map<Slot, ExportTree<Any>>
+    +{abstract} root: Any
+    +{abstract} followPath(path: List): ExportTree<Any>
+}
+
+interface Semantics {
+    +branch(condition: AggregateExpression, th: AggregateExpression, el: AggregateExpression): AggregateExpression<T>
+    +constant(value: Any): AggregateExpression<T>
+    +loop(initial: Any, f: Function1): AggregateExpression<T>
+    +mux(condition: AggregateExpression, th: AggregateExpression, el: AggregateExpression): AggregateExpression<T>
+    +neighbor(aggregateExpression: AggregateExpression): AggregateExpression<Int, T>>
+    +selfID(): AggregateExpression<Int>
+    +sense(sensorID: String): AggregateExpression<T>
+}
+
+enum Slot {
+    Condition
+    Then
+    Else
+    Key<T>(valure: T)
+    Neighbor
+    Operand(index: Int)
+}
+
+Semantics ..> AggregateExpression : produces
+AggregateExpression ..> Context : uses
+AggregateExpression ..> ExportTree : emits
+Slot --o ExportTree
+
+@enduml
