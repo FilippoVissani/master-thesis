@@ -228,7 +228,7 @@ The architecture of FRASP is shown in \Cref{fig:frasp-architecture}. The design 
     \label{fig:frasp-architecture}
 \end{figure}
 
-\subsection{Implementation Details}
+\subsection{Detailed Design}
 
 FRASP has been implemented in Scala, using Sodium as FRP library. Scala is well known for its suitability as a host for embedded \ac{dsl}s, and for aggregate computing embeddings as well. The design of the FRASP \ac{dsl} is
 detailed in \Cref{fig:frasp-design}. Following the system/execution model described in \Cref{section:frasp}, the input and output of a (sub-)program are modeled through an interface \texttt{Context}, providing access to local sensor data and neighbor data; and an interface \texttt{Export}, capturing outputs and data that must be shared with neighbors. In particular, an \texttt{Export} is modeled as a tree where each node is a \texttt{Slot} (corresponding to a particular language construct) with an associated value, and can be located through a path of slots—e.g., \texttt{S1/S2/S3} identifies a node in the export tree, where \texttt{S1} depends on \texttt{S2} which depends in turn on \texttt{S3} (so, a change in the output \texttt{S3} will cause the expression corresponding to \texttt{S2} to re-evaluate, and possibly \texttt{S1} in turn). \texttt{Flow} is the type of a reactive (sub-)computation, which takes a \texttt{Context} (providing its inputs), a \texttt{Seq[Slot]} as path (indicating its position in the export tree), and returns \texttt{Cell} (i.e. a time-varying value) of \texttt{Export}. Each \texttt{Language} construct returns a \texttt{Flow}: therefore, the constructs do not immediately run upon evaluation, but rather an executable, reactive object denoting a computation graph whose nodes will execute as a response to change (\Cref{fig:gradient-dependencies}). Access to neighbor-related data is mediated by a \texttt{NeighborField} abstraction, which is the same provided by constructs supporting interaction with neighbors, i.e., \texttt{nbr} and \texttt{nbrSensor} 
@@ -236,7 +236,7 @@ detailed in \Cref{fig:frasp-design}. Following the system/execution model descri
 \begin{figure}
     \centering
     \includegraphics[width=\linewidth]{figures/FRASP-design.pdf}
-    \caption{FRASP detailed design.}
+    \caption{Detailed design of FRASP.}
     \label{fig:frasp-design}
 \end{figure}
 
@@ -255,11 +255,35 @@ Collektive has been developed as a Gradle project composed of three different su
     \item \texttt{dsl}: the actual DSL implementation in Kotlin Multiplatform, where the logic is implemented and that exposes the operators of the aggregate computing.
 \end{itemize}
 
-\subsection{Implementation Details}
+\subsection{Detailed Design}
 
-\subsubsection{Alignment Processing Strategy}
+The detailed design of Collektive is presented in \Cref{fig:collektive-design}. The \texttt{Collektive} class represents a device with a specific \texttt{localId} and a \texttt{Network} to manage incoming and outgoing messages, it takes a function to apply within the \texttt{AggregateContext}. \texttt{Collektive} implements two different execution strategies:
 
-The alignment processing pursues the following strategy: in the first instance all the function definitions are visited and the ones involving aggregate computation will be subject to alignment processing. Then, for each candidate function, the plugin visits all the call sites in the body of the function and checks if the call has an aggregate reference or if it is involved in an aggregate computation. If so, the plugin will align the expression call. During the visiting of the function definition, branch conditions are also visited aligning only the branches that involve aggregate computation. If a branch body does not involve aggregate computation, the plugin will not align it. Aligning the branches in this way, by default all the branches follow the branch semantics of aggregate computing.
+\begin{itemize}
+    \item \texttt{cycle}: it applies once the aggregate function to the parameters of the device, then returns the result of the computation.
+    \item \texttt{cycleWhile}: it applies the aggregate function to the parameters of the device while the condition is satisfied, then returns the result of the computation.
+\end{itemize}
+
+\texttt{cycle} and \texttt{cycleWhile} implicitly use the \texttt{aggregate} function, which is the entry point of the aggregate program. It computes an iteration of a device (\texttt{localId}), taking as parameters the previous \texttt{state}, the messages received from the neighbors and the \texttt{compute} with \texttt{AggregateContext} object receiver that provides the implementation of the aggregate constructs. Another version of the \texttt{aggregate} function computes an iteration of a device, over a \texttt{network} of devices, optionally from a previous state (\texttt{previousState}), running the \texttt{compute} aggregate program. The \texttt{aggregate} function returns an \texttt{AggregateResult}, which is the result of the aggregate computation. It represents the \texttt{localId} of the device, the \texttt{result} of the computation, the messages to send (\texttt{toSend}) to other devices and the new state (\texttt{newState}) of the device.
+
+The interface \texttt{Aggregate} models the minimal set of aggregate operations and holds the \texttt{localId} of the device executing the aggregate program.
+
+The \texttt{exchange} function manages the computation of values between neighbors in a specific context. It computes a \texttt{body} function starting from the \texttt{initial} value and the messages received from other neighbors, then sends the results from the evaluation to specific neighbors or to everyone, it is contingent upon the origin of the calculated value, whether it was received from a neighbor or if it constituted the initial value. The result of the \texttt{exchange} function is a \texttt{Field} with as messages a map with the ID of devices across the network as key and the result of the computation passed as relative local values.
+
+The \texttt{alignOn} function is used for the alignment, it pushes in the stack the \texttt{pivot}, executes the \texttt{body} and pops the last element of the \texttt{Stack} after it is called, finally returns the \texttt{body}'s return element.
+
+\texttt{AggregateContext} represents the context for managing aggregate computation. It represents the \texttt{localId} of the device, the messages received from the neighbors, and the previous state (\texttt{previousState}) of the device.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\linewidth,angle=90]{figures/collektive-design.pdf}
+    \caption{Detailed design of Collektive.}
+    \label{fig:collektive-design}
+\end{figure}
+
+\subsection{Alignment Processing Strategy}
+
+The alignment processing pursues the following strategy: in the first instance all the function definitions are visited and the ones involving aggregate computation will be subject to alignment processing. Then, for each candidate function, the plugin visits all the call sites in the body of the function and checks if the call has an aggregate reference or if it is involved in an aggregate computation. If so, the plugin will align the expression call. During the visiting of the function definition, branch conditions are also visited aligning only the branches that involve aggregate computation. If a branch body does not involve aggregate computation, the plugin will not align it. Aligning the branches in this way, by default all the branches follow the branch semantics of aggregate computing. The alignment strategy is formalized below:
 
 \begin{enumerate}
     \item Each function definition exhibiting the following characteristics is the target of the alignment processing:
