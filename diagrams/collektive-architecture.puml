@@ -1,0 +1,41 @@
+@startuml
+
+package dsl {
+    [aggregate]
+    [field]
+    [networking]
+    [path]
+    [state]
+    [reactive] #Orange
+}
+
+package "compiler-plugin" as plugin {
+    [transformers]
+    [utils]
+    [visitors]
+}
+
+package "alchemist-incarnation-collektive" as alchemistIncarnation {
+    [alchemist]
+    [collektive.alchemist.device]
+}
+
+dsl ..> plugin
+alchemistIncarnation ..> dsl
+
+[aggregate] ..> [field]
+[aggregate] ..> [path]
+[aggregate] ..> [state]
+[state] ..> [path]
+[reactive] --|> [aggregate]
+[reactive] ..> [field]
+[reactive] ..> [path]
+[reactive] ..> [state]
+
+[transformers] ..> [utils]
+[transformers] ..> [visitors]
+[visitors] ..> [utils]
+
+[alchemist] ..> [collektive.alchemist.device]
+
+@enduml
