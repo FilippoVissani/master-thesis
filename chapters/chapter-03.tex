@@ -329,6 +329,7 @@ FRASP implements a reactive version of the constructs defined by the field calcu
 In the proactive model, at each round, the aggregate expression is reevaluated entirely, taking into account the following parameters passed in as input: previous state, neighbor messages, and sensors states. This behavior differs completely from the reactive model, where it is necessary to think in terms of dependencies between information flows instead of computational rounds. In other words, it is necessary to revisit the design of Collektive by modifying some aspects of it. The state, sensors, and messages of neighbors must be modeled as reactive entities, of which the values change over time; furthermore, in addition to modeling the aggregate constructs so that they are reactive, it is necessary to adequately define the dependencies between them and the context (state, sensors and neighbors messages) in which they are executed.
 
 \subsection{Feasibility of Reactive Aggregate Programming in Kotlin}
+\label{subsection:Feasibility-Reactive-Aggregate-Programming}
 
 Even before addressing the problems presented in \Cref{subsection:integration-problems}, it is necessary to understand whether it is possible to create a Kotlin version of FRASP and, if so, analyze the similarities and differences with the model implemented in Scala, considering, in particular, the ergonomics of the \ac{dsl}. In this regard, an implementation of FRASP in Kotlin that makes use of the Flow library is proposed in the analysis phase to demonstrate the actual feasibility. Reactive values are modeled by making use of \texttt{StateFlow<T>}, whose behavior is similar to that of a \texttt{Cell}, described in \Cref{subsubsection:reactive-model}.
 
@@ -345,4 +346,13 @@ Given the proposed design in \Cref{fig:kotlin-distributed-frp-design} and its im
 
 \lstinputlisting[float,label={lst:kotlin-distributed-frp-gradient},language=kotlin,caption=Gradient implementation in Kotlin Distributed FRP]{listings/kotlin-distributed-frp-gradient.kt}
 
-\subsection{Integration Solutions Proposed}
+\subsection{Integration Solutions Identified}
+
+The main goal is to introduce the reactive paradigm into Collektive, replacing it with the proactive one. At the same time, we want to make sure that the resulting DSL is ergonomic and thus it is easy for the user to understand and use it. It should be noted that, given the diversity of the two architectures, it is not possible to integrate FRASP directly into Collektive, so an intermediate solution must be identified.
+
+Given the results obtained from the analysis reported in \Cref{subsection:Feasibility-Reactive-Aggregate-Programming} and taking into consideration the possible integration issues identified in \Cref{subsection:integration-problems}, we identify two possible solutions for integrating the reactive paradigm into Collektive:
+
+\begin{itemize}
+    \item \textbf{Model with reactive messages and sensors}: it consists of building the reactive model on top of the proactive one. This can be achieved by making the messages and sensors reactive; every time the value of one of these is changed the expression is re-evaluated entirely, executing a round. This solution has the advantage that the Collektive DSL remains identical to the current one. On the other hand, it is not possible to exploit the partial updates of the sub-expressions proposed in FRASP, this translates into lower efficiency.
+    \item \textbf{Purely reactive model}: it consists of re-engineering all aggregate constructs and context definitions in Collektive to be reactive. In this case, important changes must be made to the current architecture of Collektive, making the implementation more complicated than the first solution. Furthermore, it is not possible to guarantee the ergonomics of the resulting DSL, as the definition of the aggregate constructs needs to be revised. The advantage of this solution is that, as in FRASP, it is possible to model the dependencies of the sub-expressions so that the latter can be updated only when necessary.
+\end{itemize}
