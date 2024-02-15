@@ -58,7 +58,7 @@ interface Path {
     +{abstract} tokens(): List<Any?>
 }
 
-Aggregate <|.. AggregateContext
+Aggregate <|-- AggregateContext
 AggregateResult <.. Collektive
 Field <.. Aggregate
 Aggregate <.. Collektive
