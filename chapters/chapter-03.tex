@@ -171,9 +171,11 @@ In the \Cref{lst:collektive-gradient}, the implementation of the gradient in Col
 As said in \Cref{subsection:reactive-and-proactive-models}, aggregate computing makes use of a round-based execution model, that can be defined as proactive. This approach is simple to reason about but limited in terms of flexibility in scheduling and management of sub-activities (and response to contextual changes). In~\cite{Casadei2023} is proposed a reactive self-organization programming approach, called FRASP, that enables the decoupling of the program logic from the scheduling of its sub-activities. This model maintains the same expressiveness and benefits of aggregate programming while enabling significant improvements in terms of scheduling controllability, flexibility in the sensing/actuation model, and execution efficiency.
 
 \subsubsection{Reactive Model}
+\label{subsubsection:reactive-model}
 FRASP is based on the functional reactive programming (FRP) paradigm and considers \textit{continuous time}, $Time$ = $\{ t \in \mathbb{R} \, | \, t \geq 0 \}$. Time-varying values are called \textit{cells} and may be conceptually modeled by generic functions of type $Cell$ $a$: $Time \rightarrow a$. Then, \textit{streams} are discrete-time values and may be modeled by generic functions of type $Stream$ $a$: $[Time] \rightarrow [a]$, namely, mapping a sequence of (increasing) sample times to a sequence of corresponding values. While cells model state, streams model state changes.
 
 \subsubsection{Abstractions and Primitives}
+\label{subsubsection:abstractions-and-primitives}
 
 One of the main differences between the proactive and reactive models is that the latter allows the self-organizing collective computation to be expressed as a graph of reactive sub-computations. Each sub-computation is called \textit{flow} and represents it programmatically through type \texttt{Flow[T]}, where \texttt{T} is the type of the output of the wrapped computation. A \texttt{Flow} is essentially a function that takes a \texttt{Context} and returns a cell of \texttt{Export}s, possibly depending on the exports of other \texttt{Flow}s, recursively.
 
@@ -311,7 +313,6 @@ The Scala implementation of FRASP is extremely concise, even though it models se
 \begin{itemize}
     \item \textbf{Given instances and using clauses}: Functional programming tends to express most dependencies as simple function parameterization. This is clean and powerful, but it sometimes leads to functions that take many parameters where the same value is passed over and over again in long call chains to many functions. Context parameters can help here since they enable the compiler to synthesize repetitive arguments instead of the programmer having to write them explicitly. Given instances define ``canonical" values of certain types that serve for synthesizing arguments to context parameters.
     \item \textbf{Traits and self-types}: Self-types are a way to declare that a trait must be mixed into another trait, even though it doesn't directly extend it. That makes the members of the dependency available without imports. A self-type is a way to narrow the type of \texttt{this} or another identifier that aliases \texttt{this}.
-    \item \textbf{Currying}: Currying is the process of converting a function with multiple arguments into a sequence of functions that take one argument. Each function returns another function that consumes the following argument.
 \end{itemize}
 
 \subsubsection{Differences in Paths and Exports Management}
@@ -329,9 +330,11 @@ In the proactive model, at each round, the aggregate expression is reevaluated e
 
 \subsection{Feasibility of Reactive Aggregate Programming in Kotlin}
 
-Even before addressing the problems presented in the Section, it is necessary to understand whether it is possible to create a Kotlin version of FRASP and, if so, analyze the similarities and differences with the model implemented in Scala, considering, in particular, the ergonomics of the \ac{dsl}.
+Even before addressing the problems presented in \Cref{subsection:integration-problems}, it is necessary to understand whether it is possible to create a Kotlin version of FRASP and, if so, analyze the similarities and differences with the model implemented in Scala, considering, in particular, the ergonomics of the \ac{dsl}. In this regard, an implementation of FRASP in Kotlin that makes use of the Flow library is proposed in the analysis phase to demonstrate the actual feasibility. Reactive values are modeled by making use of \texttt{StateFlow<T>}, whose behavior is similar to that of a \texttt{Cell}, described in \Cref{subsubsection:reactive-model}.
 
-\footnote{\url{https://github.com/FilippoVissani/kotlin-distributed-frp}}
+\Cref{fig:kotlin-distributed-frp-design} shows the design of the Kotlin version of FRASP. The implementation\footnote{\url{https://github.com/FilippoVissani/kotlin-distributed-frp}} includes only the subset of features from the Scala version of FRASP needed to demonstrate the feasibility of reactive aggregate programming. An aggregate expression is represented by a dedicated data structure (\texttt{AggregateExpression}) that produces a \texttt{StateFlow<ExportTree<T>>}, its behavior is similar to \texttt{Flow[T]} described in \Cref{subsubsection:abstractions-and-primitives}. Context of a device (\texttt{Context}) includes neighboring states, self ID and the state of the local sensors. Exports are modeled through a tree-like recursive data structure (\texttt{ExportTree}) holding data of type \texttt{T}. It exposes methods for accessing the \texttt{children} and the \texttt{root} element of a node and navigating through the tree using a \texttt{path}. \texttt{Semantics} implements field calculus functions (plus others useful in the reactive context) for constructing an \texttt{AggregateExpression}. These functions include \texttt{branch}, \texttt{constant}, \texttt{loop}, \texttt{mux}, \texttt{neighbor}, \texttt{selfID}, and \texttt{sense}. The enum \texttt{Slot} defines different types of tokens used within the \texttt{ExportTree} structure.
+
+Given the proposed design in \Cref{fig:kotlin-distributed-frp-design} and its implementation, to demonstrate the ergonomics of the related \ac{dsl}, the implementation of the gradient is provided in \Cref{lst:kotlin-distributed-frp-gradient}. The results obtained demonstrate the actual feasibility of the solution, not only that, the \ac{dsl} appears ergonomic and easy to use, just like the one proposed in Scala (\Cref{lst:frasp-gradient}).
 
 \begin{figure}
     \centering
@@ -340,6 +343,6 @@ Even before addressing the problems presented in the Section, it is necessary to
     \label{fig:kotlin-distributed-frp-design}
 \end{figure}
 
-\lstinputlisting[float,label={lst:kotlin-distributed-frp},language=kotlin,caption=Gradient implementation in Kotlin Distributed FRP]{listings/kotlin-distributed-frp.kt}
+\lstinputlisting[float,label={lst:kotlin-distributed-frp-gradient},language=kotlin,caption=Gradient implementation in Kotlin Distributed FRP]{listings/kotlin-distributed-frp-gradient.kt}
 
 \subsection{Integration Solutions Proposed}
