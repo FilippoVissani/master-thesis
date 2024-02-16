@@ -1,30 +1,25 @@
 @startuml
-interface AggregateExpression<T> {
-    +{abstract} compute(path: List, context: Context): StateFlow<ExportTree<T>>
+interface AggregateExpression<T> << interface >> {
+  + compute(List<Slot>, Context): StateFlow<ExportTree<T>>
 }
-
-interface Context {
-    +{abstract} neighborsStates: StateFlow<ExportTree<Any>>>
-    +{abstract} selfID: Int
-    +{abstract} sensorsStates: StateFlow<String, Any>>
-    +{abstract} receiveExport(neighborID: Int, exported: ExportTree): Unit
-    +{abstract} updateLocalSensor(sensorID: String, newValue: Any): Unit
+interface Context << interface >> {
+  + updateLocalSensor(String, T): Unit
+  + receiveExport(Int, ExportTree<?>): Unit
+   selfID: Int
+   sensorsStates: StateFlow<Map<String, ?>>
+   neighborsStates: StateFlow<Map<Int, ExportTree<?>>>
 }
-
-interface ExportTree<T> {
-    +{abstract} children: Map<Slot, ExportTree<Any>>
-    +{abstract} root: Any
-    +{abstract} followPath(path: List): ExportTree<Any>
+interface ExportTree<T> << interface >> {
+  + followPath(List<Slot>): ExportTree<?>?
+   root: T
+   children: Map<Slot, ExportTree<?>>
 }
-
-interface Semantics {
-    +branch(condition: AggregateExpression, th: AggregateExpression, el: AggregateExpression): AggregateExpression<T>
-    +constant(value: Any): AggregateExpression<T>
-    +loop(initial: Any, f: Function1): AggregateExpression<T>
-    +mux(condition: AggregateExpression, th: AggregateExpression, el: AggregateExpression): AggregateExpression<T>
-    +neighbor(aggregateExpression: AggregateExpression): AggregateExpression<Int, T>>
-    +selfID(): AggregateExpression<Int>
-    +sense(sensorID: String): AggregateExpression<T>
+class Semantics {
+  + mux(AggregateExpression<Boolean>, AggregateExpression<T>, AggregateExpression<T>): AggregateExpression<T>
+  + neighbor(AggregateExpression<T>): AggregateExpression<Map<Int, T>>
+  + branch(AggregateExpression<Boolean>, AggregateExpression<T>, AggregateExpression<T>): AggregateExpression<T>
+  + loop(T, (AggregateExpression<T>) -> AggregateExpression<T>): AggregateExpression<T>
+  + selfID(): AggregateExpression<Int>
 }
 
 enum Slot {
