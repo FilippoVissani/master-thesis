@@ -1,0 +1,40 @@
+@startuml
+
+class Collektive<ID, R> {
+  + cycle(): R
+  + cycleWhile(Function1<AggregateResult<ID, R>, Boolean>): R
+   state: Map<Path, Object>
+   localId: ID
+}
+
+class Companion {
+  + aggregate(ID, Iterable<InboundMessage<ID>>, Map<Path, Object>, Function1<Aggregate<ID>, R>): AggregateResult<ID, R>
+  + aggregate(ID, Network<ID>, Map<Path, Object>, Function1<Aggregate<ID>, R>): AggregateResult<ID, R>
+  + aggregate(ID, StateFlow<Iterable<InboundMessage<ID>>>, Function1<Aggregate<ID>, R>): StateFlow<AggregateResult<ID, R>>
+  + aggregate(ID, ReactiveNetwork<ID>, Function1<Aggregate<ID>, R>): StateFlow<AggregateResult<ID, R>>
+}
+
+interface Network<ID> << interface >> {
+  + write(OutboundMessage<ID>): Unit
+  + read(): Collection<InboundMessage<ID>>
+}
+
+interface ReactiveNetwork<ID> << interface >> {
+  + read(): StateFlow<Collection<InboundMessage<ID>>>
+  + write(OutboundMessage<ID>): Unit
+}
+
+class StateFlowExtensions {
+  + combineStates(Function0<T>, Flow<T>): StateFlow<T>
+  + combineStates(StateFlow<T1>, StateFlow<T2>, Function2<T1, T2, R>): StateFlow<R>
+  + combineStates(StateFlow<T1>, StateFlow<T2>, StateFlow<T3>, Function3<T1, T2, T3, R>): StateFlow<R>
+  + flattenConcat(StateFlow<StateFlow<T>>): StateFlow<T>
+  + mapStates(StateFlow<T>, Function1<T, R>): StateFlow<R>
+}
+
+Collektive --+ Companion
+Companion ..> Network
+Companion ..> ReactiveNetwork
+Companion .up.> StateFlowExtensions
+
+@enduml
