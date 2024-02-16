@@ -247,6 +247,7 @@ detailed in \Cref{fig:frasp-design}. Following the system/execution model descri
 \label{section:design-of-collektive}
 
 \subsection{Architecture}
+\label{subsection:collektive-architecture}
 
 Collektive has been developed as a Gradle project composed of three different submodules. The cited submodules are:
 
@@ -348,6 +349,7 @@ Given the proposed design in \Cref{fig:kotlin-distributed-frp-design} and its im
 \lstinputlisting[float,label={lst:kotlin-distributed-frp-gradient},language=kotlin,caption=Gradient implementation in Kotlin Distributed FRP]{listings/kotlin-distributed-frp-gradient.kt}
 
 \subsection{Integration Solutions Identified}
+\label{subsection:integration-solutions-identified}
 
 The main goal is to introduce the reactive paradigm into Collektive, replacing it with the proactive one. At the same time, we want to make sure that the resulting DSL is ergonomic and thus it is easy for the user to understand and use it. It should be noted that, given the diversity of the two architectures, it is not possible to integrate FRASP directly into Collektive, so an intermediate solution must be identified.
 
