@@ -28,9 +28,6 @@ alchemistIncarnation ..> dsl
 [aggregate] ..> [state]
 [state] ..> [path]
 [reactive] --|> [aggregate]
-[reactive] ..> [field]
-[reactive] ..> [path]
-[reactive] ..> [state]
 
 [transformers] ..> [utils]
 [transformers] ..> [visitors]
