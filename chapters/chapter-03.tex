@@ -248,7 +248,7 @@ detailed in \Cref{fig:frasp-design}. Following the system/execution model descri
 
 \subsection{Architecture}
 
-Collektive has been developed as a Gradle project composed of two different submodules. The cited submodules are:
+Collektive has been developed as a Gradle project composed of three different submodules. The cited submodules are:
 
 \begin{itemize}
     \item \texttt{plugin}, that is divided into two submodules:
@@ -257,6 +257,7 @@ Collektive has been developed as a Gradle project composed of two different subm
         \item \texttt{compiler-plugin}: the compiler plugin is used to modify the data structure which is responsible for keeping track of the stack at runtime. For each aggregate function and branch construct, the stack data structure is updated to allow alignment whenever necessary.
     \end{itemize}
     \item \texttt{dsl}: the actual DSL implementation in Kotlin Multiplatform, where the logic is implemented and that exposes the operators of the aggregate computing.
+    \item \texttt{alchemist-incarnation-collektive}: Allows to integrate Collektive simulations in the Alchemist~\cite{Pianini2013} simulator.
 \end{itemize}
 
 \subsection{Detailed Design}
