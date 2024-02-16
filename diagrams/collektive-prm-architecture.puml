@@ -7,6 +7,7 @@ package dsl {
     [path]
     [state]
     [reactive] #Orange
+    [flow.extensions] #Orange
 }
 
 package "compiler-plugin" as plugin {
@@ -28,6 +29,8 @@ alchemistIncarnation ..> dsl
 [aggregate] ..> [state]
 [state] ..> [path]
 [reactive] --|> [aggregate]
+[reactive] --|> [networking]
+[reactive] ..> [flow.extensions]
 
 [transformers] ..> [utils]
 [transformers] ..> [visitors]
