@@ -1,67 +1,63 @@
 @startuml
 
-package kotlinx.coroutines.flow {
-    interface StateFlow<T>
+class StateFlowExtensions {
+  + combineStates(Function0<T>, Flow<T>): StateFlow<T>
+  + combineStates(StateFlow<T1>, StateFlow<T2>, Function2<T1, T2, R>): StateFlow<R>
+  + combineStates(StateFlow<T1>, StateFlow<T2>, StateFlow<T3>, Function3<T1, T2, T3, R>): StateFlow<R>
+  + flattenConcat(StateFlow<StateFlow<T>>): StateFlow<T>
+  + mapStates(StateFlow<T>, Function1<T, R>): StateFlow<R>
 }
 
-class CombinedStateFlow<T> {
-    +replayCache: List<T>
-    +value: T
-    +collect(collector: FlowCollector): Void
+interface Aggregate<ID> << interface >> {
+  + rBranch(Function0<StateFlow<Boolean>>, Function0<StateFlow<T>>, Function0<StateFlow<T>>): StateFlow<T>
+  + rExchange(T, Function1<StateFlow<Field<ID, T>>, StateFlow<Field<ID, T>>>): StateFlow<Field<ID, T>>
+  + alignedOn(Object?, Function0<R>): R
 }
 
-interface Aggregate<ID : Any> {
-    +{abstract} localId: ID
-    +{abstract} alignedOn(pivot: Any, body: Function0): Any
-    +{abstract} exchange(initial: Any, body: Function1): Field<ID, Initial>
-    +{abstract} exchanging(initial: Any, body: Function2): Field<ID, Return>
-    +{abstract} rBranch(condition: Function0, th: Function0, el: Function0): StateFlow<T>
-    +{abstract} rExchange(initial: Any, body: Function1): StateFlow<Field<ID, T>>
-    +{abstract} repeat(initial: Any, transform: Function1): Any
-    +{abstract} repeating(initial: Any, transform: Function2): Any
+class RAggregateContext<ID> {
+    + rOutboundMessages(): StateFlow<OutboundMessage<ID>>
+    + rState(): StateFlow<Map<Path, Object>>
+    localId: ID
 }
 
-class RAggregateContext<ID : Any> {
-    +localId: Any
-    +rOutboundMessages(): StateFlow<OutboundMessage<ID>>
-    +rState(): StateFlow<Any?>>
+class RAggregateResult<ID, R> {
+   result: StateFlow<R>
+   toSend: StateFlow<OutboundMessage<ID>>
+   state: StateFlow<Map<Path, Object>>
+   localId: ID
 }
 
-class RAggregateResult<ID : Any,\nR> {
-    +localId: Any
-    +result: StateFlow<R>
-    +state: StateFlow<Any?>>
-    +toSend: StateFlow<OutboundMessage<ID>>
+class RCollektive<ID, R> {
+   localId: ID
 }
 
-class RCollektive<ID : Any,\nR> {
-    +localId: ID
-    +aggregate(\nlocalId: ID, \nrInboundMessages: StateFlow<List<InboundMessage<ID>>>, \ncompute: Aggregate<ID>.() -> StateFlow<R>\n): AggregateResult<ID, R>
+class Companion {
+  + aggregate(ID, MutableStateFlow<List<InboundMessage<ID>>>, Function1<Aggregate<ID>, StateFlow<R>>): RAggregateResult<ID, R>
 }
 
-interface Stack {
-    +{abstract} alignRaw(token: Any): Unit
-    +{abstract} currentPath(): Path
-    +{abstract} dealign(): Unit
+interface Stack << interface >> {
+  + dealign(): Unit
+  + alignRaw(Object?): Unit
+  + currentPath(): Path
 }
 
-interface Path {
-    +{abstract} tokens(): List<Any?>
+interface Path << interface >> {
+  + tokens(): List<Object>
 }
 
-interface Field<ID : Any,\nT> {
-    +{abstract} localId: Any
-    +{abstract} localValue: Any
-    +neighborsCount: Int
+interface Field<ID, T> << interface >> {
+   neighborsCount: Int
+   localValue: T
+   localId: ID
 }
 
-CombinedStateFlow --|> StateFlow
+Companion +-- RCollektive
 RAggregateContext --|> Aggregate
 Stack ..> Path
 RAggregateContext ..> Stack
-RAggregateContext ..> CombinedStateFlow
+RAggregateContext ..> StateFlowExtensions
 Aggregate ..> Field
 RCollektive ..> Aggregate
-RCollektive ..> RAggregateResult
+Companion ..> RAggregateResult
 
 @enduml

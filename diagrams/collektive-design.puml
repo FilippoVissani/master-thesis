@@ -1,65 +1,63 @@
 @startuml
-interface Aggregate<ID : Any> {
-    +{abstract} localId: Any
-    +{abstract} alignedOn(pivot: Any, body: Function0): Any
-    +{abstract} exchange(initial: Any, body: Function1): Field<ID, Initial>
-    +{abstract} exchanging(initial: Any, body: Function2): Field<ID, Return>
-    +{abstract} repeat(initial: Any, transform: Function1): Any
-    +{abstract} repeating(initial: Any, transform: Function2): Any
+left to right direction
+
+interface Aggregate<ID> << interface >> {
+  + exchange(Initial, Function1<Field<ID, Initial>, Field<ID, Initial>>): Field<ID, Initial>
+  + repeat(Initial, Function1<Initial, Initial>): Initial
+  + exchanging(Initial, Function2<YieldingContext<Field<ID, Initial>, Field<ID, Return>>, Field<ID, Initial>, YieldingResult<Field<ID, Initial>, Field<ID, Return>>>): Field<ID, Return>
+  + repeating(Initial, Function2<YieldingContext<Initial, Return>, Initial, YieldingResult<Initial, Return>>): Return
+  + alignedOn(Object?, Function0<R>): R
+   localId: ID
 }
 
-class AggregateContext<ID : Any> {
-    +messagesToSend(): OutboundMessage<ID>
-    +newState(): Map<Path, Any?>
+class AggregateContext<ID> {
+  + newState(): Map<Path, Object>
+  + messagesToSend(): OutboundMessage<ID>
 }
 
-class AggregateResult<ID : Any,\nR> {
-    +localId: Any
-    +newState: Map<Path, Any?>
-    +result: Any
-    +toSend: OutboundMessage<ID>
+class AggregateResult<ID, R> {
+   toSend: OutboundMessage<ID>
+   newState: Map<Path, Object>
+   result: R
+   localId: ID
 }
 
-class Collektive<ID : Any,\nR> {
-    +localId: Any
-    +state: Map<Path, Any?>
-    +cycle(): Any
-    +cycleWhile(condition: Function1): Any
-    +aggregate(localId: Any, network: Network, previousState: Map, compute: Function1): AggregateResult<ID, R>
-    +aggregate(localId: Any, inbound: Iterable, previousState: Map, compute: Function1): AggregateResult<ID, R>
+class Collektive<ID, R> {
+  + cycle(): R
+  + cycleWhile(Function1<AggregateResult<ID, R>, Boolean>): R
+   state: Map<Path, Object>
+   localId: ID
 }
 
-interface Stack {
-    +{abstract} alignRaw(token: Any): Unit
-    +{abstract} currentPath(): Path
-    +{abstract} dealign(): Unit
+class Companion {
+  + aggregate(ID, Iterable<InboundMessage<ID>>, Map<Path, Object>, Function1<Aggregate<ID>, R>): AggregateResult<ID, R>
+  + aggregate(ID, Network<ID>, Map<Path, Object>, Function1<Aggregate<ID>, R>): AggregateResult<ID, R>
 }
 
-interface Field<ID : Any,\nT> {
-    +{abstract} localId: Any
-    +{abstract} localValue: Any
-    +neighborsCount: Int
-    +alignedMap(other: Field, transform: Function2): Field<ID, R>
-    +{abstract} asSequence(): Sequence<Pair<ID, T>>
-    +{abstract} excludeSelf(): Map<ID, T>
-    +{abstract} get(id: Any): Any
-    +map(transform: Function1): Field<ID, B>
-    +mapToConstantField(singleton: Any): Field<ID, B>
-    +{abstract} mapWithId(transform: Function2): Field<ID, B>
-    +{abstract} toMap(): Map<ID, T>
+interface Stack << interface >> {
+  + dealign(): Unit
+  + alignRaw(Object?): Unit
+  + currentPath(): Path
 }
 
-interface Network<ID : Any> {
-    +{abstract} read(): Collection<InboundMessage<ID>>
-    +{abstract} write(message: OutboundMessage): Unit
+interface Path << interface >> {
+  + tokens(): List<Object>
 }
 
-interface Path {
-    +{abstract} tokens(): List<Any?>
+interface Field<ID, T> << interface >> {
+   neighborsCount: Int
+   localValue: T
+   localId: ID
 }
 
+interface Network<ID> << interface >> {
+  + read(): Collection<InboundMessage<ID>>
+  + write(OutboundMessage<ID>): Unit
+}
+
+Companion  +--  Collektive
 Aggregate <|-- AggregateContext
-AggregateResult <.. Collektive
+AggregateResult <.. Companion
 Field <.. Aggregate
 Aggregate <.. Collektive
 Network <.. Collektive
