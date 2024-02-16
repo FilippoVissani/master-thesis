@@ -52,7 +52,7 @@ interface Field<ID, T> << interface >> {
 }
 
 Companion +-- RCollektive
-RAggregateContext --|> Aggregate
+RAggregateContext -up-|> Aggregate
 Stack ..> Path
 RAggregateContext ..> Stack
 RAggregateContext ..> StateFlowExtensions
