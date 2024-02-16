@@ -1,5 +1,4 @@
 @startuml
-left to right direction
 
 interface Aggregate<ID> << interface >> {
   + exchange(Initial, Function1<Field<ID, Initial>, Field<ID, Initial>>): Field<ID, Initial>
@@ -55,12 +54,13 @@ interface Network<ID> << interface >> {
   + write(OutboundMessage<ID>): Unit
 }
 
-Companion  +--  Collektive
-Aggregate <|-- AggregateContext
-AggregateResult <.. Companion
-Field <.. Aggregate
-Aggregate <.. Collektive
-Network <.. Collektive
-Path <.. Stack
-Stack <.. AggregateContext
+Collektive --+ Companion
+AggregateContext --|> Aggregate
+Companion ..> AggregateResult
+Aggregate ..> Field
+Collektive .up.> Aggregate
+Collektive ..> Network
+Stack ..> Path
+AggregateContext .up.> Stack
+
 @enduml
