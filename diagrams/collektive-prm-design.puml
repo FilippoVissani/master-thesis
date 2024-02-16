@@ -31,8 +31,14 @@ class RCollektive<ID, R> {
    localId: ID
 }
 
+interface ReactiveNetwork<ID> << interface >> {
+  + read(): StateFlow<Collection<InboundMessage<ID>>>
+  + write(OutboundMessage<ID>): Unit
+}
+
 class Companion {
   + aggregate(ID, MutableStateFlow<List<InboundMessage<ID>>>, Function1<Aggregate<ID>, StateFlow<R>>): RAggregateResult<ID, R>
+  + aggregate(ID, ReactiveNetwork<ID>, Function1<Aggregate<ID>, R>): StateFlow<AggregateResult<ID, R>>
 }
 
 interface Stack << interface >> {
@@ -59,5 +65,6 @@ RAggregateContext ..> StateFlowExtensions
 Aggregate ..> Field
 RCollektive ..> Aggregate
 Companion ..> RAggregateResult
+Companion ..> ReactiveNetwork
 
 @enduml
