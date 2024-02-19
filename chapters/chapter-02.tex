@@ -114,9 +114,18 @@ The \texttt{Flow} interface does not carry information on whether a flow is a co
 
 The example \Cref{lst:flow-example} demonstrates the asynchronous nature of Kotlin Flow and how it allows concurrent execution without blocking the main thread. The \texttt{simple} function creates a flow using the \texttt{flow} builder. Inside the flow, it emits values from 1 to 3 with a delay of one hundred milliseconds between each emission. The delay simulates an operation that takes time, such as network calls or disk I/O. In the \texttt{main} function, a coroutine is launched using \texttt{launch} to run concurrently with the main thread. This coroutine prints messages indicating that it's not blocked and introduces delays between each message. As the flow is collected in the main coroutine, the emitted values are printed and interleaved with the messages from the concurrent coroutine (\Cref{lst:flow-example-result}). This demonstrates that the main thread is not blocked during the execution of the flow, thanks to the asynchronous nature of flows.
 
-\lstinputlisting[float,language=Kotlin,label={lst:flow-example},caption=Kotlin Flow example]{listings/flow-example.kt}
-
-\lstinputlisting[float,label={lst:flow-example-result},caption=Kotlin Flow example result]{listings/flow-example-result.txt}
+\begin{figure}
+    \centering
+    \begin{subfigure}[b]{\textwidth}
+        \centering
+        \lstinputlisting[language=Kotlin,label={lst:flow-example},caption=Kotlin Flow example]{listings/flow-example.kt}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{\textwidth}
+        \centering
+        \lstinputlisting[label={lst:flow-example-result},caption=Kotlin Flow example result]{listings/flow-example-result.txt}
+    \end{subfigure}
+\end{figure}
 
 \section{Aggregate Computing}
 
