@@ -34,6 +34,14 @@ Given the solutions proposed in \Cref{subsection:integration-solutions-identifie
 
 The detailed design of the purely reactive model is shown in \Cref{fig:collektive-prm-design}. The class \texttt{RCollektive} contains the methods necessary for the execution of aggregate programs. Two new methods are added to this class which have \texttt{MutableStateFlow<List<InboundMessage<ID>>>} and \texttt{ReactiveNetwork<ID>} as parameters, respectively; this is because it is necessary to reevaluate the aggregate expression in whole or in part when new messages are received. Given that in this model the aggregate expression depends on values that change over time (neighbor messages and sensor status), the concept of expression result is also revised, so that it is reactive (\texttt{RAggregateResult}). The \texttt{Aggregate} interface takes care of defining the reactive versions of the aggregate constructs, the parameters of which are bound to \texttt{StateFlow} so that it is possible to reevaluate the constructs when the result of one of the functions they take as input changes. The \texttt{RAggregateContext} class extends \texttt{Aggregate} and provides the actual implementation of the aggregate constructs, as well as containing the reactive data structures necessary for managing the outbound messages and the state. This class makes use of the \texttt{StateFlow} extensions (\texttt{StateFlowExtensions}), which are used to simplify the mapping and combining of hot flows. The data structures that model the fields, stack and paths are not changed from the original design. Since the dependencies of aggregate sub-expressions are modeled reactively in this design, when the result of a sub-expression changes, only the sub-expressions that depend on that sub-expression are reevaluated.
 
+The behavioral characteristics of the proposed model are reported below:
+
+\begin{itemize}
+    \item Computations occur reactively only when something changes in the environment, to avoid wasteful resource usage;
+    \item Each device avoids broadcasting a message that did not change since the last one, with the direct consequence that no further message exchange is required if a computation reaches a stable configuration;
+    \item If a portion of the computation depends on data that did not change, it is not be re-evaluated.
+\end{itemize}
+
 \begin{figure}
     \centering
     \includegraphics[width=\linewidth]{figures/collektive-prm-design.pdf}
