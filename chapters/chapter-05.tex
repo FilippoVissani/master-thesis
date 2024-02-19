@@ -32,7 +32,7 @@ The result of the \texttt{rBranch} construct (\Cref{lst:branch-prm}) depends on:
 
 Regardless of which branch is chosen, the result of the other branch is deleted using the \texttt{deleteOppositeBranch} function, this is because otherwise, when the condition changes, the devices would also remain aligned on the branch relating to the previous condition.
 
-The \texttt{rExchange} construct \Cref{lst:exchange-prm} takes as input a \texttt{body} function whose result depends on the previous state and the messages received; as the result of this function changes, the outbound messages and the state of the device are updated.
+The \texttt{rExchange} construct (\Cref{lst:exchange-prm}) takes as input a \texttt{body} function whose result depends on the previous state and the messages received; as the result of this function changes, the outbound messages and the state of the device are updated.
 
 \lstinputlisting[float,language=kotlin,label={lst:aggregate-prm},caption=Implementation of the \texttt{aggregate} function in the purely reactive model.]{listings/aggregate-prm.kt}
 
@@ -43,5 +43,7 @@ The \texttt{rExchange} construct \Cref{lst:exchange-prm} takes as input a \textt
 \lstinputlisting[float,language=kotlin,label={lst:exchange-prm},caption=Implementation of the \texttt{rExchange} construct in the purely reactive model.]{listings/exchange-prm.kt}
 
 \section{Model with Reactive Messages and Sensors}
+
+The central component of the implementation with reactive messages and sensors is the \texttt{aggregate} function (\Cref{lst:aggregate-rmsm}). This function takes as input the same parameters as the one defined in the purely reactive model, the difference is that the result of the aggregate program is not bound to the \texttt{StateFlow} type. The result of \texttt{aggregate} is defined as \texttt{StateFlow<AggregateResult<ID, R>>}, this wrapping allows us to avoid having to create specific data structures for managing the aggregate result, which instead happens in the purely reactive model. In the \texttt{aggregate} function, an \texttt{AggregateContext} flow is created that depends on the inbound message and state flows. The result of the aggregate expression depends on the flow of the \texttt{AggregateContext}; as the result of the expression changes, the flow relating to the state is updated.
 
 \lstinputlisting[float,language=kotlin,label={lst:aggregate-rmsm},caption=Implementation of the \texttt{aggregate} function in the model with reactive messages and sensors.]{listings/aggregate-rmsm.kt}
