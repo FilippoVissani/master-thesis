@@ -9,13 +9,38 @@
 
 \section{Purely Reactive Model}
 
+In this section, the implementation of some key components of the purely reactive model is proposed.
+
+The Aggregate function (\Cref{lst:aggregate-prm}) represents the entry point of the aggregate program; this function takes as input the device ID, a flow relating to inbound messages and an aggregate program whose result is bound to the \texttt{StateFlow<R>} type. In the body of the function, a \texttt{RAggregateContext} is created with the parameters passed as input and the aggregate program is executed in the context relating to the newly created object. The result of the function is a \texttt{RAggregateResult}, thanks to which it is possible to access the result of the aggregate expression, the outbound messages and the state of the device. The data structures within \texttt{RAggregateResult} are defined as flows, so it is possible to subscribe to and react to their changing. In this way, it is easy to establish the dependency between the inbound messages of one device and the outbound messages of another, so that the first reacts to the change of the second state.
+
+\Cref{lst:aggregate-context-prm} provides the implementation of the \texttt{RAggregateContext} class. This class is responsible for defining the context in which the aggregate expression is executed and on which the result of the latter depends. Here the actual implementation of the aggregate constructs is defined, which takes advantage of some utility functions:
+
+\begin{itemize}
+    \item The \texttt{rMessagesAt} function takes care of returning inbound messages relating to a \texttt{path}.
+    \item The \texttt{rStateAt} function returns the result of the evaluation of the given \texttt{path} using the \texttt{default} value if the result does not exist yet.
+    \item The function \texttt{alignedOn} is used to define paths, it pushes on the stack the given \texttt{pivot}, executes the \texttt{body} function and pops the first token on the stack.
+\end{itemize}
+
+The functions passed as input to the aggregate constructs and the related result of the latter are bound to the \texttt{StateFlow} type so that it is possible to react to their changes.
+
+The result of the \texttt{rBranch} construct (\Cref{lst:branch-prm}) depends on:
+\begin{itemize}
+    \item the result of the evaluation of the \texttt{condition};
+    \item the result of the evaluation of the \texttt{th} branch in the case that the condition is \texttt{true};
+    \item the result of the evaluation of the \texttt{el} branch in the case that the condition is \texttt{false}.
+\end{itemize}
+
+Regardless of which branch is chosen, the result of the other branch is deleted using the \texttt{deleteOppositeBranch} function, this is because otherwise, when the condition changes, the devices would also remain aligned on the branch relating to the previous condition.
+
+The \texttt{rExchange} construct \Cref{lst:exchange-prm} takes as input a \texttt{body} function whose result depends on the previous state and the messages received; as the result of this function changes, the outbound messages and the state of the device are updated.
+
 \lstinputlisting[float,language=kotlin,label={lst:aggregate-prm},caption=Implementation of the \texttt{aggregate} function in the purely reactive model.]{listings/aggregate-prm.kt}
 
-\lstinputlisting[float,language=kotlin,label={lst:aggregate-context-prm},caption=Implementation of the \texttt{AggregateContext} class in the purely reactive model.]{listings/AggregateContext-prm.kt}
+\lstinputlisting[float,language=kotlin,label={lst:aggregate-context-prm},caption=Implementation of the \texttt{RAggregateContext} class in the purely reactive model.]{listings/AggregateContext-prm.kt}
 
-\lstinputlisting[float,language=kotlin,label={lst:branch-prm},caption=Implementation of the \texttt{branch} construct in the purely reactive model.]{listings/branch-prm.kt}
+\lstinputlisting[float,language=kotlin,label={lst:branch-prm},caption=Implementation of the \texttt{rBranch} construct in the purely reactive model.]{listings/branch-prm.kt}
 
-\lstinputlisting[float,language=kotlin,label={lst:exchange-prm},caption=Implementation of the \texttt{exchange} construct in the purely reactive model.]{listings/exchange-prm.kt}
+\lstinputlisting[float,language=kotlin,label={lst:exchange-prm},caption=Implementation of the \texttt{rExchange} construct in the purely reactive model.]{listings/exchange-prm.kt}
 
 \section{Model with Reactive Messages and Sensors}
 
