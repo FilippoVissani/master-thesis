@@ -4,15 +4,14 @@ fun <ID : Any, R> aggregate(
     compute: Aggregate<ID>.() -> R,
 ): StateFlow<AggregateResult<ID, R>> {
     val states = MutableStateFlow<State>(emptyMap())
-    val contextFlow = mapStates(inbound) {
+    val contextFlow = inbound.mapStates {
         AggregateContext(localId, it, states.value)
     }
-    val result: StateFlow<AggregateResult<ID, R>> = mapStates(contextFlow) { aggregateContext ->
+    return contextFlow.mapStates { aggregateContext ->
         aggregateContext.run {
-            val aggregateResult = AggregateResult(localId, compute(), messagesToSend(), newState())
-            states.update { aggregateResult.newState }
-            aggregateResult
+            AggregateResult(localId, compute(), messagesToSend(), newState()).also {
+                states.update { this.newState() }
+            }
         }
     }
-    return result
 }
