@@ -5,7 +5,7 @@ override fun <T> rExchange(
 ): StateFlow<Field<ID, T>> {
     val messages = rMessagesAt<T>(stack.currentPath())
     val previous = rStateAt(stack.currentPath(), initial)
-    val subject = mapStates(messages) { m -> newField(previous.value, m) }
+    val subject = messages.mapStates { m -> newField(previous.value, m) }
     val alignmentPath = stack.currentPath()
     return body(subject).also { flow ->
         flow.onEach { field ->
