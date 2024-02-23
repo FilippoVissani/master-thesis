@@ -8,6 +8,7 @@
 %----------------------------------------------------------------------------------------
 
 \section{Purely Reactive Model}
+\label{section:prm}
 
 In this section, the implementation of some key components of the purely reactive model is proposed.
 
@@ -43,6 +44,7 @@ The \texttt{rExchange} construct (\Cref{lst:exchange-prm}) takes as input a \tex
 \lstinputlisting[float,language=kotlin,label={lst:exchange-prm},caption=Implementation of the \texttt{rExchange} construct in the purely reactive model.]{listings/exchange-prm.kt}
 
 \section{Model with Reactive Messages and Sensors}
+\label{section:mrms}
 
 The central component of the implementation with reactive messages and sensors is the \texttt{aggregate} function (\Cref{lst:aggregate-rmsm}). This function takes as input the same parameters as the one defined in the purely reactive model, the difference is that the result of the aggregate program is not bound to the \texttt{StateFlow} type. The result of \texttt{aggregate} is defined as \texttt{StateFlow<AggregateResult<ID, R>>}, this wrapping allows us to avoid having to create specific data structures for managing the aggregate result, which instead happens in the purely reactive model. In the \texttt{aggregate} function, an \texttt{AggregateContext} flow is created that depends on the inbound message and state flows. The result of the aggregate expression depends on the flow of the \texttt{AggregateContext}; as the result of the expression changes, the flow relating to the state is updated.
 
