@@ -7,7 +7,13 @@
 \label{chap:evaluation}
 %----------------------------------------------------------------------------------------
 
+Validation is the process within software development, encompassing measures to guarantee that the software aligns with predefined requirements and specifications, and is suitable for its designated purpose. This crucial step ensures that the software operates without flaws, meets user expectations, and executes its intended functions accurately. The validation process entails a range of testing methodologies, each aimed at verifying that the software achieves its objectives and behaves as anticipated across diverse environments and scenarios.
+
 \section{Testing}
+
+To ensure the accuracy of the code developed, the project implemented a comprehensive suite of unit tests to validate the implementation. This approach not only instilled confidence in refactoring efforts but also formalized expectations regarding the language's API, enabling verification and reproducibility. Specifically, unit tests were crafted using Kotest\footnote{\url{https://kotest.io/}} framework, a widely accepted tool for automated testing in Kotlin. Among its testing styles, the project opted for \texttt{StringSpec} due to its straightforward structure, which facilitates a behavior-driven approach to test composition.
+
+\lstinputlisting[float,language=kotlin,label={lst:rexchange-test},caption=TODO.]{listings/rexchange-test.kt}
 
 \section{Analysis of the Ergonomics of the Proposed Models}
 
