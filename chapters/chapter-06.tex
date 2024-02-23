@@ -13,7 +13,7 @@ Validation is the process within software development, encompassing measures to 
 
 To ensure the accuracy of the code developed, the project implemented a comprehensive suite of unit tests to validate the implementation. This approach not only instilled confidence in refactoring efforts but also formalized expectations regarding the language's API, enabling verification and reproducibility. Specifically, unit tests were crafted using Kotest\footnote{\url{https://kotest.io/}} framework, a widely accepted tool for automated testing in Kotlin. Among its testing styles, the project opted for \texttt{StringSpec} due to its straightforward structure, which facilitates a behavior-driven approach to test composition.
 
-\lstinputlisting[float,language=kotlin,label={lst:rexchange-test},caption=TODO.]{listings/rexchange-test.kt}
+\lstinputlisting[float,language=kotlin,label={lst:rexchange-test},caption=Part of the test suite related to the \texttt{rExchange} construct.]{listings/rexchange-test.kt}
 
 \section{Analysis of the Ergonomics of the Proposed Models}
 
@@ -34,24 +34,25 @@ To ensure the accuracy of the code developed, the project implemented a comprehe
     \begin{subfigure}[b]{.49\textwidth}
         \centering
         \includegraphics[width=\textwidth]{figures/gradient-environment.pdf}
-        \caption{TODO.}
+        \caption{}
         \label{fig:gradient-envronment}
     \end{subfigure}
     \hfill
     \begin{subfigure}[b]{.49\textwidth}
         \centering
         \includegraphics[width=\textwidth]{figures/gradient-environment-execution.pdf}
-        \caption{TODO.}
+        \caption{}
         \label{fig:gradient-envronment-execution}
     \end{subfigure}
+    \caption{\Cref{fig:gradient-envronment} presents the environment where the gradient with obstacles was executed. The node highlighted in green represents the source, while those in red represent the obstacles. \Cref{fig:gradient-envronment-execution} presents the output field of the gradient with obstacles after stabilization.}
 \end{figure}
 
-\lstinputlisting[float,language=kotlin,label={lst:simulation-configuration},caption=TODO.]{listings/simulation-configuration.kt}
+\lstinputlisting[float,language=kotlin,label={lst:simulation-configuration},caption=Simulation setup performed on both the purely reactive model and the one with reactive messages and sensors.]{listings/simulation-configuration.kt}
 
 \subsection{Purely Reactive Model}
 
-\lstinputlisting[float,language=kotlin,label={lst:gradient-obstacles-prm},caption=TODO.]{listings/gradient-obstacles-prm.kt}
+\lstinputlisting[float,language=kotlin,label={lst:gradient-obstacles-prm},caption=Gradient with obstacles implementation in purely reactive model.]{listings/gradient-obstacles-prm.kt}
 
 \subsection{Model with Reactive Messages and Sensors}
 
-\lstinputlisting[float,language=kotlin,label={lst:gradient-obstacles-rmsm},caption=TODO.]{listings/gradient-obstacles-rmsm.kt}
+\lstinputlisting[float,language=kotlin,label={lst:gradient-obstacles-rmsm},caption=Gradient with obstacles implementation in model with reactive messages and sensors.]{listings/gradient-obstacles-rmsm.kt}
