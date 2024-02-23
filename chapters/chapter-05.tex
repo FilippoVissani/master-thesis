@@ -30,7 +30,7 @@ The result of the \texttt{rBranch} construct (\Cref{lst:branch-prm}) depends on:
     \item the result of the evaluation of the \texttt{el} branch in the case that the condition is \texttt{false}.
 \end{itemize}
 
-Regardless of which branch is chosen, the result of the other branch is deleted using the \texttt{deleteOppositeBranch} function, this is because otherwise, when the condition changes, the devices would also remain aligned on the branch relating to the previous condition.
+Regardless of which branch is chosen, the result of the other branch is deleted using the \texttt{deleteOppositeBranch} function, this is because otherwise, when the condition changes, the devices would also remain aligned on the branch relating to the previous condition. The implementation of the construct also highlights that the \texttt{alignedOn} function is called explicitly when in reality it should be called by the compiler plugin. This is because the compiler plugin only aligns calls to aggregate functions, while within \texttt{rBranch} the \texttt{mapStates} function is called, which is not an aggregate function. This behavior of the compiler plugin can be considered a problem that needs to be resolved. With correct plugin behavior the \texttt{rBranch} implementation would not need calls to the \texttt{alignedOn}, \texttt{stack.dealign} and \texttt{stack.alignRaw} functions.
 
 The \texttt{rExchange} construct (\Cref{lst:exchange-prm}) takes as input a \texttt{body} function whose result depends on the previous state and the messages received; as the result of this function changes, the outbound messages and the state of the device are updated.
 
