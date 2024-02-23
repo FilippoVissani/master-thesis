@@ -7,6 +7,15 @@
 \label{chap:implementation}
 %----------------------------------------------------------------------------------------
 
+This chapter delves into the implementation details of the two reactive models introduced for Collektive:
+
+\begin{itemize}
+    \item The purely reactive model reevaluates relevant portions of the expression based on data dependencies, offering fine-grained reactivity.
+    \item The model with reactive messages and sensors: Introduces reactivity only to messages and sensor readings, maintaining the original Collektive DSL.
+\end{itemize}
+
+Each section focuses on a specific model, exploring its key components and implementation choices. Code snippets and explanations illustrate functionalities and highlight potential areas for improvement.
+
 \section{Purely Reactive Model}
 \label{section:prm}
 

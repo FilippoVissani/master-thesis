@@ -7,9 +7,15 @@
 \label{chap:evaluation}
 %----------------------------------------------------------------------------------------
 
-Validation is the process within software development, encompassing measures to guarantee that the software aligns with predefined requirements and specifications, and is suitable for its designated purpose. This crucial step ensures that the software operates without flaws, meets user expectations, and executes its intended functions accurately. The validation process entails a range of testing methodologies, each aimed at verifying that the software achieves its objectives and behaves as anticipated across diverse environments and scenarios.
+This chapter delves into the evaluation of the reactive extensions introduced into the Collektive framework. The chapter is divided into two main sections:
+
+\begin{itemize}
+    \item \Cref{section:testing} details the unit testing strategy employed to ensure the correctness of the implemented code. It highlights the chosen testing framework, and the testing style adopted, and showcases an example test related to the \texttt{rExchange} construct.
+    \item \Cref{section:analysis-ergonomics-proposed-models} compares the usability of the DSL for implementing aggregate programs in the two proposed reactive models. To facilitate the comparison, an example program implementing the "gradient with obstacles" scenario is presented in both DSLs. This allows for a concrete side-by-side assessment of the strengths and weaknesses of each model from a usability perspective.
+\end{itemize}
 
 \section{Testing}
+\label{section:testing}
 
 To ensure the accuracy of the code developed, the project implemented a comprehensive suite of unit tests to validate the implementation. This approach not only instilled confidence in refactoring efforts but also formalized expectations regarding the language's API, enabling verification and reproducibility. Specifically, unit tests were crafted using Kotest\footnote{\url{https://kotest.io/}} framework, a widely accepted tool for automated testing in Kotlin. Among its testing styles, the project opted for \texttt{StringSpec} due to its straightforward structure, which facilitates a behavior-driven approach to test composition. The most relevant tests within the project are those that verify the behavior of the aggregate constructs.
 
@@ -36,6 +42,7 @@ In the proposed tests, the behavior of the aggregate constructs is checked in va
 \end{itemize}
 
 \section{Analysis of the Ergonomics of the Proposed Models}
+\label{section:analysis-ergonomics-proposed-models}
 
 In addition to evaluating the correct functioning of the aggregate constructs with the unit tests, we want to evaluate the ergonomics of the \acp{dsl} relating to the implementations of the models in \Cref{section:prm} and \Cref{section:mrms}. The aggregate program chosen to carry out this evaluation is the gradient with obstacles, which maintains the properties of the classic gradient, but introduces obstacles into the environment. \Cref{fig:gradient-environment-and-execution} shows a graphical representation of what you want to achieve. There are three types of nodes in the environment: sources (green), obstacles (red) and defaults (blue). The objective is to calculate the distance of each node from the nearest source without considering the neighbors who are considered as obstacles. The environment used in this case is a grid with five columns and five rows, where each device is a neighbor of the nearest device in each horizontal and vertical direction. In addition, the device with ID 0 is a source node, while devices with ID 2, 7, and 12 are obstacles.
 

@@ -7,6 +7,12 @@
 \label{chap:design}
 %----------------------------------------------------------------------------------------
 
+This chapter delves into the design of a reactive extension for the Collektive framework. Collektive enables the execution of aggregate computations across distributed devices. This chapter introduces two novel models that incorporate reactive principles into Collektive's design.
+
+The chapter begins by providing an overview of the current Collektive architecture. It then outlines the proposed reactive architecture, highlighting the introduced components and their functionalities.
+
+Following the architectural overview, the chapter dives into the detailed design of two reactive models proposed.
+
 \section{Architecture}
 
 As mentioned in \Cref{subsection:collektive-architecture}, Collektive consists of three main modules: \texttt{dsl}, \texttt{compiler-plugin} and \texttt{alchemist-incarnation-collektive}. \texttt{alchemist-incarnation-collektive} is responsible for enabling the integration of Collektive simulations into Alchemist. The \texttt{compiler-plugin} takes care of visiting the abstract syntax tree of the aggregate expression and modifying the function call stack to correctly align the devices that execute the aggregate program. The \texttt{dsl} module defines the following components:
