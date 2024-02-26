@@ -3,7 +3,7 @@
 % !TeX root = ../thesis-main.tex
 
 %----------------------------------------------------------------------------------------
-\chapter{Evaluation}
+\chapter{Validation}
 \label{chap:evaluation}
 %----------------------------------------------------------------------------------------
 
@@ -17,34 +17,32 @@ This chapter delves into the evaluation of the reactive extensions introduced in
 \section{Testing}
 \label{section:testing}
 
-To ensure the accuracy of the code developed, the project implemented a comprehensive suite of unit tests to validate the implementation. This approach not only instilled confidence in refactoring efforts but also formalized expectations regarding the language's API, enabling verification and reproducibility. Specifically, unit tests were crafted using Kotest\footnote{\url{https://kotest.io/}} framework, a widely accepted tool for automated testing in Kotlin. Among its testing styles, the project opted for \texttt{StringSpec} due to its straightforward structure, which facilitates a behavior-driven approach to test composition. The most relevant tests within the project are those that verify the behavior of the aggregate constructs.
+Ensuring the correctness of the implemented reactive extensions is paramount to their successful integration within the Collektive framework. This section delves into the testing strategies employed, focusing on unit testing methodologies.
 
-\Cref{lst:rexchange-test} contains a test that verifies part of the behavior of the \texttt{rExchange} construct. A detailed description of the test is provided below:
+The project adopts a rigorous approach to testing, leveraging the Kotest framework for automated testing in Kotlin. Kotest\footnote{\url{https://kotest.io/}} provides a robust testing environment conducive to comprehensive test suites. Among its testing styles, the project opted for \texttt{StringSpec} due to its straightforward structure, which facilitates a behavior-driven approach to test composition. The most relevant tests within the project are those that verify the behavior of the aggregate constructs.
 
-\begin{itemize}
-    \item line 1 defines the test name;
-    \item line 2 ensures test runs sequentially within a coroutine;
-    \item lines 3-5 define the aggregate result based on the execution of the aggregate program in the given aggregate context, where the ID of the device is 0 and there are no neighbors;
-    \item lines 6-8 launch a concurrent job in the background where the simulation is executed;
-    \item line 9 defines a delay of 100 milliseconds;
-    \item line 10 cancels the job previously defined;
-    \item lines 11-12 define the assertions to be executed on the result.
-\end{itemize}
+Unit tests are designed to verify the behavior of the aggregate constructs, ensuring they function as expected across various scenarios. Tests are crafted to cover different aspects of the reactive functionality, ensuring the accurate alignment of devices and the correctness of values exchanged and validating the correctness of aggregate expressions and resultant values.
+
+An example test case for the \texttt{rExchange} construct is presented in \Cref{lst:rexchange-test} to illustrate the testing approach. The test case encompasses the following steps:
+
+\begin{enumerate}
+    \item Definition of the test name and sequential execution within a coroutine.
+    \item Definition of the aggregate result based on the execution of the aggregate program in a specific aggregate context.
+    \item Launching a concurrent job to execute the simulation.
+    \item Introduction of a delay and subsequent cancellation of the job.
+    \item Assertion of the expected results against the computed values.
+\end{enumerate}
+
+The provided example test serves as a template for testing other reactive constructs, ensuring thorough validation of their behavior.
 
 \lstinputlisting[float,language=kotlin,label={lst:rexchange-test},caption=Part of the test suite related to the \texttt{rExchange} construct.]{listings/rexchange-test.kt}
-
-In the proposed tests, the behavior of the aggregate constructs is checked in various cases, the checks carried out involve:
-
-\begin{itemize}
-    \item the correct alignment of the devices;
-    \item the correctness of the values exchanged by the devices;
-    \item the correctness of the result of the aggregate expression.
-\end{itemize}
 
 \section{Analysis of the Ergonomics of the Proposed Models}
 \label{section:analysis-ergonomics-proposed-models}
 
-In addition to evaluating the correct functioning of the aggregate constructs with the unit tests, we want to evaluate the ergonomics of the \acp{dsl} relating to the implementations of the models in \Cref{section:prm} and \Cref{section:mrms}. The aggregate program chosen to carry out this evaluation is the gradient with obstacles, which maintains the properties of the classic gradient, but introduces obstacles into the environment. \Cref{fig:gradient-environment-and-execution} shows a graphical representation of what you want to achieve. There are three types of nodes in the environment: sources (green), obstacles (red) and defaults (blue). The objective is to calculate the distance of each node from the nearest source without considering the neighbors who are considered as obstacles. The environment used in this case is a grid with five columns and five rows, where each device is a neighbor of the nearest device in each horizontal and vertical direction. In addition, the device with ID 0 is a source node, while devices with ID 2, 7, and 12 are obstacles.
+This section evaluates the usability and effectiveness of the proposed reactive models within the Collektive framework. The evaluation focuses on readability, maintainability, flexibility, and the learning curve associated with each model.
+
+The aggregate program chosen to carry out this evaluation is the gradient with obstacles, which maintains the properties of the classic gradient, but introduces obstacles into the environment. \Cref{fig:gradient-environment-and-execution} shows a graphical representation of what you want to achieve. There are three types of nodes in the environment: sources (green), obstacles (red) and defaults (blue). The objective is to calculate the distance of each node from the nearest source without considering the neighbors who are considered as obstacles. The environment used in this case is a grid with five columns and five rows, where each device is a neighbor of the nearest device in each horizontal and vertical direction. In addition, the device with ID 0 is a source node, while devices with ID 2, 7, and 12 are obstacles.
 
 \Cref{lst:gradient-obstacles-prm} and \Cref{lst:gradient-obstacles-rmsm} present the implementation of the gradient with obstacles in the purely reactive model and in the one where only sensors and messages are reactive, respectively. In both cases the node type is defined as \texttt{StateFlow<NodeType>}, allowing to change sources and obstacles at runtime. What changes is how this flow is managed: in the purely reactive case it is used directly within the aggregate constructs, while in the other a specific simulator must be created, which reevaluates the expression as the type of node varies. As regards the use of aggregate constructs within the program, the model with reactive messages and sensors is equivalent to the proactive model, while in the purely reactive model, the use of functions for manipulating flows introduces greater complexity. Based on the results obtained, the following considerations arise:
 
