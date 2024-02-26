@@ -20,3 +20,19 @@ In the design phase, we delineated the architectural and detailed designs of the
 In evaluating the proposed models, we subjected them to testing procedures and analyzed their ergonomic aspects, providing valuable insights into their strengths and weaknesses.
 
 In conclusion, our exploration has not only demonstrated the feasibility of reactive aggregate programming in Kotlin but has also contributed to advancing the discourse surrounding programming languages for self-organizing systems. By synthesizing our findings and encapsulating the contributions of this thesis, we pave the way for future research endeavors aimed at further refining and extending the capabilities of programming languages in facilitating the emergence of collective intelligence.
+
+\section{Future Work}
+
+In future work, several areas could be explored to further enhance the capabilities and usability of the reactive aggregate programming framework in Kotlin:
+
+\paragraph{Support for Real-World Distributed Platforms}
+
+Investigate ways to extend the framework to support deployment and execution on real-world distributed platforms. This could involve optimizations for distributed communication, fault tolerance mechanisms, and integration with existing distributed computing frameworks.
+
+\paragraph{DSL Improvements}
+
+Address the noise introduced in the API of the purely reactive model due to the necessity of reactive operators to work with flows instead of local values. Research and develop a more streamlined and user-friendly API that abstracts away the complexities of dealing with flows, reducing boilerplate code and improving program transparency.
+
+\paragraph{Timing Configuration Granularity}
+
+Enhance the framework's flexibility in configuring the timing of computations beyond reacting solely to standard events. Explore the possibility of supporting additional strategies for scheduling and rate limiting, such as custom scheduling policies and per-construct configuration options. This could provide developers with finer control over the execution behavior of their self-organizing systems, catering to diverse application requirements and environments.
