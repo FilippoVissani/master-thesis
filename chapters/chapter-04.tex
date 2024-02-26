@@ -38,15 +38,25 @@ Given the solutions proposed in \Cref{subsection:integration-solutions-identifie
 \subsection{Purely Reactive Model}
 \label{subsection:purely-reactive-model}
 
-The detailed design of the purely reactive model is shown in \Cref{fig:collektive-prm-design}. The class \texttt{RCollektive} contains the methods necessary for the execution of aggregate programs. Two new methods are added to this class which have \texttt{MutableStateFlow<List<InboundMessage<ID>>>} and \texttt{ReactiveNetwork<ID>} as parameters, respectively; this is because it is necessary to reevaluate the aggregate expression in whole or in part when new messages are received. Given that in this model the aggregate expression depends on values that change over time (neighbor messages and sensor status), the concept of expression result is also revised, so that it is reactive (\texttt{RAggregateResult}). The \texttt{Aggregate} interface takes care of defining the reactive versions of the aggregate constructs, the parameters of which are bound to \texttt{StateFlow} so that it is possible to reevaluate the constructs when the result of one of the functions they take as input changes. The \texttt{RAggregateContext} class extends \texttt{Aggregate} and provides the actual implementation of the aggregate constructs, as well as containing the reactive data structures necessary for managing the outbound messages and the state. This class makes use of the \texttt{StateFlow} extensions (\texttt{StateFlowExtensions}), which are used to simplify the mapping and combining of hot flows. The data structures that model the fields, stack and paths are not changed from the original design. Since the dependencies of aggregate sub-expressions are modeled reactively in this design, when the result of a sub-expression changes, only the sub-expressions that depend on that sub-expression are reevaluated.
+The detailed design of the purely reactive model is shown in \Cref{fig:collektive-prm-design}.
 
-The behavioral characteristics of the proposed model are reported below:
+Within the \texttt{RCollektive} class, the methods for executing aggregate programs have been augmented to accommodate reactive functionalities. The method \texttt{execute} now takes a \texttt{MutableStateFlow<List<InboundMessage<ID>>>} parameter, enabling the system to react to incoming messages from neighboring devices. Similarly, the \texttt{execute} method now also accepts a \texttt{ReactiveNetwork<ID>} parameter, facilitating reactive communication among devices within the network. These additions signify a departure from the static nature of traditional aggregate computations, allowing for dynamic adjustments based on real-time changes in the environment.
+
+In the purely reactive model, the concept of expression result (\texttt{RAggregateResult}) is revisited to imbue reactivity. This ensures that the aggregate expression's result is not static but rather dynamic, adapting to alterations in the underlying data or environmental conditions. Moreover, the \texttt{Aggregate} interface undergoes modifications to accommodate reactive versions of aggregate constructs. Parameters within these constructs are bound to \texttt{StateFlow}, enabling reevaluation whenever their inputs experience changes. This reactive paradigm empowers the system to respond dynamically to fluctuations in the environment.
+
+The \texttt{RAggregateContext} class extends the \texttt{Aggregate} interface, providing concrete implementations of reactive aggregate constructs. Additionally, it hosts reactive data structures essential for managing outbound messages and states. Leveraging \texttt{StateFlow} extensions (\texttt{StateFlowExtensions}), this class simplifies the mapping and combining of hot flows, enhancing the efficiency and scalability of the system. By encapsulating reactive functionalities within the \texttt{RAggregateContext}, the system maintains modularity and extensibility, facilitating future enhancements and optimizations.
+
+\subsubsection{Behavioral Characteristics}
+
+The purely reactive model exhibits distinct behavioral characteristics that distinguish it from traditional static computation approaches:
 
 \begin{itemize}
-    \item Computations occur reactively only when something changes in the environment, to avoid wasteful resource usage;
-    \item Each device avoids broadcasting a message that did not change since the last one, with the direct consequence that no further message exchange is required if a computation reaches a stable configuration;
-    \item If a portion of the computation depends on data that did not change, it is not be re-evaluated.
+    \item \textbf{Reactive Computations}: Computation occurs reactively in response to environmental changes, minimizing resource wastage and ensuring optimal responsiveness.
+    \item \textbf{Efficient Message Exchange}: Devices only broadcast messages when necessary, reducing unnecessary communication.
+    \item \textbf{Selective Reevaluation}: Sub-expressions are reevaluated only when their dependencies change, optimizing computation efficiency and reducing redundant processing.
 \end{itemize}
+
+By embodying these characteristics, the purely reactive model enhances the agility, scalability, and robustness of the Collektive framework, empowering it to effectively handle dynamic and unpredictable environments.
 
 \begin{figure}
     \centering
@@ -56,8 +66,25 @@ The behavioral characteristics of the proposed model are reported below:
 \end{figure}
 
 \subsection{Model with Reactive Messages and Sensors}
+The detailed design of the model with reactive messages and sensors is shown in \Cref{fig:collektive-rmsm-design}.
 
-The model with reactive messages and sensors, as defined by the name itself, simply introduces a reactive version of the messages received from neighbors and the state of the sensors. This implies that the changes made to the original Collektive design are more minimal than those of the model described in \Cref{subsection:purely-reactive-model}. The design of this model is described in \Cref{fig:collektive-rmsm-design}. Just like in the purely reactive model, the Collektive class implements two new versions of the \texttt{Aggregate} method, so it can receive messages via a \texttt{StateFlow<Iterable<InboundMessage<ID>>>} or a \texttt{ReactiveNetwork<ID>}. Again, the result of the \texttt{Aggregate} method is modeled as \texttt{StateFlow<AggregateResult<ID, R>>}. What changes in this design, compared to that relating to the purely reactive model, is that the \texttt{Aggregate} method implements in its entirety the logic that serves to make the evaluation of the aggregate expression reactive; as a consequence, contrary to what happens in the purely reactive model, the \texttt{AggregateContext} class is not modified. This naturally means that, when a message is received from a neighbor, the aggregate expression is reevaluated entirely, i.e. a round is performed. This allows the original Collektive \ac{dsl} to be kept unchanged at the cost of a loss of performance compared to the purely reactive model.
+Similar to the purely reactive model, the \texttt{Collektive} class accommodates two new versions of the \texttt{Aggregate} method to facilitate reactive functionalities. These methods accept either a \texttt{StateFlow<Iterable<InboundMessage<ID>>>} or a \texttt{ReactiveNetwork<ID>} parameter, enabling dynamic adjustment of aggregate computations based on real-time changes in message reception.
+
+In this model, the \texttt{Aggregate} method encompasses the logic necessary for reactive evaluation of the aggregate expression. Unlike the purely reactive model, where the \texttt{AggregateContext} class handles reactive evaluation, here the evaluation logic is embedded directly within the \texttt{Aggregate} method. Consequently, upon receiving a message from a neighbor, the entire aggregate expression undergoes reevaluation, resulting in a complete round of computation. While maintaining compatibility with the original Collektive \ac{dsl}, this approach sacrifices some performance due to the exhaustive reevaluation process.
+
+\subsubsection{Behavioral Characteristics}
+
+The model with reactive messages and sensors exhibits behavioral characteristics that align with its design principles:
+
+\begin{itemize}
+    \item \textbf{Compatibility}: Retains compatibility with the original Collektive \ac{dsl}, ensuring seamless integration with existing codebase and workflows.
+    \item \textbf{Simplified Implementation}: Integrates reactive functionalities within the \texttt{Aggregate} method, streamlining the implementation process and reducing complexity.
+    \item \textbf{Performance Trade-off}: Sacrifices some performance for compatibility, as the entire aggregate expression undergoes reevaluation upon receiving a message, potentially leading to redundant processing.
+\end{itemize}
+
+Despite the performance trade-off, this model provides a pragmatic approach to introducing reactivity into the Collektive framework, catering to scenarios where compatibility and ease of integration are paramount.
+
+In summary, both models offer distinct approaches to incorporating reactive principles into the Collektive framework, each tailored to different use cases and design priorities.
 
 \begin{figure}
     \centering
