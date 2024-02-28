@@ -70,7 +70,7 @@ To support these functionalities, Kotlin, being a statically typed programming l
 An illustrative instance of a higher-order function in Kotlin is the functional programming idiom \texttt{fold} (\Cref{lst:fold-function})
 employed for collections. This function receives an initial accumulator value and a combining function. Subsequently, it constructs its return value by iteratively combining the current accumulator value with each element in the collection. Importantly, the accumulator value is replaced with each iteration.
 
-\lstinputlisting[float,language=Kotlin,label={lst:fold-function},caption= \texttt{fold} function]{listings/fold.kt}
+\lstinputlisting[float,language=Kotlin,label={lst:fold-function},caption= \texttt{fold} function.]{listings/fold.kt}
 
 the \texttt{combine} parameter has the function type \((R, T) \rightarrow R\), so it accepts a function that takes two arguments of types \textit{R} and \textit{T} and returns a value of type \textit{R}. It is invoked inside the \texttt{for} loop, and the return value is then assigned to \texttt{accumulator}.
 
@@ -83,7 +83,7 @@ Reactive programming, as defined in~\cite{Bainomugisha2013}, is a programming pa
 Consider the example of calculating the sum of two variables (\Cref{lst:reactive-example}). In conventional sequential imperative programming, the value of the variable \texttt{var3} will always contain 3, which is the sum of the initial values of variables \texttt{var1} and \texttt{var2} even when \texttt{var1} or \texttt{var2} is later assigned a new value (unless the programmer explicitly assigns a new value to the variable \texttt{var3}). In reactive programming, the value of the variable \texttt{var3} is always kept up-to-date. In other words, the value of \texttt{var3} is automatically recomputed over time whenever the value of \texttt{var1} or \texttt{var2} changes.
 This is the key notion of reactive programming. Values change over time and when they change all dependent computations are automatically reexecuted. In reactive programming terminology, the variable \texttt{var3} is said to be dependent on the variables \texttt{var1} and \texttt{var2}.
 
-\lstinputlisting[float,label={lst:reactive-example},caption=Example of a program with reactive values]{listings/reactive-example.txt}
+\lstinputlisting[float,label={lst:reactive-example},caption=Example of a program with reactive values.]{listings/reactive-example.txt}
 
 \subsection{Evaluation Model}
 
@@ -120,12 +120,12 @@ The example \Cref{lst:flow-example} demonstrates the asynchronous nature of Kotl
     \centering
     \begin{subfigure}[b]{\textwidth}
         \centering
-        \lstinputlisting[language=Kotlin,label={lst:flow-example},caption=Kotlin Flow example]{listings/flow-example.kt}
+        \lstinputlisting[language=Kotlin,label={lst:flow-example},caption=Kotlin Flow example.]{listings/flow-example.kt}
     \end{subfigure}
     \hfill
     \begin{subfigure}[b]{\textwidth}
         \centering
-        \lstinputlisting[label={lst:flow-example-result},caption=Kotlin Flow example result]{listings/flow-example-result.txt}
+        \lstinputlisting[label={lst:flow-example-result},caption=Kotlin Flow example result.]{listings/flow-example-result.txt}
     \end{subfigure}
 \end{figure}
 
