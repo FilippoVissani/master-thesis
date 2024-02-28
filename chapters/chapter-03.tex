@@ -7,11 +7,11 @@
 \label{chap:analysis}
 %----------------------------------------------------------------------------------------
 
-This chapter delves into an in-depth examination of various state-of-the-art frameworks and methodologies in the field. It presents a comprehensive overview of Protelis, ScaFi, FCPP, Collektive, and FRASP, analyzing their respective contributions. Through a comparative lens, this chapter aims to elucidate the evolution of these technologies and their impact on the domain.
+This chapter delves into an in-depth examination of various state-of-the-art frameworks and methodologies in the field. It presents a comprehensive overview of Protelis, ScaFi, FCPP, Collektive, and \ac{frasp}, analyzing their respective contributions. Through a comparative lens, this chapter aims to elucidate the evolution of these technologies and their impact on the domain.
 
-Following the exploration of existing frameworks, the chapter transitions into the detailed design of FRASP and Collektive, shedding light on their architectures.
+Following the exploration of existing frameworks, the chapter transitions into the detailed design of \ac{frasp} and Collektive, shedding light on their architectures.
 
-Furthermore, the chapter delves into the integration of FRASP into Collektive, outlining possible issues and solutions designed to overcome them. In particular, it evaluates the feasibility of reactive aggregate programming in Kotlin, offering valuable perspectives on the integration process and its implications.
+Furthermore, the chapter delves into the integration of \ac{frasp} into Collektive, outlining possible issues and solutions designed to overcome them. In particular, it evaluates the feasibility of reactive aggregate programming in Kotlin, offering valuable perspectives on the integration process and its implications.
 
 \section{State of the Art}
 
@@ -175,18 +175,18 @@ In the \Cref{lst:collektive-gradient}, the implementation of the gradient in Col
 \subsection{FRASP}
 \label{section:frasp}
 
-As said in \Cref{subsection:reactive-and-proactive-models}, aggregate computing makes use of a round-based execution model, that can be defined as proactive. This approach is simple to reason about but limited in terms of flexibility in scheduling and management of sub-activities (and response to contextual changes). In~\cite{Casadei2023} is proposed a reactive self-organization programming approach, called FRASP, that enables the decoupling of the program logic from the scheduling of its sub-activities. This model maintains the same expressiveness and benefits of aggregate programming while enabling significant improvements in terms of scheduling controllability, flexibility in the sensing/actuation model, and execution efficiency.
+As said in \Cref{subsection:reactive-and-proactive-models}, aggregate computing makes use of a round-based execution model, that can be defined as proactive. This approach is simple to reason about but limited in terms of flexibility in scheduling and management of sub-activities (and response to contextual changes). In~\cite{Casadei2023} is proposed a reactive self-organization programming approach, called \ac{frasp}, that enables the decoupling of the program logic from the scheduling of its sub-activities. This model maintains the same expressiveness and benefits of aggregate programming while enabling significant improvements in terms of scheduling controllability, flexibility in the sensing/actuation model, and execution efficiency.
 
 \subsubsection{Reactive Model}
 \label{subsubsection:reactive-model}
-FRASP is based on the functional reactive programming (FRP) paradigm and considers \textit{continuous time}, $Time$ = $\{ t \in \mathbb{R} \, | \, t \geq 0 \}$. Time-varying values are called \textit{cells} and may be conceptually modeled by generic functions of type $Cell$ $a$: $Time \rightarrow a$. Then, \textit{streams} are discrete-time values and may be modeled by generic functions of type $Stream$ $a$: $[Time] \rightarrow [a]$, namely, mapping a sequence of (increasing) sample times to a sequence of corresponding values. While cells model state, streams model state changes.
+\ac{frasp} is based on the functional reactive programming (FRP) paradigm and considers \textit{continuous time}, $Time$ = $\{ t \in \mathbb{R} \, | \, t \geq 0 \}$. Time-varying values are called \textit{cells} and may be conceptually modeled by generic functions of type $Cell$ $a$: $Time \rightarrow a$. Then, \textit{streams} are discrete-time values and may be modeled by generic functions of type $Stream$ $a$: $[Time] \rightarrow [a]$, namely, mapping a sequence of (increasing) sample times to a sequence of corresponding values. While cells model state, streams model state changes.
 
 \subsubsection{Abstractions and Primitives}
 \label{subsubsection:abstractions-and-primitives}
 
 One of the main differences between the proactive and reactive models is that the latter allows the self-organizing collective computation to be expressed as a graph of reactive sub-computations. Each sub-computation is called \textit{flow} and represents it programmatically through type \texttt{Flow[T]}, where \texttt{T} is the type of the output of the wrapped computation. A \texttt{Flow} is essentially a function that takes a \texttt{Context} and returns a cell of \texttt{Export}s, possibly depending on the exports of other \texttt{Flow}s, recursively.
 
-The details of the syntax and semantics of FRASP are discussed in detail in Section III of~\cite{Casadei2023} while in this section they are presented in a simplified manner:
+The details of the syntax and semantics of \ac{frasp} are discussed in detail in Section III of~\cite{Casadei2023} while in this section they are presented in a simplified manner:
 
 \begin{itemize}
     \item \texttt{constant(e)} returns a constant flow that always evaluates to the argument that has been passed;
@@ -200,9 +200,9 @@ The details of the syntax and semantics of FRASP are discussed in detail in Sect
 
 \subsubsection{Gradient Implementation in FRASP}
 
-\Cref{lst:frasp-gradient} provides a representation of a gradient in FRASP. The function takes the Boolean \texttt{src} flow as input, denoting whether the executing node is the source of the gradient or not. The external \texttt{loop} is used to progressively evolve the current gradient value \texttt{distance} starting from an infinite value (as, initially, devices do not know whether a source is reachable). Internally to the loop, \texttt{mux} is used to select one of two values: if the node is a source, then its gradient value is \texttt{0} (base case); otherwise, the gradient should be the minimum value among the neighbors' gradient values augmented by the distance (\texttt{nbrRange}) from that very neighbor. Construct \texttt{liftTwice} is used to combine (using the sum: \_+\_) the two flows \texttt{nbrRange} (distances to neighbors) and \texttt{nbr(distance)} (neighbors' gradient values).
+\Cref{lst:frasp-gradient} provides a representation of a gradient in \ac{frasp}. The function takes the Boolean \texttt{src} flow as input, denoting whether the executing node is the source of the gradient or not. The external \texttt{loop} is used to progressively evolve the current gradient value \texttt{distance} starting from an infinite value (as, initially, devices do not know whether a source is reachable). Internally to the loop, \texttt{mux} is used to select one of two values: if the node is a source, then its gradient value is \texttt{0} (base case); otherwise, the gradient should be the minimum value among the neighbors' gradient values augmented by the distance (\texttt{nbrRange}) from that very neighbor. Construct \texttt{liftTwice} is used to combine (using the sum: \_+\_) the two flows \texttt{nbrRange} (distances to neighbors) and \texttt{nbr(distance)} (neighbors' gradient values).
 
-\lstinputlisting[float,label={lst:frasp-gradient},language=scala,caption=Gradient implementation in FRASP.]{listings/frasp-gradient.scala}
+\lstinputlisting[float,label={lst:frasp-gradient},language=scala,caption=Gradient implementation in \ac{frasp}.]{listings/frasp-gradient.scala}
 
 The reactive dataflow graph in \Cref{fig:gradient-dependencies} corresponds to \Cref{lst:frasp-gradient}. \Cref{fig:gradient-dependencies} provides the local view of the computation for a single node (where the layers denote different semantic kinds of dependencies), whereas \Cref{fig:gradient-dependencies-distributed} shows the distributed dependency graph. The arrows denote dependencies. The dashed arrows denote dependencies based on platform-level scheduling and node interaction; for instance, a red block depends on changes corresponding to neighbors' red blocks and is communicated via message passing.
 
@@ -229,24 +229,24 @@ The reactive dataflow graph in \Cref{fig:gradient-dependencies} corresponds to \
 
 \subsection{Architecture}
 
-The architecture of FRASP is shown in \Cref{fig:frasp-architecture}. The design is organized into three packages: \texttt{core}, which includes basic type definitions (\texttt{Core}) as well as the components for the \ac{dsl} (\texttt{Language} for primitives and \texttt{RichLanguage} for other built-ins) and its ``virtual machine" (\texttt{Semantics}), overall captured by an \texttt{Incarnation}; \texttt{frp}, which provides an interface to the FRP engine (\texttt{FrpEngine}), possibly also decoupling from the specific FRP library adopted, as well as extensions (\texttt{FrpExtensions}) useful for the definition of FRASP constructs; and simulation, which provides basic simulation support.
+The architecture of \ac{frasp} is shown in \Cref{fig:frasp-architecture}. The design is organized into three packages: \texttt{core}, which includes basic type definitions (\texttt{Core}) as well as the components for the \ac{dsl} (\texttt{Language} for primitives and \texttt{RichLanguage} for other built-ins) and its ``virtual machine" (\texttt{Semantics}), overall captured by an \texttt{Incarnation}; \texttt{frp}, which provides an interface to the FRP engine (\texttt{FrpEngine}), possibly also decoupling from the specific FRP library adopted, as well as extensions (\texttt{FrpExtensions}) useful for the definition of \ac{frasp} constructs; and simulation, which provides basic simulation support.
 
 \begin{figure}
     \centering
     \includegraphics[width=\linewidth]{figures/FRASP-architecture.png}
-    \caption{FRASP architecture.}
+    \caption{\ac{frasp} architecture.}
     \label{fig:frasp-architecture}
 \end{figure}
 
 \subsection{Detailed Design}
 
-FRASP has been implemented in Scala, using Sodium as FRP library. Scala is well known for its suitability as a host for embedded \ac{dsl}s, and for aggregate computing embeddings as well. The design of the FRASP \ac{dsl} is
+\ac{frasp} has been implemented in Scala, using Sodium as FRP library. Scala is well known for its suitability as a host for embedded \ac{dsl}s, and for aggregate computing embeddings as well. The design of the \ac{frasp} \ac{dsl} is
 detailed in \Cref{fig:frasp-design}. Following the system/execution model described in \Cref{section:frasp}, the input and output of a (sub-)program are modeled through an interface \texttt{Context}, providing access to local sensor data and neighbor data; and an interface \texttt{Export}, capturing outputs and data that must be shared with neighbors. In particular, an \texttt{Export} is modeled as a tree where each node is a \texttt{Slot} (corresponding to a particular language construct) with an associated value, and can be located through a path of slots—e.g., \texttt{S1/S2/S3} identifies a node in the export tree, where \texttt{S1} depends on \texttt{S2} which depends in turn on \texttt{S3} (so, a change in the output \texttt{S3} will cause the expression corresponding to \texttt{S2} to re-evaluate, and possibly \texttt{S1} in turn). \texttt{Flow} is the type of a reactive (sub-)computation, which takes a \texttt{Context} (providing its inputs), a \texttt{Seq[Slot]} as path (indicating its position in the export tree), and returns \texttt{Cell} (i.e. a time-varying value) of \texttt{Export}. Each \texttt{Language} construct returns a \texttt{Flow}: therefore, the constructs do not immediately run upon evaluation, but rather an executable, reactive object denoting a computation graph whose nodes will execute as a response to change (\Cref{fig:gradient-dependencies}). Access to neighbor-related data is mediated by a \texttt{NeighborField} abstraction, which is the same provided by constructs supporting interaction with neighbors, i.e., \texttt{nbr} and \texttt{nbrSensor} 
 
 \begin{figure}
     \centering
     \includegraphics[width=\linewidth]{figures/FRASP-design.pdf}
-    \caption{Detailed design of FRASP.}
+    \caption{Detailed design of \ac{frasp}.}
     \label{fig:frasp-design}
 \end{figure}
 
@@ -310,14 +310,14 @@ The alignment processing pursues the following strategy: in the first instance a
 
 \section{Integration of FRASP in Collektive}
 
-Given the considerations regarding the proactive computational model made in \Cref{subsection:reactive-and-proactive-models} and the solution proposed in~\cite{Casadei2023} with the related results of the evaluations performed, it is decided to introduce the FRASP model in Collektive.
-Analysis of the architectures of FRASP and Collektive, defined in \Cref{section:design-of-frasp} and \Cref{section:design-of-collektive}, respectively, reveals substantial differences in technology and design choices. This considerably complicates the process of integrating the reactive model into Collektive. The possible issues identified during the analysis are described in \Cref{subsection:integration-problems}.
+Given the considerations regarding the proactive computational model made in \Cref{subsection:reactive-and-proactive-models} and the solution proposed in~\cite{Casadei2023} with the related results of the evaluations performed, it is decided to introduce the \ac{frasp} model in Collektive.
+Analysis of the architectures of \ac{frasp} and Collektive, defined in \Cref{section:design-of-frasp} and \Cref{section:design-of-collektive}, respectively, reveals substantial differences in technology and design choices. This considerably complicates the process of integrating the reactive model into Collektive. The possible issues identified during the analysis are described in \Cref{subsection:integration-problems}.
 
 \subsection{Integration Problems}
 \label{subsection:integration-problems}
 
 \subsubsection{Differences between Scala and Kotlin}
-The Scala implementation of FRASP is extremely concise, even though it models several aspects of aggregate programming. In addition, the \ac{dsl} provided is particularly ergonomic, so the user can create aggregate programs easily and effectively. These characteristics of FRASP are due in part to the flexibility of Scala, which is given by the constructs that the language implements. The following are some Scala features that are used in FRASP but are not available by Kotlin:
+The Scala implementation of \ac{frasp} is extremely concise, even though it models several aspects of aggregate programming. In addition, the \ac{dsl} provided is particularly ergonomic, so the user can create aggregate programs easily and effectively. These characteristics of \ac{frasp} are due in part to the flexibility of Scala, which is given by the constructs that the language implements. The following are some Scala features that are used in \ac{frasp} but are not available by Kotlin:
 
 \begin{itemize}
     \item \textbf{Given instances and using clauses}: Functional programming tends to express most dependencies as simple function parameterization. This is clean and powerful, but it sometimes leads to functions that take many parameters where the same value is passed over and over again in long call chains to many functions. Context parameters can help here since they enable the compiler to synthesize repetitive arguments instead of the programmer having to write them explicitly. Given instances define ``canonical" values of certain types that serve for synthesizing arguments to context parameters.
@@ -327,11 +327,11 @@ The Scala implementation of FRASP is extremely concise, even though it models se
 \subsubsection{Differences in Paths and Exports Management}
 
 Typically, in aggregate computing implementations that respect the proactive model, paths are modeled as lists of tokens, while exports are represented by making use of maps that have the path as the key and the result of evaluating the sub-expression related to the path as the value.
-In FRASP, these entities are represented in a completely different way; this is due to the need to properly model the dependencies of reactive sub-expressions. In particular, an export is modeled as a tree (using a specially defined data structure) where each node is a token with an associated value and can be located through a path of tokens.
+In \ac{frasp}, these entities are represented in a completely different way; this is due to the need to properly model the dependencies of reactive sub-expressions. In particular, an export is modeled as a tree (using a specially defined data structure) where each node is a token with an associated value and can be located through a path of tokens.
 
 \subsubsection{Diversity of Implemented Constructs}
 
-FRASP implements a reactive version of the constructs defined by the field calculus, this allows a sub-expression to be automatically re-evaluated as one of the sub-expressions on which it depends changes. On the other hand, in addition to the field calculus constructs, Collektive implements a proactive version of \texttt{exchange} and \texttt{share}, so a reactive version of these two constructs must be provided.
+\ac{frasp} implements a reactive version of the constructs defined by the field calculus, this allows a sub-expression to be automatically re-evaluated as one of the sub-expressions on which it depends changes. On the other hand, in addition to the field calculus constructs, Collektive implements a proactive version of \texttt{exchange} and \texttt{share}, so a reactive version of these two constructs must be provided.
 
 \subsubsection{Divergences between Reactive and Proactive Models}
 
@@ -340,9 +340,9 @@ In the proactive model, at each round, the aggregate expression is reevaluated e
 \subsection{Feasibility of Reactive Aggregate Programming in Kotlin}
 \label{subsection:Feasibility-Reactive-Aggregate-Programming}
 
-Even before addressing the problems presented in \Cref{subsection:integration-problems}, it is necessary to understand whether it is possible to create a Kotlin version of FRASP and, if so, analyze the similarities and differences with the model implemented in Scala, considering, in particular, the ergonomics of the \ac{dsl}. In this regard, an implementation of FRASP in Kotlin that makes use of the Flow library is proposed in the analysis phase to demonstrate the actual feasibility. Reactive values are modeled by making use of \texttt{StateFlow<T>}, whose behavior is similar to that of a \texttt{Cell}, described in \Cref{subsubsection:reactive-model}.
+Even before addressing the problems presented in \Cref{subsection:integration-problems}, it is necessary to understand whether it is possible to create a Kotlin version of \ac{frasp} and, if so, analyze the similarities and differences with the model implemented in Scala, considering, in particular, the ergonomics of the \ac{dsl}. In this regard, an implementation of \ac{frasp} in Kotlin that makes use of the Flow library is proposed in the analysis phase to demonstrate the actual feasibility. Reactive values are modeled by making use of \texttt{StateFlow<T>}, whose behavior is similar to that of a \texttt{Cell}, described in \Cref{subsubsection:reactive-model}.
 
-\Cref{fig:kotlin-distributed-frp-design} shows the design of the Kotlin version of FRASP. The implementation\footnote{\url{https://github.com/FilippoVissani/kotlin-distributed-frp}} includes only the subset of features from the Scala version of FRASP needed to demonstrate the feasibility of reactive aggregate programming. An aggregate expression is represented by a dedicated data structure (\texttt{AggregateExpression}) that produces a \texttt{StateFlow<ExportTree<T>>}, its behavior is similar to \texttt{Flow[T]} described in \Cref{subsubsection:abstractions-and-primitives}. The context of a device (\texttt{Context}) includes neighboring states, self ID and the state of the local sensors. Exports are modeled through a tree-like recursive data structure (\texttt{ExportTree}) holding data of type \texttt{T}. It exposes methods for accessing the \texttt{children} and the \texttt{root} element of a node and navigating through the tree using a \texttt{path}. \texttt{Semantics} implements field calculus functions (plus others useful in the reactive context) for constructing an \texttt{AggregateExpression}. These functions include \texttt{branch}, \texttt{constant}, \texttt{loop}, \texttt{mux}, \texttt{neighbor}, \texttt{selfID}, and \texttt{sense}. The enum \texttt{Slot} defines different types of tokens used within the \texttt{ExportTree} structure.
+\Cref{fig:kotlin-distributed-frp-design} shows the design of the Kotlin version of \ac{frasp}. The implementation\footnote{\url{https://github.com/FilippoVissani/kotlin-distributed-frp}} includes only the subset of features from the Scala version of \ac{frasp} needed to demonstrate the feasibility of reactive aggregate programming. An aggregate expression is represented by a dedicated data structure (\texttt{AggregateExpression}) that produces a \texttt{StateFlow<ExportTree<T>>}, its behavior is similar to \texttt{Flow[T]} described in \Cref{subsubsection:abstractions-and-primitives}. The context of a device (\texttt{Context}) includes neighboring states, self ID and the state of the local sensors. Exports are modeled through a tree-like recursive data structure (\texttt{ExportTree}) holding data of type \texttt{T}. It exposes methods for accessing the \texttt{children} and the \texttt{root} element of a node and navigating through the tree using a \texttt{path}. \texttt{Semantics} implements field calculus functions (plus others useful in the reactive context) for constructing an \texttt{AggregateExpression}. These functions include \texttt{branch}, \texttt{constant}, \texttt{loop}, \texttt{mux}, \texttt{neighbor}, \texttt{selfID}, and \texttt{sense}. The enum \texttt{Slot} defines different types of tokens used within the \texttt{ExportTree} structure.
 
 Given the proposed design in \Cref{fig:kotlin-distributed-frp-design} and its implementation, to demonstrate the ergonomics of the related \ac{dsl}, the implementation of the gradient is provided in \Cref{lst:kotlin-distributed-frp-gradient}. The results obtained demonstrate the actual feasibility of the solution, not only that, the \ac{dsl} appears ergonomic and easy to use, just like the one proposed in Scala (\Cref{lst:frasp-gradient}).
 
@@ -358,11 +358,11 @@ Given the proposed design in \Cref{fig:kotlin-distributed-frp-design} and its im
 \subsection{Integration Solutions Identified}
 \label{subsection:integration-solutions-identified}
 
-The main goal is to introduce the reactive paradigm into Collektive, replacing it with the proactive one. At the same time, we want to make sure that the resulting DSL is ergonomic and thus it is easy for the user to understand and use it. It should be noted that, given the diversity of the two architectures, it is not possible to integrate FRASP directly into Collektive, so an intermediate solution must be identified.
+The main goal is to introduce the reactive paradigm into Collektive, replacing it with the proactive one. At the same time, we want to make sure that the resulting DSL is ergonomic and thus it is easy for the user to understand and use it. It should be noted that, given the diversity of the two architectures, it is not possible to integrate \ac{frasp} directly into Collektive, so an intermediate solution must be identified.
 
 Given the results obtained from the analysis reported in \Cref{subsection:Feasibility-Reactive-Aggregate-Programming} and taking into consideration the possible integration issues identified in \Cref{subsection:integration-problems}, we identify two possible solutions for integrating the reactive paradigm into Collektive:
 
 \begin{itemize}
-    \item \textbf{Model with reactive messages and sensors}: it consists of building the reactive model on top of the proactive one. This can be achieved by making the messages and sensors reactive; every time the value of one of these is changed the expression is re-evaluated entirely, executing a round. This solution has the advantage that the Collektive DSL remains identical to the current one. On the other hand, it is not possible to exploit the partial updates of the sub-expressions proposed in FRASP, this translates into lower efficiency.
-    \item \textbf{Purely reactive model}: it consists of re-engineering all aggregate constructs and context definitions in Collektive to be reactive. In this case, important changes must be made to the current architecture of Collektive, making the implementation more complicated than the first solution. Furthermore, it is not possible to guarantee the ergonomics of the resulting DSL, as the definition of the aggregate constructs needs to be revised. The advantage of this solution is that, as in FRASP, it is possible to model the dependencies of the sub-expressions so that the latter can be updated only when necessary.
+    \item \textbf{Model with reactive messages and sensors}: it consists of building the reactive model on top of the proactive one. This can be achieved by making the messages and sensors reactive; every time the value of one of these is changed the expression is re-evaluated entirely, executing a round. This solution has the advantage that the Collektive DSL remains identical to the current one. On the other hand, it is not possible to exploit the partial updates of the sub-expressions proposed in \ac{frasp}, this translates into lower efficiency.
+    \item \textbf{Purely reactive model}: it consists of re-engineering all aggregate constructs and context definitions in Collektive to be reactive. In this case, important changes must be made to the current architecture of Collektive, making the implementation more complicated than the first solution. Furthermore, it is not possible to guarantee the ergonomics of the resulting DSL, as the definition of the aggregate constructs needs to be revised. The advantage of this solution is that, as in \ac{frasp}, it is possible to model the dependencies of the sub-expressions so that the latter can be updated only when necessary.
 \end{itemize}
