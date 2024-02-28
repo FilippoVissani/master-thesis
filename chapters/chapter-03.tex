@@ -241,7 +241,7 @@ The architecture of \ac{frasp} is shown in \Cref{fig:frasp-architecture}. The de
 \subsection{Detailed Design}
 
 \ac{frasp} has been implemented in Scala, using Sodium as FRP library. Scala is well known for its suitability as a host for embedded \ac{dsl}s, and for aggregate computing embeddings as well. The design of the \ac{frasp} \ac{dsl} is
-detailed in \Cref{fig:frasp-design}. Following the system/execution model described in \Cref{section:frasp}, the input and output of a (sub-)program are modeled through an interface \texttt{Context}, providing access to local sensor data and neighbor data; and an interface \texttt{Export}, capturing outputs and data that must be shared with neighbors. In particular, an \texttt{Export} is modeled as a tree where each node is a \texttt{Slot} (corresponding to a particular language construct) with an associated value, and can be located through a path of slots—e.g., \texttt{S1/S2/S3} identifies a node in the export tree, where \texttt{S1} depends on \texttt{S2} which depends in turn on \texttt{S3} (so, a change in the output \texttt{S3} will cause the expression corresponding to \texttt{S2} to re-evaluate, and possibly \texttt{S1} in turn). \texttt{Flow} is the type of a reactive (sub-)computation, which takes a \texttt{Context} (providing its inputs), a \texttt{Seq[Slot]} as path (indicating its position in the export tree), and returns \texttt{Cell} (i.e. a time-varying value) of \texttt{Export}. Each \texttt{Language} construct returns a \texttt{Flow}: therefore, the constructs do not immediately run upon evaluation, but rather an executable, reactive object denoting a computation graph whose nodes will execute as a response to change (\Cref{fig:gradient-dependencies}). Access to neighbor-related data is mediated by a \texttt{NeighborField} abstraction, which is the same provided by constructs supporting interaction with neighbors, i.e., \texttt{nbr} and \texttt{nbrSensor} 
+detailed in \Cref{fig:frasp-design}. Following the system/execution model described in \Cref{section:frasp}, the input and output of a (sub-)program are modeled through an interface \texttt{Context}, providing access to local sensor data and neighbor data; and an interface \texttt{Export}, capturing outputs and data that must be shared with neighbors. In particular, an \texttt{Export} is modeled as a tree where each node is a \texttt{Slot} (corresponding to a particular language construct) with an associated value, and can be located through a path of slots—e.g., \texttt{S1/S2/S3} identifies a node in the export tree, where \texttt{S1} depends on \texttt{S2} which depends in turn on \texttt{S3} (so, a change in the output \texttt{S3} will cause the expression corresponding to \texttt{S2} to re-evaluate, and possibly \texttt{S1} in turn). \texttt{Flow} is the type of a reactive (sub-)computation, which takes a \texttt{Context} (providing its inputs), a \texttt{Seq[Slot]} as path (indicating its position in the export tree), and returns \texttt{Cell} (i.e. a time-varying value) of \texttt{Export}. Each \texttt{Language} construct returns a \texttt{Flow}: therefore, the constructs do not immediately run upon evaluation, but rather an executable, reactive object denoting a computation graph whose nodes will execute as a response to change (\Cref{fig:gradient-dependencies}). Access to neighbor-related data is mediated by a \texttt{NeighborField} abstraction, which is the same provided by constructs supporting interaction with neighbors, i.e., \texttt{nbr} and \texttt{nbrSensor}.
 
 \begin{figure}
     \centering
@@ -260,10 +260,10 @@ Collektive has been developed as a Gradle project composed of three different su
 
 \begin{itemize}
     \item \texttt{plugin}, that is divided into two submodules:
-    \begin{itemize}
-        \item \texttt{gradle-plugin}: the necessary plugin used by a gradle project to include the compiler plugin.
-        \item \texttt{compiler-plugin}: the compiler plugin is used to modify the data structure which is responsible for keeping track of the stack at runtime. For each aggregate function and branch construct, the stack data structure is updated to allow alignment whenever necessary.
-    \end{itemize}
+          \begin{itemize}
+              \item \texttt{gradle-plugin}: the necessary plugin used by a gradle project to include the compiler plugin.
+              \item \texttt{compiler-plugin}: the compiler plugin is used to modify the data structure which is responsible for keeping track of the stack at runtime. For each aggregate function and branch construct, the stack data structure is updated to allow alignment whenever necessary.
+          \end{itemize}
     \item \texttt{dsl}: the actual DSL implementation in Kotlin Multiplatform, where the logic is implemented and that exposes the operators of the aggregate computing.
     \item \texttt{alchemist-incarnation-collektive}: Allows to integrate Collektive simulations in the Alchemist~\cite{Pianini2013} simulator.
 \end{itemize}
@@ -300,11 +300,11 @@ The alignment processing pursues the following strategy: in the first instance a
 
 \begin{enumerate}
     \item Each function definition exhibiting the following characteristics is the target of the alignment processing:
-    \begin{itemize}
-        \item The function has an \texttt{extensionReceiver} of type \texttt{Aggregate} or a subtype of it.
-        \item The function has a \texttt{dispatchReceiver} of type \texttt{Aggregate} or a subtype of it.
-        \item One or more of the function's parameters are of type \texttt{Aggregate} or a subtype of it.
-    \end{itemize}
+          \begin{itemize}
+              \item The function has an \texttt{extensionReceiver} of type \texttt{Aggregate} or a subtype of it.
+              \item The function has a \texttt{dispatchReceiver} of type \texttt{Aggregate} or a subtype of it.
+              \item One or more of the function's parameters are of type \texttt{Aggregate} or a subtype of it.
+          \end{itemize}
     \item For each candidate function, it aligns the call expressions having an aggregate reference or in-depth they involve an aggregate computation.
 \end{enumerate}
 

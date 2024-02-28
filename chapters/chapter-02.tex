@@ -174,17 +174,17 @@ The concept of field calculus was introduced in~\cite{Viroli2013} as a fundament
 \begin{itemize}
     \item a \textit{field calculus program} $\texttt{P}$ consists of a sequence of \textit{function declarations} $\bar{\texttt{F}}$ followed by the \textit{main expression} $\texttt{e}$;
     \item an expression $\texttt{e}$ can be:
-    \begin{itemize}
-        \item a \textit{variable} $\texttt{x}$, e.g., a function parameter;
-        \item a \textit{local value} $l$, such as a Boolean, number, string, pair, tuple, etc;
-        \item a \textit{neighboring field value} $\phi$, e.g., a map of
-        neighbors to the distances to those neighbors;
-        \item a \textit{function call} $\texttt{f}(\bar{\texttt{e}})$ to a \textit{user-declared function} or a \textit{built-in function}, such
-        as a mathematical or logical operator, a data structure operation, or a function returning the value of a sensor;
-        \item a \textit{branching expression} $\texttt{if} (\texttt{e}_1)\{\texttt{e}_2\}\{\texttt{e}_3\}$ which splits computation into isolated sub-regions, resulting in $\texttt{e}_2$ where and when $\texttt{e}_1$ evaluates to true, and in $\texttt{e}_3$ otherwise;
-        \item a $\texttt{nbr}(\texttt{e})$ construct, which creates a neighboring field value that maps each neighbor to the latest result of evaluating $\texttt{e}$;
-        \item a $\texttt{rep}(\texttt{e}_1)\{(\texttt{x})\Rightarrow \texttt{e}_2\}$ construct, which models state evolution over time.
-    \end{itemize}
+          \begin{itemize}
+              \item a \textit{variable} $\texttt{x}$, e.g., a function parameter;
+              \item a \textit{local value} $l$, such as a Boolean, number, string, pair, tuple, etc;
+              \item a \textit{neighboring field value} $\phi$, e.g., a map of
+                    neighbors to the distances to those neighbors;
+              \item a \textit{function call} $\texttt{f}(\bar{\texttt{e}})$ to a \textit{user-declared function} or a \textit{built-in function}, such
+                    as a mathematical or logical operator, a data structure operation, or a function returning the value of a sensor;
+              \item a \textit{branching expression} $\texttt{if} (\texttt{e}_1)\{\texttt{e}_2\}\{\texttt{e}_3\}$ which splits computation into isolated sub-regions, resulting in $\texttt{e}_2$ where and when $\texttt{e}_1$ evaluates to true, and in $\texttt{e}_3$ otherwise;
+              \item a $\texttt{nbr}(\texttt{e})$ construct, which creates a neighboring field value that maps each neighbor to the latest result of evaluating $\texttt{e}$;
+              \item a $\texttt{rep}(\texttt{e}_1)\{(\texttt{x})\Rightarrow \texttt{e}_2\}$ construct, which models state evolution over time.
+          \end{itemize}
 \end{itemize}
 
 To work properly, the semantics of \texttt{nbr} and \texttt{rep} require a way to access, respectively, the last registered state of each neighbor and the last registered output of the device itself. In addition, this process should be made in such a way that different instances of \texttt{rep} and \texttt{nbr} cannot inadvertently ``swap" their respective value. This process is called \textit{alignment}, and it has the consequence that two branches of an \texttt{if} expression execute in isolation, meaning that two devices that execute different branches cannot communicate with each other inside their branches. In practice, this process is done by carefully constructing the export of an expression as an \textit{evaluation tree} that represents the aggregate computation. The complete semantics of export construction and alignment can be found in Appendix C of~\cite{Viroli2018}.
@@ -192,7 +192,7 @@ To work properly, the semantics of \texttt{nbr} and \texttt{rep} require a way t
 \subsection{Reactive and Proactive Models}
 \label{subsection:reactive-and-proactive-models}
 
-Aggregate computing emerged as a prominent approach for programming self-organization, with the benefits of formality, abstraction, compositionality, and pragmatism. Formality stems from building the approach over field calculus with well-defined language semantics. 
+Aggregate computing emerged as a prominent approach for programming self-organization, with the benefits of formality, abstraction, compositionality, and pragmatism. Formality stems from building the approach over field calculus with well-defined language semantics.
 
 Though conceptually simple, in the round-based model, discussed in~\cite{Viroli2018}, each round of a device is alternated with some sleeping time during which it collects information from neighboring devices. This way of managing computation can be thought of as a \textit{proactive model} since it is the device that decides when computation should occur based on its internal scheduler.
 
