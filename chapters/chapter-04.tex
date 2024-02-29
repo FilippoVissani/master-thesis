@@ -18,13 +18,17 @@ Following the architectural overview, the chapter dives into the detailed design
 
 As mentioned in \Cref{subsection:collektive-architecture}, Collektive consists of three main modules:
 
-\begin{itemize}
-    \item \texttt{dsl}
-    \item \texttt{compiler-plugin}
-    \item \texttt{alchemist-incarnation-collektive}
-\end{itemize}
+\paragraph{alchemist-incarnation-collektive}
 
-\texttt{alchemist-incarnation-collektive} is responsible for enabling the integration of Collektive simulations into Alchemist. The \texttt{compiler-plugin} takes care of visiting the abstract syntax tree of the aggregate expression and modifying the function call stack to correctly align the devices that execute the aggregate program. The \texttt{dsl} module defines the following components:
+It is responsible for enabling the integration of Collektive simulations into Alchemist.
+
+\paragraph{compiler-plugin}
+
+It takes care of visiting the abstract syntax tree of the aggregate expression and modifying the function call stack to correctly align the devices that execute the aggregate program.
+
+\paragraph{dsl}
+
+This module defines the following components:
 \begin{itemize}
     \item \texttt{aggregate}: deals with defining the context related to a device, the semantics of aggregate constructs, and the data structures necessary for path definition and device alignment;
     \item \texttt{field}: Contains the definition of computational field and the related functionalities for manipulating the latter;
