@@ -124,7 +124,7 @@ If a node is not a source, then will take as its gradient value the output of th
 
 \subsection{FCPP}
 
-FCPP~\cite{Audrito2020} is a C++14 library implementing Field Calculus and providing tools for distributed system simulation.
+FCPP~\cite{Audrito2020} is a C++14 library implementing field calculus and providing tools for distributed system simulation.
 
 Its extensible component-based architecture allows customization for diverse application scenarios, such as Internet-of-Things (IoT) deployments, simulations, and self-organizing cloud applications. Users can add components tailored to specific functionalities, enhancing flexibility and applicability. The library incorporates compile-time optimizations and supports parallel execution, enabling efficient simulation of both systems and self-organizing cloud applications. Currently, FCPP focuses on distributed system simulations but already significantly reduces simulation costs, accelerating the development of new distributed algorithms. These features offer a path for a convenient extension to address previously ineffective scenarios:
 
@@ -264,7 +264,7 @@ Collektive has been developed as a Gradle project composed of three different su
               \item \texttt{gradle-plugin}: the necessary plugin used by a gradle project to include the compiler plugin.
               \item \texttt{compiler-plugin}: the compiler plugin is used to modify the data structure which is responsible for keeping track of the stack at runtime. For each aggregate function and branch construct, the stack data structure is updated to allow alignment whenever necessary.
           \end{itemize}
-    \item \texttt{dsl}: the actual DSL implementation in Kotlin Multiplatform, where the logic is implemented and that exposes the operators of the aggregate computing.
+    \item \texttt{dsl}: the actual \ac{dsl} implementation in Kotlin Multiplatform, where the logic is implemented and that exposes the operators of the aggregate computing.
     \item \texttt{alchemist-incarnation-collektive}: Allows to integrate Collektive simulations in the Alchemist~\cite{Pianini2013} simulator.
 \end{itemize}
 
@@ -290,7 +290,7 @@ The \texttt{alignOn} function is used for the alignment, it pushes in the stack 
 \begin{figure}
     \centering
     \includegraphics[width=\linewidth]{figures/collektive-design.pdf}
-    \caption{Detailed design of Collektive DSL.}
+    \caption{Detailed design of Collektive \ac{dsl}.}
     \label{fig:collektive-design}
 \end{figure}
 
@@ -359,11 +359,11 @@ Given the proposed design in \Cref{fig:kotlin-distributed-frp-design} and its im
 \subsection{Integration Solutions Identified}
 \label{subsection:integration-solutions-identified}
 
-The main goal is to introduce the reactive paradigm into Collektive, replacing it with the proactive one. At the same time, we want to make sure that the resulting DSL is ergonomic and thus it is easy for the user to understand and use it. It should be noted that, given the diversity of the two architectures, it is not possible to integrate \ac{frasp} directly into Collektive, so an intermediate solution must be identified.
+The main goal is to introduce the reactive paradigm into Collektive, replacing it with the proactive one. At the same time, we want to make sure that the resulting \ac{dsl} is ergonomic and thus it is easy for the user to understand and use it. It should be noted that, given the diversity of the two architectures, it is not possible to integrate \ac{frasp} directly into Collektive, so an intermediate solution must be identified.
 
 Given the results obtained from the analysis reported in \Cref{subsection:Feasibility-Reactive-Aggregate-Programming} and taking into consideration the possible integration issues identified in \Cref{subsection:integration-problems}, we identify two possible solutions for integrating the reactive paradigm into Collektive:
 
 \begin{itemize}
-    \item \textbf{Model with reactive messages and sensors}: it consists of building the reactive model on top of the proactive one. This can be achieved by making the messages and sensors reactive; every time the value of one of these is changed the expression is re-evaluated entirely, executing a round. This solution has the advantage that the Collektive DSL remains identical to the current one. On the other hand, it is not possible to exploit the partial updates of the sub-expressions proposed in \ac{frasp}, this translates into lower efficiency.
-    \item \textbf{Purely reactive model}: it consists of re-engineering all aggregate constructs and context definitions in Collektive to be reactive. In this case, important changes must be made to the current architecture of Collektive, making the implementation more complicated than the first solution. Furthermore, it is not possible to guarantee the ergonomics of the resulting DSL, as the definition of the aggregate constructs needs to be revised. The advantage of this solution is that, as in \ac{frasp}, it is possible to model the dependencies of the sub-expressions so that the latter can be updated only when necessary.
+    \item \textbf{Model with reactive messages and sensors}: it consists of building the reactive model on top of the proactive one. This can be achieved by making the messages and sensors reactive; every time the value of one of these is changed the expression is re-evaluated entirely, executing a round. This solution has the advantage that the Collektive \ac{dsl} remains identical to the current one. On the other hand, it is not possible to exploit the partial updates of the sub-expressions proposed in \ac{frasp}, this translates into lower efficiency.
+    \item \textbf{Purely reactive model}: it consists of re-engineering all aggregate constructs and context definitions in Collektive to be reactive. In this case, important changes must be made to the current architecture of Collektive, making the implementation more complicated than the first solution. Furthermore, it is not possible to guarantee the ergonomics of the resulting \ac{dsl}, as the definition of the aggregate constructs needs to be revised. The advantage of this solution is that, as in \ac{frasp}, it is possible to model the dependencies of the sub-expressions so that the latter can be updated only when necessary.
 \end{itemize}
