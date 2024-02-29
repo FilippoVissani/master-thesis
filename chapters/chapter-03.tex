@@ -7,13 +7,14 @@
 \label{chap:analysis}
 %----------------------------------------------------------------------------------------
 
-This chapter delves into an in-depth examination of various state-of-the-art frameworks and methodologies in the field. It presents a comprehensive overview of Protelis, ScaFi, FCPP, Collektive, and \ac{frasp}, analyzing their respective contributions. Through a comparative lens, this chapter aims to elucidate the evolution of these technologies and their impact on the domain.
+This chapter delves into an in-depth examination of various state-of-the-art frameworks and methodologies in the field (\Cref{section:state-of-the-art}). It presents a comprehensive overview of Protelis, ScaFi, FCPP, Collektive, and \ac{frasp}, analyzing their respective contributions. Through a comparative lens, this chapter aims to elucidate the evolution of these technologies and their impact on the domain.
 
-Following the exploration of existing frameworks, the chapter transitions into the detailed design of \ac{frasp} and Collektive, shedding light on their architectures.
+Following the exploration of existing frameworks, the chapter transitions into the analysis of \ac{frasp} (\Cref{section:design-of-frasp}) and Collektive (\Cref{section:design-of-collektive}), shedding light on their architecture and detailed design.
 
-Furthermore, the chapter delves into the integration of \ac{frasp} into Collektive, outlining possible issues and solutions designed to overcome them. In particular, it evaluates the feasibility of reactive aggregate programming in Kotlin, offering valuable perspectives on the integration process and its implications.
+Furthermore, the chapter delves into the integration of \ac{frasp} into Collektive (\Cref{section:integration-frasp-collektive}), outlining possible issues and solutions designed to overcome them. In particular, it evaluates the feasibility of reactive aggregate programming in Kotlin, offering valuable perspectives on the integration process and its implications.
 
 \section{State of the Art}
+\label{section:state-of-the-art}
 
 \subsection{Protelis}
 
@@ -36,13 +37,7 @@ In large public events, it can be challenging to meet with companions due to cro
 
 Utilizing peer-to-peer geometric calculations across a network of devices to compute a \textit{rendezvous}\footnote{A meeting at an agreed time and place.} route is the proposed solution to the problem. The solution is demonstrated in a simulated city center environment (\Cref{fig:protelis-example-map}), using London as an example, with devices distributed randomly across the city streets. Each device has a communication range, and the goal is for two individuals (represented by their devices) to meet at a specific location.
 
-The implementation (\Cref{lst:protelis-example}) involves injecting the environment of the devices with properties representing their owners (e.g., "Alice" and "Bob"). The algorithm measures the distance to one of the participants, creates a potential field, and builds an optimal path from the other participant, descending the distance potential field to reach the first participant at zero distance. The algorithm utilizes two main functions: \texttt{distanceTo} and \texttt{descend}. \texttt{distanceTo} measures the distance to one of the participants. Given a device and a potential field, \texttt{descend} builds a path of devices connecting the device with the source of the potential field. The algorithm elegantly compresses the entire process into a few lines of code, utilizing the \texttt{nbr} operator to exchange required information without explicitly declaring any communication protocol.
-
-As \Cref{fig:protelis-example-map} shows, the simulation rapidly identifies a chain of devices (represented by red dots) that marks a sequence of waypoints for both device owners to walk and meet in the middle. The algorithm dynamically adjusts the path if one of the device owners moves in a different direction, ensuring it continues to recommend the best path for rendezvous.
-
-\lstinputlisting[float,label={lst:protelis-example},caption=Rendezvous implementation in Protelis.]{listings/protelis-example.txt}
-
-\begin{figure}
+\begin{figure}[ht!]
     \centering
     \begin{subfigure}[b]{.49\textwidth}
         \centering
@@ -75,6 +70,11 @@ As \Cref{fig:protelis-example-map} shows, the simulation rapidly identifies a ch
     \label{fig:protelis-example-map}
 \end{figure}
 
+The implementation (\Cref{lst:protelis-example}) involves injecting the environment of the devices with properties representing their owners (e.g., "Alice" and "Bob"). The algorithm measures the distance to one of the participants, creates a potential field, and builds an optimal path from the other participant, descending the distance potential field to reach the first participant at zero distance. The algorithm utilizes two main functions: \texttt{distanceTo} and \texttt{descend}. \texttt{distanceTo} measures the distance to one of the participants. Given a device and a potential field, \texttt{descend} builds a path of devices connecting the device with the source of the potential field. The algorithm elegantly compresses the entire process into a few lines of code, utilizing the \texttt{nbr} operator to exchange required information without explicitly declaring any communication protocol.
+
+\lstinputlisting[float,label={lst:protelis-example},caption=Rendezvous implementation in Protelis.]{listings/protelis-example.txt}
+
+As \Cref{fig:protelis-example-map} shows, the simulation rapidly identifies a chain of devices (represented by red dots) that marks a sequence of waypoints for both device owners to walk and meet in the middle. The algorithm dynamically adjusts the path if one of the device owners moves in a different direction, ensuring it continues to recommend the best path for rendezvous.
 
 \subsection{ScaFi}
 
@@ -309,6 +309,7 @@ The alignment processing pursues the following strategy: in the first instance a
 \end{enumerate}
 
 \section{Integration of FRASP in Collektive}
+\label{section:integration-frasp-collektive}
 
 Given the considerations regarding the proactive computational model made in \Cref{subsection:reactive-and-proactive-models} and the solution proposed in~\cite{Casadei2023} with the related results of the evaluations performed, it is decided to introduce the \ac{frasp} model in Collektive.
 Analysis of the architectures of \ac{frasp} and Collektive, defined in \Cref{section:design-of-frasp} and \Cref{section:design-of-collektive}, respectively, reveals substantial differences in technology and design choices. This considerably complicates the process of integrating the reactive model into Collektive. The possible issues identified during the analysis are described in \Cref{subsection:integration-problems}.
