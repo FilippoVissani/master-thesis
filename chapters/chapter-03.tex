@@ -78,7 +78,7 @@ As \Cref{fig:protelis-example-map} shows, the simulation rapidly identifies a ch
 
 \subsection{ScaFi}
 
-ScaFi~\cite{Casadei2022} is a Scala-based library and framework designed for aggregate programming. It facilitates the development of distributed algorithms where computations are performed by individual devices in a network, and the results are aggregated across the network. The core concepts and constructs of ScaFi's API are outlined as follows:
+ScaFi~\cite{Casadei2022} is a Scala\footnote{\url{https://www.scala-lang.org/}.}-based library and framework designed for aggregate programming. It facilitates the development of distributed algorithms where computations are performed by individual devices in a network, and the results are aggregated across the network. The core concepts and constructs of ScaFi's API are outlined as follows:
 
 \paragraph{Expression Evaluation}
 An expression written using the ScaFi API is evaluated by each device once per computation round.
@@ -158,7 +158,7 @@ Portability refers to its ability to run on various platforms and environments, 
 Constructs implemented in Collektive are defined in \Cref{lst:collektive-constructs}, while the semantics are described below:
 
 \begin{itemize}
-    \item \texttt{exchange}~\cite{https://doi.org/10.4230/lipics.ecoop.2022.20}: manages the computation of values between neighbors in a specific context. It computes a \texttt{body} function starting from the \texttt{initial} value and the messages received from other neighbors, then sends the results from the evaluation to specific neighbors or everyone, it is contingent upon the origin of the calculated value, whether it was received from a neighbor or if it constituted the initial value. The result of this function is a field with as messages a map with as key the ID of the devices across the network and the result of the computation passed as relative local values.
+    \item \texttt{exchange}~\cite{https://doi.org/10.4230/lipics.ecoop.2022.20}: This construct is not part of the field calculus but extends it. It manages the computation of values between neighbors in a specific context. It computes a \texttt{body} function starting from the \texttt{initial} value and the messages received from other neighbors, then sends the results from the evaluation to specific neighbors or everyone, it is contingent upon the origin of the calculated value, whether it was received from a neighbor or if it constituted the initial value. The result of this function is a field with as messages a map with as key the ID of the devices across the network and the result of the computation passed as relative local values.
     \item \texttt{exchanging}: Same behavior of \texttt{exchange} but this function can yield a \texttt{Field} of \texttt{Return} value.
     \item \texttt{repeat}: Iteratively updates the value computing the \texttt{transform} expression at each device using the last computed value or the \texttt{initial}.
     \item \texttt{repeating}: Iteratively updates the value computing the \texttt{transform} expression from a \texttt{YieldingContext} at each device using the last computed value or the \texttt{initial}.
@@ -168,7 +168,8 @@ Constructs implemented in Collektive are defined in \Cref{lst:collektive-constru
 
 \subsubsection{Example of Gradient in Collektive}
 
-In the \Cref{lst:collektive-gradient}, the implementation of the gradient in Collektive is presented. In this case, it is used a construct that is not strictly part of the field calculus but extends it; it is the \texttt{share} construct~\cite{https://doi.org/10.48550/arxiv.1910.02874}. \texttt{share} captures the space-time nature of field computation through observation of neighbors' values, starting from an \texttt{initial} value, it reduces to a single local value given a \texttt{transform} function and updating and sharing to neighbors of a local variable.
+In the \Cref{lst:collektive-gradient}, the implementation of the gradient in Collektive is presented. In this case, it is used the \texttt{share} construct~\cite{https://doi.org/10.48550/arxiv.1910.02874}. This construct is not part of field calculus but extends it; it allows declarative
+expression of unified and coherent operation mechanisms for state preservation, communication to neighbors, and aggregation of received messages. In~\cite{https://doi.org/10.48550/arxiv.1910.02874} is demonstrated that \texttt{share} can be used to replace the combination of \texttt{rep} and \texttt{nbr}. \texttt{share} captures the space-time nature of field computation through observation of neighbors' values, starting from an \texttt{initial} value, it reduces to a single local value given a \texttt{transform} function and updating and sharing to neighbors of a local variable.
 
 \lstinputlisting[float,label={lst:collektive-gradient},language=kotlin,caption=Gradient implementation in Collektive.]{listings/collektive-gradient.kt}
 
@@ -200,9 +201,9 @@ The details of the syntax and semantics of \ac{frasp} are discussed in detail in
 
 \subsubsection{Gradient Implementation in FRASP}
 
-\Cref{lst:frasp-gradient} provides a representation of a gradient in \ac{frasp}. The function takes the Boolean \texttt{src} flow as input, denoting whether the executing node is the source of the gradient or not. The external \texttt{loop} is used to progressively evolve the current gradient value \texttt{distance} starting from an infinite value (as, initially, devices do not know whether a source is reachable). Internally to the loop, \texttt{mux} is used to select one of two values: if the node is a source, then its gradient value is \texttt{0} (base case); otherwise, the gradient should be the minimum value among the neighbors' gradient values augmented by the distance (\texttt{nbrRange}) from that very neighbor. Construct \texttt{liftTwice} is used to combine (using the sum: \_+\_) the two flows \texttt{nbrRange} (distances to neighbors) and \texttt{nbr(distance)} (neighbors' gradient values).
+\Cref{lst:frasp-gradient} provides the implementation of the gradient in \ac{frasp}. The function takes the boolean \texttt{src} flow as input, denoting whether the executing node is the source of the gradient or not. The external \texttt{loop} is used to progressively evolve the current gradient value \texttt{distance} starting from an infinite value (as, initially, devices do not know whether a source is reachable). Internally to the loop, \texttt{mux} is used to select one of two values: if the node is a source, then its gradient value is \texttt{0} (base case); otherwise, the gradient should be the minimum value among the neighbors' gradient values augmented by the distance (\texttt{nbrRange}) from that very neighbor. Construct \texttt{liftTwice} is used to combine (using the sum: \_+\_) the two flows \texttt{nbrRange} (distances to neighbors) and \texttt{nbr(distance)} (neighbors' gradient values).
 
-\lstinputlisting[float,label={lst:frasp-gradient},language=scala,caption=Gradient implementation in \ac{frasp}.]{listings/frasp-gradient.scala}
+\lstinputlisting[label={lst:frasp-gradient},language=scala,caption=Gradient implementation in \ac{frasp}.]{listings/frasp-gradient.scala}
 
 The reactive dataflow graph in \Cref{fig:gradient-dependencies} corresponds to \Cref{lst:frasp-gradient}. \Cref{fig:gradient-dependencies} provides the local view of the computation for a single node (where the layers denote different semantic kinds of dependencies), whereas \Cref{fig:gradient-dependencies-distributed} shows the distributed dependency graph. The arrows denote dependencies. The dashed arrows denote dependencies based on platform-level scheduling and node interaction; for instance, a red block depends on changes corresponding to neighbors' red blocks and is communicated via message passing.
 
@@ -231,7 +232,7 @@ The reactive dataflow graph in \Cref{fig:gradient-dependencies} corresponds to \
 
 The architecture of \ac{frasp} is shown in \Cref{fig:frasp-architecture}. The design is organized into three packages: \texttt{core}, which includes basic type definitions (\texttt{Core}) as well as the components for the \ac{dsl} (\texttt{Language} for primitives and \texttt{RichLanguage} for other built-ins) and its ``virtual machine" (\texttt{Semantics}), overall captured by an \texttt{Incarnation}; \texttt{frp}, which provides an interface to the FRP engine (\texttt{FrpEngine}), possibly also decoupling from the specific FRP library adopted, as well as extensions (\texttt{FrpExtensions}) useful for the definition of \ac{frasp} constructs; and simulation, which provides basic simulation support.
 
-\begin{figure}
+\begin{figure}[ht!]
     \centering
     \includegraphics[width=\linewidth]{figures/FRASP-architecture.png}
     \caption{\ac{frasp} architecture.}
@@ -240,15 +241,17 @@ The architecture of \ac{frasp} is shown in \Cref{fig:frasp-architecture}. The de
 
 \subsection{Detailed Design}
 
-\ac{frasp} has been implemented in Scala, using Sodium as FRP library. Scala is well known for its suitability as a host for embedded \ac{dsl}s, and for aggregate computing embeddings as well. The design of the \ac{frasp} \ac{dsl} is
-detailed in \Cref{fig:frasp-design}. Following the system/execution model described in \Cref{section:frasp}, the input and output of a (sub-)program are modeled through an interface \texttt{Context}, providing access to local sensor data and neighbor data; and an interface \texttt{Export}, capturing outputs and data that must be shared with neighbors. In particular, an \texttt{Export} is modeled as a tree where each node is a \texttt{Slot} (corresponding to a particular language construct) with an associated value, and can be located through a path of slots—e.g., \texttt{S1/S2/S3} identifies a node in the export tree, where \texttt{S1} depends on \texttt{S2} which depends in turn on \texttt{S3} (so, a change in the output \texttt{S3} will cause the expression corresponding to \texttt{S2} to re-evaluate, and possibly \texttt{S1} in turn). \texttt{Flow} is the type of a reactive (sub-)computation, which takes a \texttt{Context} (providing its inputs), a \texttt{Seq[Slot]} as path (indicating its position in the export tree), and returns \texttt{Cell} (i.e. a time-varying value) of \texttt{Export}. Each \texttt{Language} construct returns a \texttt{Flow}: therefore, the constructs do not immediately run upon evaluation, but rather an executable, reactive object denoting a computation graph whose nodes will execute as a response to change (\Cref{fig:gradient-dependencies}). Access to neighbor-related data is mediated by a \texttt{NeighborField} abstraction, which is the same provided by constructs supporting interaction with neighbors, i.e., \texttt{nbr} and \texttt{nbrSensor}.
-
-\begin{figure}
+\begin{figure}[ht!]
     \centering
     \includegraphics[width=\linewidth]{figures/FRASP-design.pdf}
     \caption{Detailed design of \ac{frasp}.}
     \label{fig:frasp-design}
 \end{figure}
+
+\ac{frasp} has been implemented in Scala, using Sodium\footnote{\url{https://github.com/SodiumFRP/sodium}.} as FRP library. Scala is well known for its suitability as a host for embedded \acp{dsl} and aggregate computing embeddings as well. The design of the \ac{frasp} \ac{dsl} is
+detailed in \Cref{fig:frasp-design}.
+
+Following the system/execution model described in \Cref{section:frasp}, the input and output of a (sub-)program are modeled through an interface \texttt{Context}, providing access to local sensor data and neighbor data; and an interface \texttt{Export}, capturing outputs and data that must be shared with neighbors. In particular, an \texttt{Export} is modeled as a tree where each node is a \texttt{Slot} (corresponding to a particular language construct) with an associated value, and can be located through a path of slots—e.g., \texttt{S1/S2/S3} identifies a node in the export tree, where \texttt{S1} depends on \texttt{S2} which depends in turn on \texttt{S3} (so, a change in the output \texttt{S3} will cause the expression corresponding to \texttt{S2} to re-evaluate, and possibly \texttt{S1} in turn). \texttt{Flow} is the type of a reactive (sub-)computation, which takes a \texttt{Context} (providing its inputs), a \texttt{Seq[Slot]} as path (indicating its position in the export tree), and returns \texttt{Cell} (i.e. a time-varying value) of \texttt{Export}. Each \texttt{Language} construct returns a \texttt{Flow}: therefore, the constructs do not immediately run upon evaluation, but rather an executable, reactive object denoting a computation graph whose nodes will execute as a response to change (\Cref{fig:gradient-dependencies}). Access to neighbor-related data is mediated by a \texttt{NeighborField} abstraction, which is the same provided by constructs supporting interaction with neighbors, i.e., \texttt{nbr} and \texttt{nbrSensor}.
 
 \section{Design of Collektive}
 \label{section:design-of-collektive}
@@ -277,22 +280,22 @@ The detailed design of Collektive is presented in \Cref{fig:collektive-design}. 
     \item \texttt{cycleWhile}: it applies the aggregate function to the parameters of the device while the condition is satisfied, then returns the result of the computation.
 \end{itemize}
 
-\texttt{cycle} and \texttt{cycleWhile} implicitly use the \texttt{aggregate} function, which is the entry point of the aggregate program. It computes an iteration of a device (\texttt{localId}), taking as parameters the previous \texttt{state}, the messages received from the neighbors and the \texttt{compute} with \texttt{AggregateContext} object receiver that provides the implementation of the aggregate constructs. Another version of the \texttt{aggregate} function computes an iteration of a device, over a \texttt{network} of devices, optionally from a previous state (\texttt{previousState}), running the \texttt{compute} aggregate program. The \texttt{aggregate} function returns an \texttt{AggregateResult}, which is the result of the aggregate computation. It represents the \texttt{localId} of the device, the \texttt{result} of the computation, the messages to send (\texttt{toSend}) to other devices and the new state (\texttt{newState}) of the device.
-
-The interface \texttt{Aggregate} models the minimal set of aggregate operations and holds the \texttt{localId} of the device executing the aggregate program.
-
-The \texttt{exchange} function manages the computation of values between neighbors in a specific context. It computes a \texttt{body} function starting from the \texttt{initial} value and the messages received from other neighbors, then sends the results from the evaluation to specific neighbors or to everyone, it is contingent upon the origin of the calculated value, whether it was received from a neighbor or if it constituted the initial value. The result of the \texttt{exchange} function is a \texttt{Field} with as messages a map with the ID of devices across the network as key and the result of the computation passed as relative local values.
-
-The \texttt{alignOn} function is used for the alignment, it pushes in the stack the \texttt{pivot}, executes the \texttt{body} and pops the last element of the \texttt{Stack} after it is called, finally returns the \texttt{body}'s return element.
-
-\texttt{AggregateContext} represents the context for managing aggregate computation. It represents the \texttt{localId} of the device, the messages received from the neighbors, and the previous state (\texttt{previousState}) of the device.
-
-\begin{figure}
+\begin{figure}[ht!]
     \centering
     \includegraphics[width=\linewidth]{figures/collektive-design.pdf}
     \caption{Detailed design of Collektive \ac{dsl}.}
     \label{fig:collektive-design}
 \end{figure}
+
+\texttt{cycle} and \texttt{cycleWhile} implicitly use the \texttt{aggregate} function, which is the entry point of the aggregate program. It computes an iteration of a device (\texttt{localId}), taking as parameters the previous \texttt{state}, the messages received from the neighbors and the \texttt{compute} with \texttt{AggregateContext} object receiver that provides the implementation of the aggregate constructs. Another version of the \texttt{aggregate} function computes an iteration of a device, over a \texttt{network} of devices, optionally from a previous state (\texttt{previousState}), running the \texttt{compute} aggregate program. The \texttt{aggregate} function returns an \texttt{AggregateResult}, which is the result of the aggregate computation. It represents the \texttt{localId} of the device, the \texttt{result} of the computation, the messages to send (\texttt{toSend}) to other devices and the new state (\texttt{newState}) of the device.
+
+The interface \texttt{Aggregate} models the minimal set of aggregate operations and holds the \texttt{localId} of the device executing the aggregate program.
+
+The \texttt{exchange} function manages the computation of values between neighbors in a specific context. It computes a \texttt{body} function starting from the \texttt{initial} value and the messages received from other neighbors, then sends the results from the evaluation to specific neighbors or everyone, it is contingent upon the origin of the calculated value, whether it was received from a neighbor or if it constituted the initial value. The result of the \texttt{exchange} function is a \texttt{Field} with as messages a map with the ID of devices across the network as key and the result of the computation passed as relative local values.
+
+The \texttt{alignOn} function is used for the alignment, it pushes in the stack the \texttt{pivot}, executes the \texttt{body} and pops the last element of the \texttt{Stack} after it is called, finally returns the \texttt{body}'s return element.
+
+The \texttt{AggregateContext} class represents the context for managing aggregate computation. It encapsulates the \texttt{localId} of the device, the messages received from the neighbors, and the previous state (\texttt{previousState}) of the device. The actual implementation of the aggregate constructs is defined in this class.
 
 \subsection{Alignment Processing Strategy}
 
@@ -361,7 +364,7 @@ Given the proposed design in \Cref{fig:kotlin-distributed-frp-design} and its im
 
 The main goal is to introduce the reactive paradigm into Collektive, replacing it with the proactive one. At the same time, we want to make sure that the resulting \ac{dsl} is ergonomic and thus it is easy for the user to understand and use it. It should be noted that, given the diversity of the two architectures, it is not possible to integrate \ac{frasp} directly into Collektive, so an intermediate solution must be identified.
 
-Given the results obtained from the analysis reported in \Cref{subsection:Feasibility-Reactive-Aggregate-Programming} and taking into consideration the possible integration issues identified in \Cref{subsection:integration-problems}, we identify two possible solutions for integrating the reactive paradigm into Collektive:
+Given the results obtained from the analysis reported in \Cref{subsection:Feasibility-Reactive-Aggregate-Programming} and taking into consideration the possible integration issues identified in \Cref{subsection:integration-problems}, we propose two possible solutions for integrating the reactive paradigm into Collektive:
 
 \begin{itemize}
     \item \textbf{Model with reactive messages and sensors}: it consists of building the reactive model on top of the proactive one. This can be achieved by making the messages and sensors reactive; every time the value of one of these is changed the expression is re-evaluated entirely, executing a round. This solution has the advantage that the Collektive \ac{dsl} remains identical to the current one. On the other hand, it is not possible to exploit the partial updates of the sub-expressions proposed in \ac{frasp}, this translates into lower efficiency.
