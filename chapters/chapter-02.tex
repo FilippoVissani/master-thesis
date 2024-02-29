@@ -7,11 +7,12 @@
 \label{chap:background}
 %----------------------------------------------------------------------------------------
 
-This chapter establishes the essential theoretical foundation for the subsequent exploration undertaken in this thesis. We focus on three key programming paradigms: functional programming, reactive programming, and aggregate computing.
+This chapter establishes the essential theoretical foundation for the subsequent exploration undertaken in this thesis. We focus on three key programming paradigms: functional programming (\Cref{section:functional-programming}), reactive programming (\Cref{section:reactive-programming}), and aggregate computing (\Cref{section:aggregate-computing}).
 
 We begin by examining the core concepts of functional programming and its practical implementation in Kotlin. This understanding underpins our exploration of reactive programming, where we delve into its evaluation model, the reactive operators, and their application in Kotlin. Finally, we explore the fundamental abstractions of aggregate computing, including the field calculus and the contrasting reactive and proactive computational models.
 
 \section{Functional Programming}
+\label{section:functional-programming}
 
 The functional paradigm, in the context of computer science, involves building programs through the application and composition of functions. It adopts a \textit{declarative} approach, where function definitions are represented as trees of expressions mapping values to other values, rather than relying on a sequence of imperative statements to update the program's running state.
 
@@ -77,6 +78,7 @@ the \texttt{combine} parameter has the function type \((R, T) \rightarrow R\), s
 Kotlin uses function types, such as \((Int) \rightarrow String\), for declarations that deal with functions. Each function type in Kotlin is characterized by a parenthesized list specifying the parameter types and a return type. For example, \((A, B) \rightarrow C\) represents a type indicative of functions that accept two arguments of types \textit{A} and \textit{B}, yielding a result of type \textit{C}. The parameter list may be empty, denoted by \(() \rightarrow A\). It is essential to note that the return type cannot exclude the declaration of \texttt{Unit}. Function types have the option to include an additional receiver type, indicated before the dot in the notation. For instance, the type \(A.(B) \rightarrow C\) signifies functions that can be invoked on a receiver object \textit{A}, accepting a parameter \textit{B}, and producing a result of type \textit{C}.
 
 \section{Reactive Programming}
+\label{section:reactive-programming}
 
 Reactive programming, as defined in~\cite{Bainomugisha2013}, is a programming paradigm centered on the concept of \textit{continuous time-varying values} and the seamless propagation of changes. It streamlines the declarative creation of event-driven applications by enabling developers to articulate programs in terms of desired actions, leaving it to the language to autonomously handle the timing of execution. Within this paradigm, alterations in the state are automatically and efficiently disseminated throughout the network of interdependent computations by the intrinsic execution model.
 
@@ -142,8 +144,9 @@ The example \Cref{lst:flow-example} demonstrates the asynchronous nature of Kotl
 \end{figure}
 
 \section{Aggregate Computing}
+\label{section:aggregate-computing}
 
-\textit{Aggregate computing} is a method for designing intricate coordinations in distributed systems, particularly for \textit{\ac{cas}}. The approach primarily centers on the notion that understanding system interactions is more straightforward when viewed in the context of information flowing through groups of devices, as opposed to focusing on individual devices and their interactions with peers and the environment.~\cite{Viroli2019}
+\textit{Aggregate computing} is a method for designing intricate coordinations in distributed systems, particularly for \textit{\ac{cas}}~\cite{Ferscha2015}. The approach primarily centers on the notion that understanding system interactions is more straightforward when viewed in the context of information flowing through groups of devices, as opposed to focusing on individual devices and their interactions with peers and the environment~\cite{Viroli2019}.
 
 Aggregate computing is especially suitable for scenarios where the problem at hand involves a network of devices possessing the following characteristics:
 
@@ -158,7 +161,7 @@ Addressing these considerations requires an approach grounded in \textit{self-or
 \subsection{Abstractions}
 \label{subsection:abstractions}
 
-Aggregate computing models a distributed system as a set $\mathcal{D}$ of devices, ranged over by $\delta$. On top of that, a reflexive~\footnote{each device is a neighbor of itself.} \textit{neighboring relation} indicates the devices with which one can communicate (which is application-dependent and can be used to describe logical or physical proximity). In addition, each device has a set of \textit{sensors} that enable the perception of the environment.
+Aggregate computing models a distributed system as a set $\mathcal{D}$ of devices, ranged over by $\delta$. On top of that, a reflexive~\footnote{Each device is a neighbor of itself.} \textit{neighboring relation} indicates the devices with which one can communicate (which is application-dependent and can be used to describe logical or physical proximity). In addition, each device has a set of \textit{sensors} that enable the perception of the environment.
 
 The primary abstraction introduced by aggregate computing is the \textit{computational field} (or simply \textit{field}), which is a function $\phi: \mathcal{D} \mapsto \mathcal{L}$ mapping each device $\delta \in \mathcal{D}$ to a local value $l \in \mathcal{L}$~\cite{Viroli2018}.
 %
@@ -181,14 +184,14 @@ Each iteration executed by a device is called a \textit{computation round} and c
 
 Aggregate computing builds from a foundation of the field calculus, a functional programming model for the specification and composition of collective behaviors with formally equivalent local and aggregate semantics.
 
-The concept of field calculus was introduced in~\cite{Viroli2013} as a fundamental core calculus designed to encapsulate the essential elements found in languages utilizing computational fields. These include functions operating over fields, functional composition involving fields, the progression of fields over time, the creation of fields of values based on neighboring elements, and the limitation of a field computation to a specific sub-region within the network. While its syntax, typing, and semantics are deeply discussed in~\cite{Viroli2019} and are omitted here for simplicity, a brief description of its elements is presented below:
+The concept of field calculus was introduced in~\cite{Viroli2013} as a fundamental core calculus designed to encapsulate the essential elements found in languages utilizing computational fields. These include functions operating over fields, functional composition involving fields, the progression of fields over time, the creation of fields of values based on neighboring elements, and the limitation of a field computation to a specific sub-region within the network. While its syntax, typing, and semantics are deeply discussed in~\cite{Viroli2019} and are omitted here for simplicity, a brief description of its elements is presented below (\Cref{fig:field-calculus-syntax}):
 
 \begin{itemize}
     \item a \textit{field calculus program} $\texttt{P}$ consists of a sequence of \textit{function declarations} $\bar{\texttt{F}}$ followed by the \textit{main expression} $\texttt{e}$;
     \item an expression $\texttt{e}$ can be:
           \begin{itemize}
               \item a \textit{variable} $\texttt{x}$, e.g., a function parameter;
-              \item a \textit{local value} $l$, such as a Boolean, number, string, pair, tuple, etc;
+              \item a \textit{local value} $l$, such as a boolean, number, string, pair, tuple, etc;
               \item a \textit{neighboring field value} $\phi$, e.g., a map of
                     neighbors to the distances to those neighbors;
               \item a \textit{function call} $\texttt{f}(\bar{\texttt{e}})$ to a \textit{user-declared function} or a \textit{built-in function}, such
@@ -199,7 +202,14 @@ The concept of field calculus was introduced in~\cite{Viroli2013} as a fundament
           \end{itemize}
 \end{itemize}
 
-To work properly, the semantics of \texttt{nbr} and \texttt{rep} require a way to access, respectively, the last registered state of each neighbor and the last registered output of the device itself. In addition, this process should be made in such a way that different instances of \texttt{rep} and \texttt{nbr} cannot inadvertently ``swap" their respective value. This process is called \textit{alignment}, and it has the consequence that two branches of an \texttt{if} expression execute in isolation, meaning that two devices that execute different branches cannot communicate with each other inside their branches. In practice, this process is done by carefully constructing the export of an expression as an \textit{evaluation tree} that represents the aggregate computation. The complete semantics of export construction and alignment can be found in Appendix C of~\cite{Viroli2018}.
+\begin{figure}
+    \centering
+    \includegraphics[width=\linewidth]{figures/field-calculus-syntax.jpg}
+    \caption{Abstract syntax of the field calculus.}
+    \label{fig:field-calculus-syntax}
+\end{figure}
+
+To work properly, the semantics of \texttt{nbr} and \texttt{rep} require a way to access, respectively, the last registered state of each neighbor and the last registered output of the device itself. In addition, this process should be made in such a way that different instances of \texttt{rep} and \texttt{nbr} cannot inadvertently ``swap" their respective value. This process is called \textit{alignment}, and it has the consequence that two branches of an \texttt{if} expression execute in isolation, meaning that two devices that execute different branches cannot communicate with each other inside their branches. In practice, this process is done by carefully constructing the export of an expression as an \textit{evaluation tree} that represents the aggregate computation. The complete semantics of export construction and alignment can be found in~\cite{Viroli2018}.
 
 \subsection{Reactive and Proactive Models}
 \label{subsection:reactive-and-proactive-models}
@@ -208,4 +218,4 @@ Aggregate computing emerged as a prominent approach for programming self-organiz
 
 Though conceptually simple, in the round-based model, discussed in~\cite{Viroli2018}, each round of a device is alternated with some sleeping time during which it collects information from neighboring devices. This way of managing computation can be thought of as a \textit{proactive model} since it is the device that decides when computation should occur based on its internal scheduler.
 
-The round-based model could be more efficient because it fully re-evaluates the context and the whole program without tracking change. Though it might be acceptable for predictable patterns of environmental change, this becomes largely suboptimal for highly variable dynamics. Indeed, the round-based approach seems to be a legacy of imperative languages or solutions featuring limited compositionality. Given this motivation, taking inspiration from the functional reactive paradigm, in~\cite{Casadei2023} proposed a \textit{reactive self-organization programming language}, called \ac{frasp} (Functional Reactive Approach to Self-organization Programming), that enables the decoupling of program logic from its scheduling. The details of this programming model will be discussed more deeply in \Cref{chap:analysis}.
+The round-based model could be more efficient because it fully re-evaluates the context and the whole program without tracking change. Though it might be acceptable for predictable patterns of environmental change, this becomes largely suboptimal for highly variable dynamics. Indeed, the round-based approach seems to be a legacy of imperative languages or solutions featuring limited compositionality. Given this motivation, taking inspiration from the functional reactive paradigm, in~\cite{Casadei2023} a \textit{reactive self-organization programming language}, called \ac{frasp}, is proposed. This model enables the decoupling of program logic from its scheduling; the details will be discussed more deeply in \Cref{chap:analysis}.
