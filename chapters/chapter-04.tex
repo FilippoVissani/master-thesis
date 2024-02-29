@@ -76,7 +76,7 @@ By embodying these characteristics, the \ac{prm} enhances the agility, scalabili
 \end{figure}
 
 \subsection{Model with Reactive Messages and Sensors}
-The detailed design of the model with reactive messages and sensors is shown in \Cref{fig:collektive-rmsm-design}.
+The detailed design of the \ac{rmsm} is shown in \Cref{fig:collektive-rmsm-design}.
 
 Similar to the \ac{prm}, the \texttt{Collektive} class accommodates two new versions of the \texttt{Aggregate} method to facilitate reactive functionalities. These methods accept either a \texttt{StateFlow<Iterable<InboundMessage<ID>>>} or a \texttt{ReactiveNetwork<ID>} parameter, enabling dynamic adjustment of aggregate computations based on real-time changes in message reception.
 
@@ -84,7 +84,7 @@ In this model, the \texttt{Aggregate} method encompasses the logic necessary for
 
 \subsubsection{Behavioral Characteristics}
 
-The model with reactive messages and sensors exhibits behavioral characteristics that align with its design principles:
+The \ac{rmsm} exhibits behavioral characteristics that align with its design principles:
 
 \begin{itemize}
     \item \textbf{Compatibility}: Retains compatibility with the original Collektive \ac{dsl}, ensuring seamless integration with existing codebase and workflows.
@@ -99,6 +99,6 @@ In summary, both models offer distinct approaches to incorporating reactive prin
 \begin{figure}
     \centering
     \includegraphics[width=\linewidth]{figures/collektive-rmsm-design.pdf}
-    \caption{Detailed design of the model with reactive messages and sensors proposed.}
+    \caption{Detailed design of the \ac{rmsm} proposed.}
     \label{fig:collektive-rmsm-design}
 \end{figure}
