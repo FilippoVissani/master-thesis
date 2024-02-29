@@ -107,20 +107,20 @@ The semantics of the constructs defined in ScaFi are described below:
 
 A \textit{(self-healing) gradient} is a distributed behavior that self-stabilizes, in each device of the distributed system, to a value denoting its minimum distance from the closest source node (for instance, computed by summing the neighbor-to-neighbor distances along the shortest path to the source), adapting to changes in the source set and distances. By following the neighbors of maximum decrease (resp. increase) of the gradient value, i.e., by descending (resp. ascending) the gradient, it is possible to implement efficient hop-by-hop information flows, that can be useful for data propagation and collection.
 
-The implementation of a gradient using ScaFi is presented in \Cref{lst:scafi-gradient}. The following is a brief description of the program:
+\begin{figure}[ht!]
+    \centering
+    \includegraphics[width=.8\linewidth]{figures/scafi-gradient.png}
+    \caption{A graphical representation of the gradient implementation in ScaFi after stabilization. Each device of the network is labeled with its distance from the source (in parenthesis) and its ID. The source device is the one with ID 1. Note that devices that are not connected to the source are considered to be at an infinite distance from it.}
+    \label{fig:scafi-gradient}
+\end{figure}
+
+The implementation of a gradient using ScaFi is presented in \Cref{lst:scafi-gradient}, the following is a brief description of the program:
 The gradient value at each node is dynamically evolved using \texttt{rep}. This is necessary to allow a node to share its previous gradient value with neighbors. The default value is \texttt{Double.PositiveInfinity} since by default a node is at an infinite distance from a source (since it may not be reachable in general). The \texttt{mux(c)(th)(el)} evaluates its expression \texttt{th} and \texttt{el} and then uses the Boolean condition \texttt{c} to select either the former (when \texttt{c} is true) or the latter (when \texttt{c} is false).
 If a node is a source (i.e., if sensing the Boolean sensor \texttt{source} returns \texttt{true}), then its gradient value is \texttt{0} (by definition).
 If a node is not a source, then will take as its gradient value the output of the expression \texttt{minHoodPlus(nbr\{distance\} + nbrRange)}.
 \texttt{minHoodPlus(e)} is a variant of \texttt{foldhood} which does not consider the device itself when folding over the neighborhood. Namely, it selects the minimum value among those obtained by evaluating \texttt{e} against the neighbors. The argument of \texttt{minHoodPlus} is \texttt{nbr\{distance\} + nbrRange()}, which amounts to calculating, for each neighbor, the sum of the neighbor's most recent gradient value and the corresponding distance to that neighbor (obtained by neighboring sensor \texttt{nbrRange}, which is \texttt{nbrvar[Double]("nbrRange")}).
 
-\lstinputlisting[float,label={lst:scafi-gradient},language=scala,caption=Implementation of gradient in ScaFi.]{listings/scafi-gradient.scala}
-
-\begin{figure}
-    \centering
-    \includegraphics[width=\linewidth]{figures/scafi-gradient.png}
-    \caption{A graphical representation of the gradient implementation in ScaFi after stabilization. Each device of the network is labeled with its distance from the source (in parenthesis) and its ID. The source device is the one with ID 1. Note that devices that are not connected to the source are considered to be at an infinite distance from it.}
-    \label{fig:scafi-gradient}
-\end{figure}
+\lstinputlisting[label={lst:scafi-gradient},language=scala,caption=Implementation of gradient in ScaFi.]{listings/scafi-gradient.scala}
 
 \subsection{FCPP}
 
