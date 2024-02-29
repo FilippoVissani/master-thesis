@@ -10,7 +10,7 @@
 This chapter delves into the implementation details of the two reactive models introduced for Collektive:
 
 \begin{itemize}
-    \item The purely reactive model reevaluates relevant portions of the expression based on data dependencies, offering fine-grained reactivity.
+    \item The \ac{prm} reevaluates relevant portions of the expression based on data dependencies, offering fine-grained reactivity.
     \item The model with reactive messages and sensors: Introduces reactivity only to messages and sensor readings, maintaining the original Collektive \ac{dsl}.
 \end{itemize}
 
@@ -19,7 +19,7 @@ Each section focuses on a specific model, exploring its key components and imple
 \section{Purely Reactive Model}
 \label{section:prm}
 
-In this section, the implementation of some key components of the purely reactive model is proposed.
+In this section, the implementation of some key components of the \ac{prm} is proposed.
 
 The \texttt{aggregate} function (\Cref{lst:aggregate-prm}) represents the entry point of the aggregate program; this function takes as input the device ID, a flow relating to inbound messages and an aggregate program whose result is bound to the \texttt{StateFlow<R>} type. In the body of the function, a \texttt{RAggregateContext} is created with the parameters passed as input and the aggregate program is executed in the context relating to the newly created object. The result of the function is a \texttt{RAggregateResult}, thanks to which it is possible to access the result of the aggregate expression, the outbound messages and the state of the device. The data structures within \texttt{RAggregateResult} are defined as flows, so it is possible to subscribe to and react to their changing. In this way, it is easy to establish the dependency between the inbound messages of one device and the outbound messages of another, so that the first reacts to the change of the second state.
 
@@ -44,17 +44,17 @@ Regardless of which branch is chosen, the result of the other branch is deleted 
 
 The \texttt{rExchange} construct (\Cref{lst:exchange-prm}) takes as input a \texttt{body} function whose result depends on the previous state and the messages received; as the result of this function changes, the outbound messages and the state of the device are updated.
 
-\lstinputlisting[float,language=kotlin,label={lst:aggregate-prm},caption=Implementation of the \texttt{aggregate} function in the purely reactive model.]{listings/aggregate-prm.kt}
+\lstinputlisting[float,language=kotlin,label={lst:aggregate-prm},caption=Implementation of the \texttt{aggregate} function in the \ac{prm}.]{listings/aggregate-prm.kt}
 
-\lstinputlisting[float,language=kotlin,label={lst:aggregate-context-prm},caption=Implementation of the \texttt{RAggregateContext} class in the purely reactive model.]{listings/AggregateContext-prm.kt}
+\lstinputlisting[float,language=kotlin,label={lst:aggregate-context-prm},caption=Implementation of the \texttt{RAggregateContext} class in the \ac{prm}.]{listings/AggregateContext-prm.kt}
 
-\lstinputlisting[float,language=kotlin,label={lst:branch-prm},caption=Implementation of the \texttt{rBranch} construct in the purely reactive model.]{listings/branch-prm.kt}
+\lstinputlisting[float,language=kotlin,label={lst:branch-prm},caption=Implementation of the \texttt{rBranch} construct in the \ac{prm}.]{listings/branch-prm.kt}
 
-\lstinputlisting[float,language=kotlin,label={lst:exchange-prm},caption=Implementation of the \texttt{rExchange} construct in the purely reactive model.]{listings/exchange-prm.kt}
+\lstinputlisting[float,language=kotlin,label={lst:exchange-prm},caption=Implementation of the \texttt{rExchange} construct in the \ac{prm}.]{listings/exchange-prm.kt}
 
 \section{Model with Reactive Messages and Sensors}
 \label{section:mrms}
 
-The central component of the implementation with reactive messages and sensors is the \texttt{aggregate} function (\Cref{lst:aggregate-rmsm}). This function takes as input the same parameters as the one defined in the purely reactive model, the difference is that the result of the aggregate program is not bound to the \texttt{StateFlow} type. The result of \texttt{aggregate} is defined as \texttt{StateFlow<AggregateResult<ID, R>>}, this wrapping allows us to avoid having to create specific data structures for managing the aggregate result, which instead happens in the purely reactive model. In the \texttt{aggregate} function, an \texttt{AggregateContext} flow is created that depends on the inbound message and state flows. The result of the aggregate expression depends on the flow of the \texttt{AggregateContext}; as the result of the expression changes, the flow relating to the state is updated.
+The central component of the implementation with reactive messages and sensors is the \texttt{aggregate} function (\Cref{lst:aggregate-rmsm}). This function takes as input the same parameters as the one defined in the \ac{prm}, the difference is that the result of the aggregate program is not bound to the \texttt{StateFlow} type. The result of \texttt{aggregate} is defined as \texttt{StateFlow<AggregateResult<ID, R>>}, this wrapping allows us to avoid having to create specific data structures for managing the aggregate result, which instead happens in the \ac{prm}. In the \texttt{aggregate} function, an \texttt{AggregateContext} flow is created that depends on the inbound message and state flows. The result of the aggregate expression depends on the flow of the \texttt{AggregateContext}; as the result of the expression changes, the flow relating to the state is updated.
 
 \lstinputlisting[float,language=kotlin,label={lst:aggregate-rmsm},caption=Implementation of the \texttt{aggregate} function in the model with reactive messages and sensors.]{listings/aggregate-rmsm.kt}
