@@ -52,13 +52,20 @@ Given the solutions proposed in \Cref{subsection:integration-solutions-identifie
 \subsection{Purely Reactive Model}
 \label{subsection:purely-reactive-model}
 
-The detailed design of the \ac{prm} is shown in \Cref{fig:collektive-prm-design}.
+The detailed design of the \ac{prm} is shown in \Cref{fig:collektive-prm-design}. Within the \texttt{RCollektive} class, the methods for executing aggregate programs have been augmented to accommodate reactive functionalities. The method \texttt{execute} now takes a
 
-Within the \texttt{RCollektive} class, the methods for executing aggregate programs have been augmented to accommodate reactive functionalities. The method \texttt{execute} now takes a \texttt{MutableStateFlow<List<InboundMessage<ID>>>} parameter, enabling the system to react to incoming messages from neighboring devices. Similarly, the \texttt{execute} method now also accepts a \texttt{ReactiveNetwork<ID>} parameter, facilitating reactive communication among devices within the network. These additions signify a departure from the static nature of traditional aggregate computations, allowing for dynamic adjustments based on real-time changes in the environment.
+\texttt{MutableStateFlow<List<InboundMessage<ID>>>} as parameter, enabling the system to react to incoming messages from neighboring devices. Similarly, the \texttt{execute} method now also accepts a \texttt{ReactiveNetwork<ID>} parameter, facilitating reactive communication among devices within the network. These additions signify a departure from the static nature of traditional aggregate computations, allowing for dynamic adjustments based on real-time changes in the environment.
 
-In the \ac{prm}, the concept of expression result (\texttt{RAggregateResult}) is revisited to imbue reactivity. This ensures that the aggregate expression's result is not static but rather dynamic, adapting to alterations in the underlying data or environmental conditions. Moreover, the \texttt{Aggregate} interface undergoes modifications to accommodate reactive versions of aggregate constructs. Parameters within these constructs are bound to \texttt{StateFlow}, enabling reevaluation whenever their inputs experience changes. This reactive paradigm empowers the system to respond dynamically to fluctuations in the environment.
+\begin{figure}[ht!]
+    \centering
+    \includegraphics[width=\linewidth]{figures/collektive-prm-design.pdf}
+    \caption{Detailed design of the \ac{prm} proposed.}
+    \label{fig:collektive-prm-design}
+\end{figure}
 
-The \texttt{RAggregateContext} class extends the \texttt{Aggregate} interface, providing concrete implementations of reactive aggregate constructs. Additionally, it hosts reactive data structures essential for managing outbound messages and states. Leveraging \texttt{StateFlow} extensions (\texttt{StateFlowExtensions}), this class simplifies the mapping and combining of hot flows, enhancing the efficiency and scalability of the system. By encapsulating reactive functionalities within the \texttt{RAggregateContext}, the system maintains modularity and extensibility, facilitating future enhancements and optimizations.
+In the \ac{prm}, the concept of expression result (\texttt{RAggregateResult}) is revisited to imbue reactivity. This ensures that the aggregate expression's result is not static but rather dynamic, adapting to alterations in the underlying data or environmental conditions. Moreover, the \texttt{Aggregate} interface undergoes modifications to accommodate reactive versions of aggregate constructs. Parameters within these constructs are bound to \texttt{StateFlow}, enabling reevaluation whenever their inputs experience changes.
+
+The \texttt{RAggregateContext} class extends the \texttt{Aggregate} interface, providing concrete implementations of reactive aggregate constructs. Additionally, it hosts reactive data structures essential for managing outbound messages and states. Leveraging \texttt{StateFlow} extensions (\texttt{StateFlowExtensions}), this class simplifies the mapping and combining of hot flows, enhancing the efficiency and scalability of the system.
 
 \subsubsection{Behavioral Characteristics}
 
@@ -70,21 +77,14 @@ The \ac{prm} exhibits distinct behavioral characteristics that distinguish it fr
     \item \textbf{Selective Reevaluation}: Sub-expressions are reevaluated only when their dependencies change, optimizing computation efficiency and reducing redundant processing.
 \end{itemize}
 
-By embodying these characteristics, the \ac{prm} enhances the agility, scalability, and robustness of the Collektive framework, empowering it to effectively handle dynamic and unpredictable environments.
-
-\begin{figure}
-    \centering
-    \includegraphics[width=\linewidth]{figures/collektive-prm-design.pdf}
-    \caption{Detailed design of the \ac{prm} proposed.}
-    \label{fig:collektive-prm-design}
-\end{figure}
+By embodying these characteristics, the \ac{prm} enhances the scalability, and robustness of the Collektive framework, empowering it to effectively handle dynamic and unpredictable environments.
 
 \subsection{Model with Reactive Messages and Sensors}
-The detailed design of the \ac{rmsm} is shown in \Cref{fig:collektive-rmsm-design}.
+The detailed design of the \ac{rmsm} is shown in \Cref{fig:collektive-rmsm-design}. Similar to the \ac{prm}, the \texttt{Collektive} class accommodates two new versions of the \texttt{Aggregate} method to facilitate reactive functionalities. These methods accept either a
 
-Similar to the \ac{prm}, the \texttt{Collektive} class accommodates two new versions of the \texttt{Aggregate} method to facilitate reactive functionalities. These methods accept either a \texttt{StateFlow<Iterable<InboundMessage<ID>>>} or a \texttt{ReactiveNetwork<ID>} parameter, enabling dynamic adjustment of aggregate computations based on real-time changes in message reception.
+\texttt{StateFlow<Iterable<InboundMessage<ID>>>} or a \texttt{ReactiveNetwork<ID>} parameter, enabling dynamic adjustment of aggregate computations based on real-time changes in message reception.
 
-In this model, the \texttt{Aggregate} method encompasses the logic necessary for reactive evaluation of the aggregate expression. Unlike the \ac{prm}, where the \texttt{AggregateContext} class handles reactive evaluation, here the evaluation logic is embedded directly within the \texttt{Aggregate} method. Consequently, upon receiving a message from a neighbor, the entire aggregate expression undergoes reevaluation, resulting in a complete round of computation. While maintaining compatibility with the original Collektive \ac{dsl}, this approach sacrifices some performance due to the exhaustive reevaluation process.
+In this model, the \texttt{Aggregate} method encompasses the logic necessary for reactive evaluation of the aggregate expression. Unlike the \ac{prm}, where the \texttt{RAggregateContext} class handles reactive evaluation, here the evaluation logic is embedded directly within the \texttt{Aggregate} method. Consequently, upon receiving a message from a neighbor, the entire aggregate expression undergoes reevaluation, resulting in a complete round of computation. While maintaining compatibility with the original Collektive \ac{dsl}, this approach sacrifices some performance due to the exhaustive reevaluation process.
 
 \subsubsection{Behavioral Characteristics}
 
