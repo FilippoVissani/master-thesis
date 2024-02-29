@@ -11,7 +11,7 @@ This chapter delves into the evaluation of the reactive extensions introduced in
 
 \begin{itemize}
     \item \Cref{section:testing} details the unit testing strategy employed to ensure the correctness of the implemented code. It highlights the chosen testing framework, and the testing style adopted, and showcases an example test related to the \texttt{rExchange} construct.
-    \item \Cref{section:analysis-ergonomics-proposed-models} compares the usability of the DSL for implementing aggregate programs in the two proposed reactive models. To facilitate the comparison, an example program implementing the "gradient with obstacles" scenario is presented in both DSLs. This allows for a concrete side-by-side assessment of the strengths and weaknesses of each model from a usability perspective.
+    \item \Cref{section:analysis-ergonomics-proposed-models} compares the usability of the \ac{dsl} for implementing aggregate programs in the two proposed reactive models. To facilitate the comparison, an example program implementing the "gradient with obstacles" scenario is presented in both DSLs. This allows for a concrete side-by-side assessment of the strengths and weaknesses of each model from a usability perspective.
 \end{itemize}
 
 \section{Testing}
@@ -49,7 +49,7 @@ The aggregate program chosen to carry out this evaluation is the gradient with o
 
 \paragraph{Readability}
 
-In the purely reactive model, the use of rShare, rMux, and rBranch might be less familiar to developers unfamiliar with this specific DSL. Understanding the syntax and purpose of these functions requires additional learning. The model with reactive messages and sensors utilizes familiar syntax like share and conditional statements, potentially making it easier to read and understand for developers with general programming experience.
+In the purely reactive model, the use of rShare, rMux, and rBranch might be less familiar to developers unfamiliar with this specific \ac{dsl}. Understanding the syntax and purpose of these functions requires additional learning. The model with reactive messages and sensors utilizes familiar syntax like share and conditional statements, potentially making it easier to read and understand for developers with general programming experience.
 
 \paragraph{Maintainability}
 
@@ -57,11 +57,11 @@ Composing complex logic using nested functions like rMux and rBranch can lead to
 
 \paragraph{Flexibility}
 
-The DSL of the purely reactive model provides dedicated functions for building reactive constructs, potentially offering more flexibility for complex reactive patterns. While offering less specialized syntax, the model with reactive messages and sensors can still achieve various reactive behaviors. However, complex reactive patterns might require more verbose code compared to the purely reactive approach.
+The \ac{dsl} of the purely reactive model provides dedicated functions for building reactive constructs, potentially offering more flexibility for complex reactive patterns. While offering less specialized syntax, the model with reactive messages and sensors can still achieve various reactive behaviors. However, complex reactive patterns might require more verbose code compared to the purely reactive approach.
 
 \paragraph{Learning Curve}
 
-The purely reactive model requires learning the specific syntax and semantics of the DSL functions, while the model with reactive messages and sensors leverages familiar programming constructs, potentially reducing the learning curve for developers with general programming experience.
+The purely reactive model requires learning the specific syntax and semantics of the \ac{dsl} functions, while the model with reactive messages and sensors leverages familiar programming constructs, potentially reducing the learning curve for developers with general programming experience.
 
 \begin{figure}
     \centering
