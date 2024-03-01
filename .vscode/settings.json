@@ -4,6 +4,7 @@
         "DFRP",
         "FRASP",
         "macroprogramming",
+        "nvalue",
         "Protelis"
     ],
     "latex-workshop.latex.autoBuild.run": "never"
