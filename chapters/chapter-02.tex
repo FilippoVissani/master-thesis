@@ -85,7 +85,7 @@ Reactive programming, as defined in~\cite{Bainomugisha2013}, is a programming pa
 Consider the example of calculating the sum of two variables (\Cref{lst:reactive-example}). In conventional sequential imperative programming, the value of the variable \texttt{var3} will always contain 3, which is the sum of the initial values of variables \texttt{var1} and \texttt{var2} even when \texttt{var1} or \texttt{var2} is later assigned a new value (unless the programmer explicitly assigns a new value to the variable \texttt{var3}). In reactive programming, the value of the variable \texttt{var3} is always kept up-to-date. In other words, the value of \texttt{var3} is automatically recomputed over time whenever the value of \texttt{var1} or \texttt{var2} changes.
 This is the key notion of reactive programming. Values change over time and when they change all dependent computations are automatically reexecuted. In reactive programming terminology, the variable \texttt{var3} is said to be dependent on the variables \texttt{var1} and \texttt{var2}.
 
-\begin{figure}
+\begin{figure}[ht!]
     \centering
     \begin{subfigure}[b]{\textwidth}
         \centering
@@ -158,8 +158,6 @@ Aggregate computing is especially suitable for scenarios where the problem at ha
 
 Addressing these considerations requires an approach grounded in \textit{self-organization}, where cohesive and resilient coordination behavior arises from localized coordination abstractions. Another objective of aggregate computing is to provide developers with a means to articulate the behavior of distributed systems possessing the aforementioned features in a composable and declarative manner. This facilitates better scalability in dealing with the intricacies of the domain.
 
-Aggregate computing builds upon the principles of \textit{\ac{fc}} (\Cref{subsection:field-calculus}) but adds abstraction layers to address scalability and resilience challenges (\Cref{fig:aggregate-abstraction-layers}). These layers hide the complexity of distributed coordination and support efficient system engineering. The methodology ensures simplicity and transparency in module composition, tailoring coordination mechanisms to different subsystems based on varying requirements. Additionally, it abstracts away intricate implementation details, enabling programmers to focus on high-level system design rather than low-level intricacies. The introduction of ``\textit{resilient coordination operators}'' is fundamental in concealing complexity and ensuring system robustness. By providing standardized ways to handle failures and adapt to changing conditions, these operators contribute to the overall efficiency and reliability of distributed coordination systems.
-
 \begin{figure}
     \centering
     \includegraphics[width=.8\linewidth]{figures/aggregate-programming-abstraction-layers.png}
@@ -168,6 +166,8 @@ Aggregate computing builds upon the principles of \textit{\ac{fc}} (\Cref{subsec
     which are then wrapped and combined to produce a user-friendly API for developing situated \ac{IoT} systems.}
     \label{fig:aggregate-abstraction-layers}
 \end{figure}
+
+Aggregate computing builds upon the principles of \textit{\ac{fc}} (\Cref{subsection:field-calculus}) but adds abstraction layers to address scalability and resilience challenges (\Cref{fig:aggregate-abstraction-layers}). These layers hide the complexity of distributed coordination and support efficient system engineering. The methodology ensures simplicity and transparency in module composition, tailoring coordination mechanisms to different subsystems based on varying requirements. Additionally, it abstracts away intricate implementation details, enabling programmers to focus on high-level system design rather than low-level intricacies. The introduction of ``\textit{resilient coordination operators}'' is fundamental in concealing complexity and ensuring system robustness. By providing standardized ways to handle failures and adapt to changing conditions, these operators contribute to the overall efficiency and reliability of distributed coordination systems.
 
 \subsection{Abstractions}
 \label{subsection:abstractions}
