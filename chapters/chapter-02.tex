@@ -22,7 +22,7 @@ This section elucidates fundamental concepts that form the basis of functional p
 
 \paragraph{Higher-order functions}
 
-Higher-order functions possess the ability to either receive functions as arguments or produce them as results. The nuanced difference lies in the mathematical concept denoted by "higher-order", which involves functions operating on other functions.
+Higher-order functions possess the ability to either receive functions as arguments or produce them as results. The nuanced difference lies in the mathematical concept denoted by ``higher-order'', which involves functions operating on other functions.
 
 These functions facilitate partial application or currying, enabling a technique where a function is applied to its arguments one at a time. With each application, a new function is created to handle the next argument. This approach allows programmers to express ideas succinctly, such as representing the successor function by partially applying the addition operator to the natural number one.
 
@@ -103,7 +103,7 @@ This is the key notion of reactive programming. Values change over time and when
 
 The evaluation model of a reactive programming language focuses on how changes propagate across a dependency graph of values and computations. From the programmer's perspective, the automatic propagation of changes is a fundamental aspect of reactive programming. Essentially, any alteration in a value should be automatically transmitted to all computations dependent on it. When an event occurs at a source, computations reliant on that event should be notified of the changes, potentially triggering a recomputation.
 
-At the language level, a crucial design decision involves determining who initiates the propagation of changes. This entails deciding whether the source should \textit{push} new data to its dependents (consumers) or if the dependents should \textit{pull} data from the event source (producer). In the pull-based model, the computation that requires a value needs to ``pull" it from the source. That is, propagation is driven by the demand for new data. In the push-based model, when the source has new data, it pushes the data to its dependent computations. That is, propagation is driven by the availability of new data.
+At the language level, a crucial design decision involves determining who initiates the propagation of changes. This entails deciding whether the source should \textit{push} new data to its dependents (consumers) or if the dependents should \textit{pull} data from the event source (producer). In the pull-based model, the computation that requires a value needs to ``pull'' it from the source. That is, propagation is driven by the demand for new data. In the push-based model, when the source has new data, it pushes the data to its dependent computations. That is, propagation is driven by the availability of new data.
 
 \subsection{Reactive Operators}
 
@@ -122,15 +122,13 @@ Furthermore, these operator functions are intentionally designed to be composabl
 
 Kotlin Flow\footnote{\url{https://kotlinlang.org/docs/flow.html}.} is a part of the Kotlin Coroutines library, introduced to provide a reactive programming model for asynchronous \textit{cold}\footnote{A flow that emits values only when there is an active collector.} and \textit{hot}\footnote{A flow that produces values regardless of whether there are active collectors.} data streams.
 
-A \texttt{Flow} is an asynchronous data stream that sequentially emits values and completes normally or with an exception. Intermediate operators on the flow such as \texttt{map}, \texttt{filter}, \texttt{take} and \texttt{zip} are functions that are applied to the \textit{upstream} flow or flows and return a \textit{downstream} flow where further operators can be applied to. Intermediate operations do not execute any code in the flow and are not suspending functions\footnote{A function that can be paused and resumed at a later time.} themselves. They only set up a chain of operations for future execution and quickly return. This is known as a cold flow property. \textit{Terminal operators} on the flow are either suspending functions such as \texttt{collect}, \texttt{single}, \texttt{reduce} and \texttt{toList} or \texttt{launchIn} operator that starts collection of the flow in the given scope. They are applied to the upstream flow and trigger the execution of all operations. Execution of the flow is also called ``collecting the flow" and is always performed in a suspending manner without actual blocking. Terminal operators complete normally or exceptionally depending on the successful or failed execution of all the flow operations in the upstream.
+A \texttt{Flow} is an asynchronous data stream that sequentially emits values and completes normally or with an exception. Intermediate operators on the flow such as \texttt{map}, \texttt{filter}, \texttt{take} and \texttt{zip} are functions that are applied to the \textit{upstream} flow or flows and return a \textit{downstream} flow where further operators can be applied to. Intermediate operations do not execute any code in the flow and are not suspending functions\footnote{A function that can be paused and resumed at a later time.} themselves. They only set up a chain of operations for future execution and quickly return. This is known as a cold flow property. \textit{Terminal operators} on the flow are either suspending functions such as \texttt{collect}, \texttt{single}, \texttt{reduce} and \texttt{toList} or \texttt{launchIn} operator that starts collection of the flow in the given scope. They are applied to the upstream flow and trigger the execution of all operations. Execution of the flow is also called ``collecting the flow'' and is always performed in a suspending manner without actual blocking. Terminal operators complete normally or exceptionally depending on the successful or failed execution of all the flow operations in the upstream.
 
 By default, flows are \textit{sequential} and all flow operations are executed sequentially in the same coroutine\footnote{A concurrency design pattern that allows to write asynchronous, non-blocking code in a sequential style.}, with an exception for a few operations specifically designed to introduce concurrency into flow execution such as \texttt{buffer} and \texttt{flatMapMerge}.
 
 The \texttt{Flow} interface does not carry information on whether a flow is a cold stream that can be collected repeatedly and triggers execution of the same code every time it is collected, or if it is a hot stream that emits different values from the same running source on each collection. Usually flows represent cold streams, but there is a \texttt{SharedFlow} subtype that represents hot streams. In addition to that, any flow can be turned into a hot one by the \texttt{stateIn} and \texttt{shareIn} operators, or by converting the flow into a hot channel via the \texttt{produceIn} operator.
 
-The example \Cref{lst:flow-example} demonstrates the asynchronous nature of Kotlin Flow and how it allows concurrent execution without blocking the main thread. The \texttt{simple} function creates a flow using the \texttt{flow} builder. Inside the flow, it emits values from 1 to 3 with a delay of one hundred milliseconds between each emission. The delay simulates an operation that takes time, such as network calls or disk I/O. In the \texttt{main} function, a coroutine is launched using \texttt{launch} to run concurrently with the main thread. This coroutine prints messages indicating that it's not blocked and introduces delays between each message. As the flow is collected in the main coroutine, the emitted values are printed and interleaved with the messages from the concurrent coroutine (\Cref{lst:flow-example-result}). This demonstrates that the main thread is not blocked during the execution of the flow, thanks to the asynchronous nature of flows.
-
-\begin{figure}
+\begin{figure}[ht!]
     \centering
     \begin{subfigure}[b]{\textwidth}
         \centering
@@ -142,6 +140,8 @@ The example \Cref{lst:flow-example} demonstrates the asynchronous nature of Kotl
         \lstinputlisting[label={lst:flow-example-result},caption=Kotlin Flow example result.]{listings/flow-example-result.txt}
     \end{subfigure}
 \end{figure}
+
+The example \Cref{lst:flow-example} demonstrates the asynchronous nature of Kotlin Flow and how it allows concurrent execution without blocking the main thread. The \texttt{simple} function creates a flow using the \texttt{flow} builder. Inside the flow, it emits values from 1 to 3 with a delay of one hundred milliseconds between each emission. The delay simulates an operation that takes time, such as network calls or disk I/O. In the \texttt{main} function, a coroutine is launched using \texttt{launch} to run concurrently with the main thread. This coroutine prints messages indicating that it's not blocked and introduces delays between each message. As the flow is collected in the main coroutine, the emitted values are printed and interleaved with the messages from the concurrent coroutine (\Cref{lst:flow-example-result}). This demonstrates that the main thread is not blocked during the execution of the flow, thanks to the asynchronous nature of flows.
 
 \section{Aggregate Computing}
 \label{section:aggregate-computing}
@@ -156,7 +156,18 @@ Aggregate computing is especially suitable for scenarios where the problem at ha
     \item \textbf{Intrinsic adaptiveness}, signifying the capability to respond to significant events to ensure the overall resilience of the system.
 \end{itemize}
 
-Addressing these considerations requires an approach grounded in \textit{self-organization}, where cohesive and resilient coordination behavior arises from localized coordination abstractions. Another objective of aggregate computing is to provide developers with a means to articulate the behavior of distributed systems possessing the aforementioned features in a composable and declarative manner. This facilitates better scalability in dealing with the intricacies of the domain. The mathematical foundation of aggregate computing, relying on \textit{\ac{fc}} (\Cref{subsection:field-calculus}), enables this capability.
+Addressing these considerations requires an approach grounded in \textit{self-organization}, where cohesive and resilient coordination behavior arises from localized coordination abstractions. Another objective of aggregate computing is to provide developers with a means to articulate the behavior of distributed systems possessing the aforementioned features in a composable and declarative manner. This facilitates better scalability in dealing with the intricacies of the domain.
+
+Aggregate computing builds upon the principles of \textit{\ac{fc}} (\Cref{subsection:field-calculus}) but adds abstraction layers to address scalability and resilience challenges (\Cref{fig:aggregate-abstraction-layers}). These layers hide the complexity of distributed coordination and support efficient system engineering. The methodology ensures simplicity and transparency in module composition, tailoring coordination mechanisms to different subsystems based on varying requirements. Additionally, it abstracts away intricate implementation details, enabling programmers to focus on high-level system design rather than low-level intricacies. The introduction of ``\textit{resilient coordination operators}'' is fundamental in concealing complexity and ensuring system robustness. By providing standardized ways to handle failures and adapt to changing conditions, these operators contribute to the overall efficiency and reliability of distributed coordination systems.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=.8\linewidth]{figures/aggregate-programming-abstraction-layers.png}
+    \caption{Aggregate programming abstraction layers. The software and hardware capabilities of particular devices are used to implement aggregate-level field
+    calculus constructs. These constructs are used to implement a limited set of building-block coordination operations with provable resilience properties,
+    which are then wrapped and combined to produce a user-friendly API for developing situated \ac{IoT} systems.}
+    \label{fig:aggregate-abstraction-layers}
+\end{figure}
 
 \subsection{Abstractions}
 \label{subsection:abstractions}
@@ -209,7 +220,72 @@ The concept of field calculus was introduced in~\cite{Viroli2013} as a fundament
     \label{fig:field-calculus-syntax}
 \end{figure}
 
-To work properly, the semantics of \texttt{nbr} and \texttt{rep} require a way to access, respectively, the last registered state of each neighbor and the last registered output of the device itself. In addition, this process should be made in such a way that different instances of \texttt{rep} and \texttt{nbr} cannot inadvertently ``swap" their respective value. This process is called \textit{alignment}, and it has the consequence that two branches of an \texttt{if} expression execute in isolation, meaning that two devices that execute different branches cannot communicate with each other inside their branches. In practice, this process is done by carefully constructing the export of an expression as an \textit{evaluation tree} that represents the aggregate computation. The complete semantics of export construction and alignment can be found in~\cite{Viroli2018}.
+To work properly, the semantics of \texttt{nbr} and \texttt{rep} require a way to access, respectively, the last registered state of each neighbor and the last registered output of the device itself. In addition, this process should be made in such a way that different instances of \texttt{rep} and \texttt{nbr} cannot inadvertently ``swap'' their respective value. This process is called \textit{alignment}, and it has the consequence that two branches of an \texttt{if} expression execute in isolation, meaning that two devices that execute different branches cannot communicate with each other inside their branches. In practice, this process is done by carefully constructing the export of an expression as an \textit{evaluation tree} that represents the aggregate computation. The complete semantics of export construction and alignment can be found in~\cite{Viroli2018}.
+
+\subsection{Field Calculus Extensions}
+
+\subsubsection{The Share Operator}
+
+In recent research on the universality of the field calculus, a limitation in the efficiency of information propagation has been identified~\cite{Audrito2018}. This limitation arises from the combination of time evolution and neighbor interaction operators in the original field calculus, resulting in a delay that restricts the speed at which information can be effectively propagated.
+
+The delay stems from the separation between state sharing (\texttt{nbr}) and state updates (\texttt{rep}). Specifically, when information is received through a neighbor operation, it must be retained and remembered through a state update before it can be shared onward during the subsequent execution of the neighbor operation. This process is illustrated in \Cref{fig:handling-state-sharing}.
+
+This delay in information propagation has implications for the efficiency and effectiveness of systems or models built upon the field calculus framework. Researchers may need to explore alternative approaches or optimizations to overcome this limitation and enhance the speed of information dissemination within such systems.
+
+\begin{figure}[ht!]
+    \centering
+    \includegraphics[width=.5\linewidth]{figures/state-sharing.png}
+    \caption{Handling state sharing (\texttt{nbr}) and memory (\texttt{rep}) separately injects a delay while information ``loops around'' to where it can be shared (top) while combining state sharing and memory into the new share operator eliminates that delay (bottom).}
+    \label{fig:handling-state-sharing}
+\end{figure}
+
+In~\cite{Audrito2018} is proposed a solution to the limitation mentioned by introducing the \texttt{share} construct as an extension to the field calculus. This extension is designed to overcome the delay in information propagation by integrating time evolution and neighbor interaction into a single atomic coordination primitive.
+
+The \texttt{share} construct leverages the asynchronous protocol of the field calculus, enabling it to perform several crucial operations simultaneously:
+
+\begin{enumerate}
+    \item observation of neighbors' values;
+    \item reduction to a single local value;
+    \item update of a local variable and sharing of the updated value.
+\end{enumerate}
+
+By incorporating these functionalities into a single atomic operation, the \texttt{share} construct enables the immediate sharing of information received from neighbors as soon as it is integrated into the system's state. This eliminates the need to wait for the next computation round, effectively addressing the delay in information propagation identified in the original field calculus framework.
+
+\subsubsection{The XC Language}
+
+Programming distributed systems presents significant challenges, primarily stemming from issues such as concurrency, asynchronous execution, message loss, and device failures. These complexities are particularly pronounced in homogeneous distributed systems, wherein devices are similar and interact with neighboring devices while executing identical programs.
+
+XC is a programming language introduced in~\cite{https://doi.org/10.4230/lipics.ecoop.2022.20}, tailored for the development of homogeneous distributed systems. Within XC, developers craft a singular program that each device executes, facilitating collective emergent behavior. The language's framework abstracts away complexities such as concurrency, asynchronous execution, message loss, and device failures. A minimalist approach is adopted, incorporating a single declarative primitive responsible for communication, state management, and connection oversight (\texttt{exchange}). The alignment mechanism within XC enables developers to abstract over asynchronous execution while preserving composability.
+
+XC features a single communication primitive:
+
+\[ \texttt{exchange($e_i$, $(\underline{n}) \Rightarrow$ return $e_r$ send $e_s$)} \]
+
+which de-sugars to:
+
+\[ \texttt{exchange($e_i$, $(\underline{n}) \Rightarrow$ ($e_r$,$e_s$))} \]
+
+and is evaluated as follows:
+
+\begin{enumerate}
+    \item the device computes the local value $l_i$ of $e_i$ (the initial value);
+    \item it substitutes variable $\underline{n}$ with the \textit{nvalue} (neighboring value) $\underline{w}$ of messages received from the neighbors for this exchange, using $l_i$ as default. The exchange returns the (neighboring or local) value $v_r$ from the evaluation of $e_r$;
+    \item $e_s$ evaluates to a nvalue $\underline{w}_s$ consisting of local values to be sent to neighbor devices $\delta'$, that will use their corresponding $\underline{w}_s$ ($\delta'$) as soon as they wake up and perform their next execution round.
+\end{enumerate}
+
+Often, expressions $e_r$ and $e_s$ coincide, hence we provide:
+
+\[ \texttt{exchange($e_i$, $(\underline{n}) \Rightarrow$ retsend $e$)} \]
+
+as a shorthand for:
+
+\[ \texttt{exchange($e_i$, $(\underline{n}) \Rightarrow$ ($e$,$e$))} \]
+
+Another common pattern is to access neighbors' values, which we support via:
+
+\[ \texttt{nbr($e_i$, $e_s$) = exchange($e_i$, $(\underline{n}) \Rightarrow$ return $\underline{n}$ send $e_s$)} \]
+
+In \texttt{nbr($e_i$, $e_s$)}, the value of expression $e_s$ is sent to neighbors, and the values received from them (gathered in $\underline{n}$ together with the default from $e_i$ ) are returned as a nvalue, thus providing a view on neighbors' values of $e_s$. It is crucial for the expressivity of XC that \texttt{exchange} (hence \texttt{nbr}) can send a different value to each neighbor, to allow custom interaction.
 
 \subsection{Reactive and Proactive Models}
 \label{subsection:reactive-and-proactive-models}
