@@ -96,7 +96,9 @@ The export for each iteration is constructed by the ScaFi engine. It applies sid
 The semantics of the constructs defined in ScaFi are described below:
 \begin{itemize}
     \item \texttt{rep(init)(f)}: captures state evolution, starting from an \texttt{init} value that is updated each round through \texttt{f};
-    \item \texttt{nbr(e)} captures communication, of the value computed from its \texttt{e} expression, with neighbors; it is used only inside the argument \texttt{expr} of \texttt{foldhood(init)(acc)(expr)}, which supports neighborhood data aggregation, through a standard “fold” of functional programming with initial value \texttt{init}, accumulator function \texttt{acc}, and the set of values to fold over obtained by evaluating expr against all neighbors;
+    \item \texttt{nbr(e)} captures communication, of the value computed from its \texttt{e} expression, with neighbors; it is used only inside the argument \texttt{expr} of
+    
+    \texttt{foldhood(init)(acc)(expr)}, which supports neighborhood data aggregation, through a standard “fold” of functional programming with initial value \texttt{init}, accumulator function \texttt{acc}, and the set of values to fold over obtained by evaluating expr against all neighbors;
     \item \texttt{branch(cond)(th)(el)} captures domain partitioning (space-time branching): essentially, the devices for which \texttt{cond} evaluates to \texttt{true} will run sub-computation \texttt{th}, while the others will run \texttt{el};
     \item \texttt{mid} is a built-in sensor providing the identifier of devices;
     \item \texttt{sense(sensorName)} abstracts access to local sensors;
@@ -158,7 +160,7 @@ Portability refers to its ability to run on various platforms and environments, 
 Constructs implemented in Collektive are defined in \Cref{lst:collektive-constructs}, while the semantics are described below:
 
 \begin{itemize}
-    \item \texttt{exchange}~\cite{https://doi.org/10.4230/lipics.ecoop.2022.20}: This construct is not part of the field calculus but extends it. It manages the computation of values between neighbors in a specific context. It computes a \texttt{body} function starting from the \texttt{initial} value and the messages received from other neighbors, then sends the results from the evaluation to specific neighbors or everyone, it is contingent upon the origin of the calculated value, whether it was received from a neighbor or if it constituted the initial value. The result of this function is a field with as messages a map with as key the ID of the devices across the network and the result of the computation passed as relative local values.
+    \item \texttt{exchange}: It manages the computation of values between neighbors in a specific context. It computes a \texttt{body} function starting from the \texttt{initial} value and the messages received from other neighbors, then sends the results from the evaluation to specific neighbors or everyone, it is contingent upon the origin of the calculated value, whether it was received from a neighbor or if it constituted the initial value. The result of this function is a field with as messages a map with as key the ID of the devices across the network and the result of the computation passed as relative local values.
     \item \texttt{exchanging}: Same behavior of \texttt{exchange} but this function can yield a \texttt{Field} of \texttt{Return} value.
     \item \texttt{repeat}: Iteratively updates the value computing the \texttt{transform} expression at each device using the last computed value or the \texttt{initial}.
     \item \texttt{repeating}: Iteratively updates the value computing the \texttt{transform} expression from a \texttt{YieldingContext} at each device using the last computed value or the \texttt{initial}.
@@ -168,8 +170,12 @@ Constructs implemented in Collektive are defined in \Cref{lst:collektive-constru
 
 \subsubsection{Example of Gradient in Collektive}
 
-In the \Cref{lst:collektive-gradient}, the implementation of the gradient in Collektive is presented. In this case, it is used the \texttt{share} construct~\cite{https://doi.org/10.48550/arxiv.1910.02874}. This construct is not part of field calculus but extends it; it allows declarative
-expression of unified and coherent operation mechanisms for state preservation, communication to neighbors, and aggregation of received messages. In~\cite{https://doi.org/10.48550/arxiv.1910.02874} is demonstrated that \texttt{share} can be used to replace the combination of \texttt{rep} and \texttt{nbr}. \texttt{share} captures the space-time nature of field computation through observation of neighbors' values, starting from an \texttt{initial} value, it reduces to a single local value given a \texttt{transform} function and updating and sharing to neighbors of a local variable.
+In the \Cref{lst:collektive-gradient}, the implementation of the gradient in Collektive is presented. It uses the \texttt{share} construct with \texttt{POSITIVE\_INFINITY} as the initial value. The \texttt{when} construct is used to select the result of the expression based on the type of the node:
+
+\begin{itemize}
+    \item if the node is the source the result is $0.0$;
+    \item if the node is not the source it must consider the neighbor where the value of the gradient is smallest and sum the distance from that neighbor.
+\end{itemize}
 
 \lstinputlisting[float,label={lst:collektive-gradient},language=kotlin,caption=Gradient implementation in Collektive.]{listings/collektive-gradient.kt}
 
@@ -290,8 +296,6 @@ The detailed design of Collektive is presented in \Cref{fig:collektive-design}. 
 \texttt{cycle} and \texttt{cycleWhile} implicitly use the \texttt{aggregate} function, which is the entry point of the aggregate program. It computes an iteration of a device (\texttt{localId}), taking as parameters the previous \texttt{state}, the messages received from the neighbors and the \texttt{compute} with \texttt{AggregateContext} object receiver that provides the implementation of the aggregate constructs. Another version of the \texttt{aggregate} function computes an iteration of a device, over a \texttt{network} of devices, optionally from a previous state (\texttt{previousState}), running the \texttt{compute} aggregate program. The \texttt{aggregate} function returns an \texttt{AggregateResult}, which is the result of the aggregate computation. It represents the \texttt{localId} of the device, the \texttt{result} of the computation, the messages to send (\texttt{toSend}) to other devices and the new state (\texttt{newState}) of the device.
 
 The interface \texttt{Aggregate} models the minimal set of aggregate operations and holds the \texttt{localId} of the device executing the aggregate program.
-
-The \texttt{exchange} function manages the computation of values between neighbors in a specific context. It computes a \texttt{body} function starting from the \texttt{initial} value and the messages received from other neighbors, then sends the results from the evaluation to specific neighbors or everyone, it is contingent upon the origin of the calculated value, whether it was received from a neighbor or if it constituted the initial value. The result of the \texttt{exchange} function is a \texttt{Field} with as messages a map with the ID of devices across the network as key and the result of the computation passed as relative local values.
 
 The \texttt{alignOn} function is used for the alignment, it pushes in the stack the \texttt{pivot}, executes the \texttt{body} and pops the last element of the \texttt{Stack} after it is called, finally returns the \texttt{body}'s return element.
 
