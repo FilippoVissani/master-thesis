@@ -11,7 +11,7 @@ This chapter delves into an in-depth examination of various state-of-the-art fra
 
 Following the exploration of existing frameworks, the chapter transitions into the analysis of \ac{frasp} (\Cref{section:design-of-frasp}) and Collektive (\Cref{section:design-of-collektive}), shedding light on their architecture and detailed design.
 
-Furthermore, the chapter delves into the integration of \ac{frasp} into Collektive (\Cref{section:integration-frasp-collektive}), outlining possible issues and solutions designed to overcome them. In particular, it evaluates the feasibility of reactive aggregate programming in Kotlin, offering valuable perspectives on the integration process and its implications.
+Furthermore, the chapter delves into the re-implementation of \ac{frasp} into Collektive (\Cref{section:integration-frasp-collektive}), outlining possible issues and solutions designed to overcome them. In particular, it evaluates the feasibility of reactive aggregate programming in Kotlin, offering valuable perspectives on the re-implementation process and its implications.
 
 \section{State of the Art}
 \label{section:state-of-the-art}
@@ -315,13 +315,13 @@ The alignment processing pursues the following strategy: in the first instance a
     \item For each candidate function, it aligns the call expressions having an aggregate reference or in-depth they involve an aggregate computation.
 \end{enumerate}
 
-\section{Integration of FRASP in Collektive}
+\section{Re-implementation of FRASP in Collektive}
 \label{section:integration-frasp-collektive}
 
 Given the considerations regarding the proactive computational model made in \Cref{subsection:reactive-and-proactive-models} and the solution proposed in~\cite{Casadei2023} with the related results of the evaluations performed, it is decided to introduce the \ac{frasp} model in Collektive.
-Analysis of the architectures of \ac{frasp} and Collektive, defined in \Cref{section:design-of-frasp} and \Cref{section:design-of-collektive}, respectively, reveals substantial differences in technology and design choices. This considerably complicates the process of integrating the reactive model into Collektive. The possible issues identified during the analysis are described in \Cref{subsection:integration-problems}.
+Analysis of the architectures of \ac{frasp} and Collektive, defined in \Cref{section:design-of-frasp} and \Cref{section:design-of-collektive}, respectively, reveals substantial differences in technology and design choices. This considerably complicates the process of implementing the reactive model into Collektive. The possible issues identified during the analysis are described in \Cref{subsection:integration-problems}.
 
-\subsection{Integration Problems}
+\subsection{Implementation Issues}
 \label{subsection:integration-problems}
 
 \subsubsection{Differences between Scala and Kotlin}
@@ -363,12 +363,12 @@ Given the proposed design in \Cref{fig:kotlin-distributed-frp-design} and its im
 
 \lstinputlisting[float,label={lst:kotlin-distributed-frp-gradient},language=kotlin,caption=Gradient implementation in Kotlin Distributed FRP.]{listings/kotlin-distributed-frp-gradient.kt}
 
-\subsection{Integration Solutions Identified}
+\subsection{Solutions Identified}
 \label{subsection:integration-solutions-identified}
 
-The main goal is to introduce the reactive paradigm into Collektive, replacing it with the proactive one. At the same time, we want to make sure that the resulting \ac{dsl} is ergonomic and thus it is easy for the user to understand and use it. It should be noted that, given the diversity of the two architectures, it is not possible to integrate \ac{frasp} directly into Collektive, so an intermediate solution must be identified.
+The main goal is to introduce the reactive paradigm into Collektive, replacing it with the proactive one. At the same time, we want to make sure that the resulting \ac{dsl} is ergonomic and thus it is easy for the user to understand and use it. It should be noted that, given the diversity of the two architectures, it is not possible to implement the \ac{frasp} model directly in Collektive, so an intermediate solution must be identified.
 
-Given the results obtained from the analysis reported in \Cref{subsection:Feasibility-Reactive-Aggregate-Programming} and taking into consideration the possible integration issues identified in \Cref{subsection:integration-problems}, we propose two possible solutions for integrating the reactive paradigm into Collektive:
+Given the results obtained from the analysis reported in \Cref{subsection:Feasibility-Reactive-Aggregate-Programming} and taking into consideration the possible implementation issues identified in \Cref{subsection:integration-problems}, we propose two possible solutions for implementing the reactive paradigm into Collektive:
 
 \begin{itemize}
     \item \textbf{\ac{rmsm}}: it consists of building the reactive model on top of the proactive one. This can be achieved by making the messages and sensors reactive; every time the value of one of these is changed the expression is re-evaluated entirely, executing a round. This solution has the advantage that the Collektive \ac{dsl} remains identical to the current one. On the other hand, it is not possible to exploit the partial updates of the sub-expressions proposed in \ac{frasp}, this translates into lower efficiency.
