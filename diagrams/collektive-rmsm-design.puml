@@ -24,7 +24,7 @@ class StateFlowExtensions {
 }
 
 Collektive --+ Companion
-Companion ..> ReactiveNetwork
+Companion .up.> ReactiveNetwork
 Companion ..> StateFlowExtensions
 
 @enduml

@@ -1,11 +1,11 @@
 @startuml
 
 interface Aggregate<ID> << interface >> {
-  + exchange(Initial, Function1<Field<ID, Initial>, Field<ID, Initial>>): Field<ID, Initial>
-  + repeat(Initial, Function1<Initial, Initial>): Initial
-  + exchanging(Initial, Function2<YieldingContext<Field<ID, Initial>, Field<ID, Return>>, Field<ID, Initial>, YieldingResult<Field<ID, Initial>, Field<ID, Return>>>): Field<ID, Return>
-  + repeating(Initial, Function2<YieldingContext<Initial, Return>, Initial, YieldingResult<Initial, Return>>): Return
-  + alignedOn(Object?, Function0<R>): R
+  + exchange(...): Field<ID, Initial>
+  + repeat(...): Initial
+  + exchanging(...): Field<ID, Return>
+  + repeating(...): Return
+  + alignedOn(...): R
    localId: ID
 }
 
@@ -57,10 +57,10 @@ interface Network<ID> << interface >> {
 Collektive --+ Companion
 AggregateContext --|> Aggregate
 Companion ..> AggregateResult
-Aggregate ..> Field
+Aggregate .up.> Field
 Collektive .up.> Aggregate
-Collektive ..> Network
-Stack ..> Path
+Collektive .up.> Network
+Stack .up.> Path
 AggregateContext .up.> Stack
 
 @enduml

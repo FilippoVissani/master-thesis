@@ -31,9 +31,9 @@ It takes care of visiting the abstract syntax tree of the aggregate expression a
 This module defines the following components:
 \begin{itemize}
     \item \texttt{aggregate}: deals with defining the context related to a device, the semantics of aggregate constructs, and the data structures necessary for path definition and device alignment;
-    \item \texttt{field}: Contains the definition of computational field and the related functionalities for manipulating the latter;
+    \item \texttt{field}: contains the definition of computational field and the related functionalities for manipulating the latter;
     \item \texttt{state}: defines the association between the paths and the results of their evaluations;
-    \item \texttt{path}: Defines the data structures necessary to represent the abstract syntax tree relating to the aggregate expression;
+    \item \texttt{path}: defines the data structures necessary to represent the abstract syntax tree relating to the aggregate expression;
     \item \texttt{networking}: defines the data structures necessary for distributed device communication.
 \end{itemize}
 
@@ -72,9 +72,9 @@ The \texttt{RAggregateContext} class extends the \texttt{Aggregate} interface, p
 The \ac{prm} exhibits distinct behavioral characteristics that distinguish it from traditional static computation approaches:
 
 \begin{itemize}
-    \item \textbf{Reactive Computations}: Computation occurs reactively in response to environmental changes, minimizing resource wastage and ensuring optimal responsiveness.
-    \item \textbf{Efficient Message Exchange}: Devices only broadcast messages when necessary, reducing unnecessary communication.
-    \item \textbf{Selective Reevaluation}: Sub-expressions are reevaluated only when their dependencies change, optimizing computation efficiency and reducing redundant processing.
+    \item \textbf{Reactive computations}: computation occurs reactively in response to environmental changes, minimizing resource wastage and ensuring optimal responsiveness.
+    \item \textbf{Efficient message exchange}: devices only broadcast messages when necessary, reducing unnecessary communication.
+    \item \textbf{Selective reevaluation}: sub-expressions are reevaluated only when their dependencies change, optimizing computation efficiency and reducing redundant processing.
 \end{itemize}
 
 By embodying these characteristics, the \ac{prm} enhances the scalability, and robustness of the Collektive framework, empowering it to effectively handle dynamic and unpredictable environments.
