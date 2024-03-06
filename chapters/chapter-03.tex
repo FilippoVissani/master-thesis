@@ -128,7 +128,7 @@ If a node is not a source, then will take as its gradient value the output of th
 
 FCPP~\cite{Audrito2020} is a C++14 library implementing field calculus and providing tools for distributed system simulation.
 
-Its extensible component-based architecture allows customization for diverse application scenarios, such as Internet-of-Things (IoT) deployments, simulations, and self-organizing cloud applications. Users can add components tailored to specific functionalities, enhancing flexibility and applicability. The library incorporates compile-time optimizations and supports parallel execution, enabling efficient simulation of both systems and self-organizing cloud applications. Currently, FCPP focuses on distributed system simulations but already significantly reduces simulation costs, accelerating the development of new distributed algorithms. These features offer a path for a convenient extension to address previously ineffective scenarios:
+Its extensible component-based architecture allows customization for diverse application scenarios, such as Internet-of-Things (IoT) deployments, simulations, and self-organizing cloud applications, which require fine-grained parallelism to scale and for which performance improvements translate into a cost reduction. Users can add components tailored to specific functionalities, enhancing flexibility and applicability. The library incorporates compile-time optimizations and supports parallel execution, enabling efficient simulation of both systems and self-organizing cloud applications. Currently, FCPP focuses on distributed system simulations but already significantly reduces simulation costs, accelerating the development of new distributed algorithms. These features offer a path for a convenient extension to address previously ineffective scenarios.
 
 Existing implementations often have high-performance requirements, unsuitable for resource-constrained microcontrollers. FCPP's lightweight nature makes it well-suited for these systems.
 
@@ -265,7 +265,7 @@ Following the system/execution model described in \Cref{section:frasp}, the inpu
 \subsection{Architecture}
 \label{subsection:collektive-architecture}
 
-Collektive has been developed as a Gradle project composed of three different submodules. The cited submodules are:
+Collektive has been developed as a Gradle project composed of three different submodules. The cited submodules are, namely:
 
 \begin{itemize}
     \item \texttt{plugin}, that is divided into two submodules:
@@ -274,7 +274,7 @@ Collektive has been developed as a Gradle project composed of three different su
               \item \texttt{compiler-plugin}: the compiler plugin is used to modify the data structure which is responsible for keeping track of the stack at runtime. For each aggregate function and branch construct, the stack data structure is updated to allow alignment whenever necessary.
           \end{itemize}
     \item \texttt{dsl}: the actual \ac{dsl} implementation in Kotlin Multiplatform, where the logic is implemented and that exposes the operators of the aggregate computing.
-    \item \texttt{alchemist-incarnation-collektive}: Allows to integrate Collektive simulations in the Alchemist~\cite{Pianini2013} simulator.
+    \item \texttt{alchemist-incarnation-collektive}: allows to integrate Collektive simulations in the Alchemist~\cite{Pianini2013} simulator.
 \end{itemize}
 
 \subsection{Detailed Design}
@@ -286,9 +286,9 @@ The detailed design of Collektive is presented in \Cref{fig:collektive-design}. 
     \item \texttt{cycleWhile}: it applies the aggregate function to the parameters of the device while the condition is satisfied, then returns the result of the computation.
 \end{itemize}
 
-\begin{figure}[ht!]
+\begin{figure}
     \centering
-    \includegraphics[width=\linewidth]{figures/collektive-design.pdf}
+    \includegraphics[width=\textwidth]{figures/collektive-design.pdf}
     \caption{Detailed design of Collektive \ac{dsl}.}
     \label{fig:collektive-design}
 \end{figure}
@@ -303,7 +303,7 @@ The \texttt{AggregateContext} class represents the context for managing aggregat
 
 \subsection{Alignment Processing Strategy}
 
-The alignment processing pursues the following strategy: in the first instance all the function definitions are visited and the ones involving aggregate computation will be subject to alignment processing. Then, for each candidate function, the plugin visits all the call sites in the body of the function and checks if the call has an aggregate reference or if it is involved in an aggregate computation. If so, the plugin will align the expression call. During the visiting of the function definition, branch conditions are also visited aligning only the branches that involve aggregate computation. If a branch body does not involve aggregate computation, the plugin will not align it. Aligning the branches in this way, by default all the branches follow the branch semantics of aggregate computing. The alignment strategy is formalized below:
+The alignment processing pursues the following strategy: in the first instance, all the function definitions are visited and the ones involving aggregate computation will be subject to alignment processing. Then, for each candidate function, the plugin visits all the call sites in the body of the function and checks if the call has an aggregate reference or if it is involved in an aggregate computation. If so, the plugin will align the expression call. During the visiting of the function definition, branch conditions are also visited aligning only the branches that involve aggregate computation. If a branch body does not involve aggregate computation, the plugin will not align it. Aligning the branches in this way, by default all the branches follow the branch semantics of aggregate computing. The alignment strategy is formalized below:
 
 \begin{enumerate}
     \item Each function definition exhibiting the following characteristics is the target of the alignment processing:
@@ -328,8 +328,8 @@ Analysis of the architectures of \ac{frasp} and Collektive, defined in \Cref{sec
 The Scala implementation of \ac{frasp} is extremely concise, even though it models several aspects of aggregate programming. In addition, the \ac{dsl} provided is particularly ergonomic, so the user can create aggregate programs easily and effectively. These characteristics of \ac{frasp} are due in part to the flexibility of Scala, which is given by the constructs that the language implements. The following are some Scala features that are used in \ac{frasp} but are not available by Kotlin:
 
 \begin{itemize}
-    \item \textbf{Given instances and using clauses}: Functional programming tends to express most dependencies as simple function parameterization. This is clean and powerful, but it sometimes leads to functions that take many parameters where the same value is passed over and over again in long call chains to many functions. Context parameters can help here since they enable the compiler to synthesize repetitive arguments instead of the programmer having to write them explicitly. Given instances define ``canonical'' values of certain types that serve for synthesizing arguments to context parameters.
-    \item \textbf{Traits and self-types}: Self-types are a way to declare that a trait must be mixed into another trait, even though it doesn't directly extend it. That makes the members of the dependency available without imports. A self-type is a way to narrow the type of \texttt{this} or another identifier that aliases \texttt{this}.
+    \item \textbf{Given instances and using clauses}: functional programming tends to express most dependencies as simple function parameterization. This is clean and powerful, but it sometimes leads to functions that take many parameters where the same value is passed over and over again in long call chains to many functions. Context parameters can help here since they enable the compiler to synthesize repetitive arguments instead of the programmer having to write them explicitly. Given instances define ``canonical'' values of certain types that serve for synthesizing arguments to context parameters.
+    \item \textbf{Traits and self-types}: self-types are a way to declare that a trait must be mixed into another trait, even though it does not directly extend it. That makes the members of the dependency available without imports. A self-type is a way to narrow the type of \texttt{this} or another identifier that aliases \texttt{this}.
 \end{itemize}
 
 \subsubsection{Differences in Paths and Exports Management}
@@ -366,7 +366,7 @@ Given the proposed design in \Cref{fig:kotlin-distributed-frp-design} and its im
 \subsection{Solutions Identified}
 \label{subsection:integration-solutions-identified}
 
-The main goal is to introduce the reactive paradigm into Collektive, replacing it with the proactive one. At the same time, we want to make sure that the resulting \ac{dsl} is ergonomic and thus it is easy for the user to understand and use it. It should be noted that, given the diversity of the two architectures, it is not possible to implement the \ac{frasp} model directly in Collektive, so an intermediate solution must be identified.
+The main goal is to introduce the reactive paradigm into Collektive, replacing it with the proactive one. At the same time, we want to make sure that the resulting \ac{dsl} is ergonomic and thus it is easy for the user to understand and to use it. It should be noted that, given the diversity of the two architectures, it is not possible to implement the \ac{frasp} model directly in Collektive, so an intermediate solution must be identified.
 
 Given the results obtained from the analysis reported in \Cref{subsection:Feasibility-Reactive-Aggregate-Programming} and taking into consideration the possible implementation issues identified in \Cref{subsection:integration-problems}, we propose two possible solutions for implementing the reactive paradigm into Collektive:
 

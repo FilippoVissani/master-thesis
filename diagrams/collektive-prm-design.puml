@@ -62,9 +62,9 @@ RAggregateContext -up-|> Aggregate
 Stack ..> Path
 RAggregateContext ..> Stack
 RAggregateContext ..> StateFlowExtensions
-Aggregate ..> Field
+Aggregate .up.> Field
 RCollektive ..> Aggregate
-Companion ..> RAggregateResult
-Companion ..> ReactiveNetwork
+Companion .up.> RAggregateResult
+Companion .up.> ReactiveNetwork
 
 @enduml

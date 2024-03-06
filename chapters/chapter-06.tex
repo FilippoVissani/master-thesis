@@ -75,24 +75,28 @@ The aggregate program chosen to carry out this evaluation is the gradient with o
     \label{fig:gradient-environment-and-execution}
 \end{figure}
 
-\Cref{lst:gradient-obstacles-prm} and \Cref{lst:gradient-obstacles-rmsm} present the implementation of the gradient with obstacles in the \ac{prm} and in the \ac{rmsm}, respectively. In both cases the node type is defined as \texttt{StateFlow<NodeType>}, allowing to change sources and obstacles at runtime. What changes is how this flow is managed: in the purely reactive case it is used directly within the aggregate constructs, while in the other a specific simulator must be created, which reevaluates the expression as the type of node varies. As regards the use of aggregate constructs within the program, the \ac{rmsm} is equivalent to the proactive model, while in the \ac{prm}, the use of functions for manipulating flows introduces greater complexity. Based on the results obtained, the following considerations arise:
-
-\paragraph{Readability}
-
-In the \ac{prm}, the use of \texttt{rShare}, \texttt{rMux}, and \texttt{rBranch} might be less familiar to developers unfamiliar with this specific \ac{dsl}. Understanding the syntax and purpose of these functions requires additional learning. The \ac{rmsm} utilizes familiar syntax like \texttt{share} and conditional statements, potentially making it easier to read and understand for developers with general programming experience.
-
-\paragraph{Maintainability}
-
-Composing complex logic using nested functions like \texttt{rMux} and \texttt{rBranch} can lead to nested code structures, potentially impacting maintainability as the codebase grows. In the \ac{rmsm} conditional statements and function calls promote a more linear and explicit flow of logic, potentially improving maintainability.
-
-\paragraph{Flexibility}
-
-The \ac{dsl} of the \ac{prm} provides dedicated functions for building reactive constructs, potentially offering more flexibility for complex reactive patterns. While offering less specialized syntax, the \ac{rmsm} can still achieve various reactive behaviors. However, complex reactive patterns might require more verbose code compared to the purely reactive approach.
-
-\paragraph{Learning Curve}
-
-The \ac{prm} requires learning the specific syntax and semantics of the \ac{dsl} functions, while the \ac{rmsm} leverages familiar programming constructs, potentially reducing the learning curve for developers with general programming experience.
+\Cref{lst:gradient-obstacles-prm} and \Cref{lst:gradient-obstacles-rmsm} present the implementation of the gradient with obstacles in the \ac{prm} and in the \ac{rmsm}, respectively. In both cases the node type is defined as \texttt{StateFlow<NodeType>}, allowing to change sources and obstacles at runtime. What changes is how this flow is managed: in the purely reactive case it is used directly within the aggregate constructs, while in the other a specific simulator must be created, which reevaluates the expression as the type of node varies. As regards the use of aggregate constructs within the program, the \ac{rmsm} is equivalent to the proactive model, while in the \ac{prm}, the use of functions for manipulating flows introduces greater complexity.
 
 \lstinputlisting[float,language=kotlin,label={lst:gradient-obstacles-prm},caption=Gradient with obstacles implementation in \ac{prm}.]{listings/gradient-obstacles-prm.kt}
 
 \lstinputlisting[float,language=kotlin,label={lst:gradient-obstacles-rmsm},caption=Gradient with obstacles implementation in \ac{rmsm}.]{listings/gradient-obstacles-rmsm.kt}
+
+The differences between the two implementations are analyzed in detail below:
+
+\begin{enumerate}
+    \item Initially, the \texttt{if} (\ac{rmsm}) and \texttt{rBranch} (\ac{prm}) constructs are used to isolate obstacles from the rest of the nodes. Nodes identified as obstacles will return the value -1.0 and will not execute the gradient function. In \ac{rmsm} the condition is verified directly, while in \ac{prm} it is necessary to use the \texttt{mapStates} function to convert the node type into a boolean value. In the \ac{prm}, since the return value is bound to the \texttt{StateFlow} type, to return the value -1.0 (if the condition is true) it is necessary to wrap the latter in a \texttt{MutableStateFlow}. This constraint is not present in the \ac{rmsm}, since the return value does not have to be of type \texttt{StateFlow}.
+    \item If the node is not defined as an obstacle, the gradient is executed. The \texttt{share} (\ac{rmsm}) and \texttt{rShare} (\ac{prm}) constructs are used to capture the space-time computation of the gradient. In this case, the way these two constructs are used is very similar.
+    \item Internally to \texttt{share} and \texttt{rShare} the \texttt{when} (\ac{rmsm}) and \texttt{rMux} (\ac{prm}) constructs are used, respectively. Both constructs serve to distinguish the source from the rest of the nodes; given a node, if this is identified as the source then the value 0.0 is returned (base case), otherwise, to calculate the return value, the neighbor in which the gradient value is smaller is considered and the distance (1.0) is added. From the two implementations, it appears that the syntax of the \texttt{when} construct is less intricate and more understandable than that used in the \texttt{rMux} construct. Furthermore, within \texttt{rMux} it is necessary to wrap the result in a \texttt{MutableStateFlow} when the condition is true, or use the functions to map flows when the condition is false; these operations are not necessary for the \texttt{when} construct.
+\end{enumerate}
+
+\Cref{lst:frasp-gradient2} and \Cref{lst:kotlin-distributed-frp-gradient2} again show the gradient implementations (without obstacles) for FRASP and Kotlin Distributed FRP, respectively. Despite the differences regarding the aggregate constructs, languages (Scala and Kotlin) and the design of the frameworks used, there is some similarity in the four gradient implementations provided.
+
+\lstinputlisting[float,label={lst:frasp-gradient2},language=scala,caption=Gradient implementation in \ac{frasp}.]{listings/frasp-gradient.scala}
+
+\lstinputlisting[float,label={lst:kotlin-distributed-frp-gradient2},language=kotlin,caption=Gradient implementation in Kotlin Distributed FRP.]{listings/kotlin-distributed-frp-gradient.kt}
+
+Based on the results obtained, the following considerations arise:
+in the \ac{prm}, the use of \texttt{rShare}, \texttt{rMux}, and \texttt{rBranch} might be less familiar to developers unfamiliar with this specific \ac{dsl}. Understanding the syntax and purpose of these functions requires additional learning. The \ac{rmsm} utilizes familiar syntax like \texttt{share} and conditional statements, potentially making it easier to read and understand for developers with general programming experience.
+Composing complex logic using nested functions like \texttt{rMux} and \texttt{rBranch} can lead to nested code structures, potentially impacting maintainability as the codebase grows. In the \ac{rmsm} conditional statements and function calls promote a more linear and explicit flow of logic, potentially improving maintainability.
+The \ac{dsl} of the \ac{prm} provides dedicated functions for building reactive constructs, potentially offering more flexibility for complex reactive patterns. While offering less specialized syntax, the \ac{rmsm} can still achieve various reactive behaviors. However, complex reactive patterns might require more verbose code compared to the purely reactive approach.
+The \ac{prm} requires learning the specific syntax and semantics of the \ac{dsl} functions, while the \ac{rmsm} leverages familiar programming constructs, potentially reducing the learning curve for developers with general programming experience.
