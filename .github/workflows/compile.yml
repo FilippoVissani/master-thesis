@@ -24,6 +24,6 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y inkscape
-      - uses: DanySK/compile-and-publish-all-latex@2.0.16
+      - uses: DanySK/compile-and-publish-all-latex@2.0.17
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
